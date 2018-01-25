@@ -3,6 +3,7 @@ package com.x.wallet;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import net.bither.bitherj.utils.BlockUtil;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -40,6 +43,17 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    Log.i("test", "MainActivity start");
+                    BlockUtil.dowloadSpvBlock();
+                }catch (Exception e){
+                    Log.i("test", "MainActivity exception", e);
+                }
+            }
+        }).start();
     }
 
     @Override
