@@ -1,0 +1,9 @@
+build/
+app/app.iml
+.idea/
+.gradle/
+gradle/
+XWallet.iml
+local.properties
+gradlew
+gradlew.bat
