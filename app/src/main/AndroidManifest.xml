@@ -20,7 +20,8 @@
         </activity>
         <activity
             android:name=".ui.activity.CoinTypeChooseActivity"
-            android:label="@string/cointype_choose">
+            android:label="@string/cointype_choose"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.x.wallet.action.COINTYPE_CHOOSE_ACTION"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -28,12 +29,17 @@
         </activity>
         <activity
             android:name=".ui.activity.CreateAccountActivity"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.x.wallet.action.CREATE_ACCOUNT_ACTION"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        <provider
+            android:authorities="com.x.wallet"
+            android:name=".db.XWalletProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>
