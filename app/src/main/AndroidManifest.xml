@@ -11,12 +11,27 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.activity.CoinTypeChooseActivity"
+            android:label="@string/cointype_choose">
+            <intent-filter>
+                <action android:name="com.x.wallet.action.COINTYPE_CHOOSE_ACTION"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.activity.CreateAccountActivity"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="com.x.wallet.action.CREATE_ACCOUNT_ACTION"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
     </application>
