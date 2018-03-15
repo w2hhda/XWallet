@@ -7,3 +7,5 @@ XWallet.iml
 local.properties
 gradlew
 gradlew.bat
+ethwallet/build/
+ethwallet/ethwallet.iml
