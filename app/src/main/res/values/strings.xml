@@ -17,4 +17,7 @@
     <string name="set_password_hint">请输入密码（至少6位）</string>
     <string name="confirm_password">确认密码</string>
     <string name="confirm_password_hint">请再次输入密码确认</string>
+    <string name="blank_password">密码为空,不能创建地址</string>
+    <string name="create_address_success">地址创建成功</string>
+    <string name="create_address_failed">地址创建失败</string>
 </resources>

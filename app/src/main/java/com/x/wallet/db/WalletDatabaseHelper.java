@@ -46,8 +46,7 @@ public class WalletDatabaseHelper extends SQLiteOpenHelper {
                 DbUtils.DbColumns.ADDRESS + " TEXT," +
                 DbUtils.DbColumns.NAME + " TEXT," +
                 DbUtils.DbColumns.COIN_NAME + " TEXT," +
-                DbUtils.DbColumns.PASSWORD + " TEXT," +
-                DbUtils.DbColumns.WHISPER + " TEXT," +
-                DbUtils.DbColumns.KEYS + " TEXT);");
+                DbUtils.DbColumns.ENCRYPT_SEED + " TEXT," +
+                DbUtils.DbColumns.ENCRYPT_MNEMONIC + " TEXT);");
     }
 }

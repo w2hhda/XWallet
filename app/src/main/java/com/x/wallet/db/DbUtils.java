@@ -10,8 +10,7 @@ public class DbUtils {
         String ADDRESS = "address";
         String NAME = "name";
         String COIN_NAME = "coin_name";
-        String PASSWORD = "password";
-        String WHISPER = "whisper";
-        String KEYS = "keys";
+        String ENCRYPT_SEED = "encrypt_seed";
+        String ENCRYPT_MNEMONIC = "encrypt_mnemonic";
     }
 }
