@@ -42,4 +42,5 @@ public class AppUtils {
 
     public static final String ACTION_TYPE = "action_type";
     public static final String COIN_TYPE  = "coin_type";
+    public static final String ACCOUNT_DATA = "account_data";
 }

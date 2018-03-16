@@ -27,4 +27,6 @@
     <string name="blank_key">私钥为空，无法导入</string>
     <string name="import_address_success">地址导入成功</string>
     <string name="import_address_failed">地址导入失败</string>
+    <string name="send_out_transaction">转账</string>
+    <string name="receipt_transaction">收款</string>
 </resources>

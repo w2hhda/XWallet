@@ -48,4 +48,8 @@ public class AccountListItem extends RelativeLayout{
         mCoinNameTv.setText(mAccountItem.getCoinName());
         mBalanceTv.setText(String.valueOf(mAccountItem.getBalance()));
     }
+
+    public AccountItem getAccountItem() {
+        return mAccountItem;
+    }
 }

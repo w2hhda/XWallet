@@ -44,6 +44,14 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.activity.AccountDetailActivity"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.x.wallet.action.SEE_ACCOUNT_DETAIL_ACTION"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
         <provider android:name=".db.XWalletProvider"
             android:authorities="com.x.wallet"
             android:exported="false"/>
