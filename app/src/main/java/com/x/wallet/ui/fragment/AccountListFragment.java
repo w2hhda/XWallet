@@ -89,10 +89,10 @@ public class AccountListFragment extends Fragment {
                         Intent intent = new Intent("com.x.wallet.action.COINTYPE_CHOOSE_ACTION");
                         switch (which){
                             case 0:
-                                intent.putExtra("action_type", AppUtils.ACCOUNT_ACTION_TYPE_NEW);
+                                intent.putExtra(AppUtils.ACTION_TYPE, AppUtils.ACCOUNT_ACTION_TYPE_NEW);
                                 break;
                             case 1:
-                                intent.putExtra("action_type", AppUtils.ACCOUNT_ACTION_TYPE_IMPORT);
+                                intent.putExtra(AppUtils.ACTION_TYPE, AppUtils.ACCOUNT_ACTION_TYPE_IMPORT);
                                 break;
                         }
                         AccountListFragment.this.startActivity(intent);

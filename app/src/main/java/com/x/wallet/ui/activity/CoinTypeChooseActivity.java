@@ -24,7 +24,7 @@ public class CoinTypeChooseActivity extends BaseAppCompatActivity {
         setContentView(R.layout.cointype_choose_activity);
 
         Intent intent = getIntent();
-        mActionType = intent.getIntExtra("action_type", 0);
+        mActionType = intent.getIntExtra(AppUtils.ACTION_TYPE, AppUtils.ACCOUNT_ACTION_TYPE_NEW);
 
         ListView listView = findViewById(R.id.listview);
         listView.setAdapter(new ArrayAdapter<String>(this,  android.R.layout.simple_list_item_1,
@@ -34,11 +34,11 @@ public class CoinTypeChooseActivity extends BaseAppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 if(mActionType == AppUtils.ACCOUNT_ACTION_TYPE_NEW){
                     Intent intent = new Intent("com.x.wallet.action.CREATE_ACCOUNT_ACTION");
-                    intent.putExtra("coin_index", position);
+                    intent.putExtra(AppUtils.COIN_TYPE, position);
                     startActivity(intent);
                 } else {
-                    Intent intent = new Intent("");
-                    intent.putExtra("coin_index", position);
+                    Intent intent = new Intent("com.x.wallet.action.IMPORT_ACCOUNT_ACTION");
+                    intent.putExtra(AppUtils.COIN_TYPE, position);
                     startActivity(intent);
                 }
             }

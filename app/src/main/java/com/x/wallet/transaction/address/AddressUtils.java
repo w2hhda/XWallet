@@ -33,4 +33,16 @@ public class AddressUtils {
         }
         return null;
     }
+
+    public static Uri importAddressThroughMnemonic(int coinType, String password, String accountName, int mnemonicType, String mnemonic) {
+        return null;
+    }
+
+    public static Uri importAddressThroughKey(int coinType, String password, String accountName, String key) {
+        return null;
+    }
+
+    public static Uri importAddressThroughKeyStore(int coinType, String password, String accountName) {
+        return null;
+    }
 }

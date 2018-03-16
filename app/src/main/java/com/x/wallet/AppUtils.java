@@ -25,8 +25,21 @@ public class AppUtils {
         return values;
     }
 
+    public static int getMnemonicType(String mnemonicTypeText) {
+        return 0;
+    }
+
     public interface COINTYPE{
         int COIN_BTC = 0;
         int COIN_ETH = 1;
     }
+
+    public interface IMPORTTYPE{
+        int IMPORT_TYPE_MNEMONIC = 0;
+        int IMPORT_TYPE_KEY = 1;
+        int IMPORT_TYPE_KEYSTORE = 2;
+    }
+
+    public static final String ACTION_TYPE = "action_type";
+    public static final String COIN_TYPE  = "coin_type";
 }
