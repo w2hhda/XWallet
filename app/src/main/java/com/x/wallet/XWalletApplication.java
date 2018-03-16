@@ -1,10 +1,9 @@
 package com.x.wallet;
 
 import android.app.Application;
+import android.util.Log;
 
-import net.bither.bitherj.crypto.mnemonic.MnemonicWordList;
-
-import java.io.IOException;
+import net.bither.bitherj.crypto.mnemonic.MnemonicHelper;
 
 /**
  * Created by wuliang on 18-3-15.
@@ -25,9 +24,9 @@ public class XWalletApplication extends Application{
             @Override
             public void run() {
                 try {
-                    MnemonicCodeAndroid.setMnemonicCode(MnemonicWordList.English);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    AppMnemonicHelper.init(MnemonicHelper.MNEMONICTYPE.MNEMONICTYPE_EN);
+                } catch (Exception e) {
+                    Log.e("XWalletApplication", "initApp has a exception!", e);
                 }
             }
         }).start();
