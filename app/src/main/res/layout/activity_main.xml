@@ -7,12 +7,12 @@
     android:layout_height="match_parent"
     tools:context="com.x.wallet.MainActivity">
 
-    <com.x.wallet.ui.NoSlidingViewPaper
+    <com.x.wallet.ui.adapter.NoSlidingViewPaper
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-    </com.x.wallet.ui.NoSlidingViewPaper>
+    </com.x.wallet.ui.adapter.NoSlidingViewPaper>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"

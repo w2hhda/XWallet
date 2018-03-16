@@ -1,4 +1,4 @@
-package com.x.wallet.ui;
+package com.x.wallet.ui.adapter;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;

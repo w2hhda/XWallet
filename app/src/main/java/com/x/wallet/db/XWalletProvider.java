@@ -32,8 +32,26 @@ public class XWalletProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] strings, @Nullable String s, @Nullable String[] strings1, @Nullable String s1) {
-        return null;
+    public Cursor query(@NonNull Uri uri, @Nullable String[] projection,
+                        @Nullable String selection, @Nullable String[] selectionArgs,
+                        @Nullable String sortOrder) {
+        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+        Cursor cursor = null;
+        final int match = URI_MATCHER.match(uri);
+        switch (match) {
+            case URI_ACCOUNT:
+                cursor = db.query(TABLE_ACCOUNT,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null, null,
+                        sortOrder);
+                break;
+        }
+        if (cursor != null) {
+            cursor.setNotificationUri(getContext().getContentResolver(), CONTENT_URI);
+        }
+        return cursor;
     }
 
     @Nullable

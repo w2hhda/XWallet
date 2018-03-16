@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import com.x.wallet.ui.fragment.AccountListFragment;
 import com.x.wallet.ui.fragment.MarketDetailFragment;
 import com.x.wallet.ui.fragment.SettingsFragment;
-import com.x.wallet.ui.ViewPagerAdapter;
+import com.x.wallet.ui.adapter.ViewPagerAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        mBottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
+        mBottomNavigationView = findViewById(R.id.navigation);
         mBottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 

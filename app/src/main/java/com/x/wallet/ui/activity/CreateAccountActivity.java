@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
-import com.x.wallet.transaction.address.AddressUtils;
 import com.x.wallet.transaction.address.CreateAddressAsycTask;
 
 
@@ -45,7 +44,7 @@ public class CreateAccountActivity extends BaseAppCompatActivity {
 
     private void initView(){
         mPasswordEt = findViewById(R.id.set_password_et);
-        mAccountNameEt = findViewById(R.id.account_custome_name_et);
+        mAccountNameEt = findViewById(R.id.account_name_et);
         mCreateAcountView = findViewById(R.id.create_account_btn);
         mCreateAcountView.setOnClickListener(new View.OnClickListener() {
             @Override

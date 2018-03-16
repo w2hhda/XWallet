@@ -1,4 +1,4 @@
-package com.x.wallet.ui;
+package com.x.wallet.ui.adapter;
 
 
 import android.support.v4.app.Fragment;
