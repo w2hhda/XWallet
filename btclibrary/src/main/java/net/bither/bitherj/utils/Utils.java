@@ -3,6 +3,8 @@ package net.bither.bitherj.utils;
 import com.google.common.base.Charsets;
 import com.google.common.primitives.UnsignedLongs;
 
+import net.bither.bitherj.crypto.SecureCharSequence;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -13,6 +15,9 @@ import java.util.Date;
 import java.util.Locale;
 import org.spongycastle.crypto.digests.RIPEMD160Digest;
 import org.spongycastle.util.encoders.Hex;
+
+import javax.annotation.Nonnull;
+
 import static com.google.common.base.Preconditions.checkArgument;
 /**
  * Created by wuliang on 18-3-15.
@@ -220,5 +225,28 @@ public class Utils {
         int length = Math.min(biBytes.length, numBytes);
         System.arraycopy(biBytes, start, bytes, numBytes - length, length);
         return bytes;
+    }
+
+    // remeber to wipe #address
+    public static SecureCharSequence formatHashFromCharSequence(@Nonnull final SecureCharSequence address, final int groupSize, final int lineSize) {
+        int length = address.length();
+        if (length % groupSize == 0) {
+            length = length + length / groupSize - 1;
+        } else {
+            length = length + length / groupSize;
+        }
+        char[] chars = new char[length];
+        for (int i = 0; i < length; i++) {
+            if (i % (groupSize + 1) == groupSize) {
+                if ((i + 1) % (lineSize + lineSize / groupSize) == 0) {
+                    chars[i] = '\n';
+                } else {
+                    chars[i] = ' ';
+                }
+            } else {
+                chars[i] = address.charAt(i - i / (groupSize + 1));
+            }
+        }
+        return new SecureCharSequence(chars);
     }
 }

@@ -1,12 +1,17 @@
 package net.bither.bitherj.core;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.x.wallet.btclibrary.AccountData;
 
+import net.bither.bitherj.crypto.DumpedPrivateKey;
 import net.bither.bitherj.crypto.EncryptedData;
+import net.bither.bitherj.crypto.KeyCrypterException;
+import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.crypto.hd.DeterministicKey;
 import net.bither.bitherj.crypto.hd.HDKeyDerivation;
+import net.bither.bitherj.crypto.mnemonic.MnemonicCode;
 import net.bither.bitherj.crypto.mnemonic.MnemonicException;
 import net.bither.bitherj.crypto.mnemonic.MnemonicHelper;
 import net.bither.bitherj.utils.Utils;
@@ -77,5 +82,81 @@ public class BtcCreateAddressHelper {
     private static DeterministicKey getChainRootKey(DeterministicKey accountKey, AbstractHD.PathType
             pathType) {
         return accountKey.deriveSoftened(pathType.getValue());
+    }
+
+    public static String readPrivateKey(String encryptSeed, String password){
+        try {
+            byte[] decryptSeed = decryptHDSeed(encryptSeed, password);
+
+            if(decryptSeed == null){
+                Log.e("BtcCreateAddressHelper", "readPrivateKey decrypt failed for decrypting failed!");
+                return null;
+            }
+            DeterministicKey master = HDKeyDerivation.createMasterPrivateKey(decryptSeed);
+            wipeByteShuzu(decryptSeed);
+
+            if(master == null){
+                Log.e("BtcCreateAddressHelper", "readPrivateKey decrypt failed for master is null!");
+                return null;
+            }
+
+            DeterministicKey account = getAccount(master);
+            DeterministicKey externalKey = getChainRootKey(account, AbstractHD.PathType.EXTERNAL_ROOT_PATH);
+            account.wipe();
+            master.wipe();
+
+            DeterministicKey key = externalKey.deriveSoftened(0);
+            if(key != null){
+                final SecureCharSequence privateKey = new DumpedPrivateKey(key.getPrivKeyBytes(), true).toSecureCharSequence();
+                return privateKey != null ? privateKey.toString() : null;
+            }
+        } catch (Exception e){
+            Log.e("BtcCreateAddressHelper", "readPrivateKey", e);
+        }
+        return null;
+    }
+
+    public static String readMnemonic(String encryptMnemonic, String password){
+        byte[] mnemonicSeed = null;
+        try {
+            mnemonicSeed = decryptMnemonicSeed(encryptMnemonic, password);
+            if(mnemonicSeed == null){
+                Log.e("BtcCreateAddressHelper", "readMnemonic decrypt failed for decrypting failed!");
+                return null;
+            }
+            List<String> words = MnemonicHelper.toMnemonic(mnemonicSeed);
+            StringBuilder builder = new StringBuilder();
+            for(String word: words){
+                builder.append(" ");
+                builder.append(word);
+            }
+            return builder.toString().substring(1);
+        } catch (Exception e){
+            Log.e("BtcCreateAddressHelper", "readMnemonic decrypt failed for exception!", e);
+        } finally {
+            wipeByteShuzu(mnemonicSeed);
+        }
+        return null;
+    }
+
+    private static byte[] decryptHDSeed(String encryptSeed, CharSequence password) throws MnemonicException.MnemonicLengthException {
+        if (password == null || TextUtils.isEmpty(encryptSeed)) {
+            return null;
+        }
+        return new EncryptedData(encryptSeed).decrypt(password);
+    }
+
+    private static byte[] decryptMnemonicSeed(String encryptMnemonic, CharSequence password) throws KeyCrypterException {
+        if (password == null || TextUtils.isEmpty(encryptMnemonic)) {
+            return null;
+        }
+        return new EncryptedData(encryptMnemonic).decrypt(password);
+    }
+
+    private static void wipeByteShuzu(byte[] value) {
+        if (value == null) {
+            return;
+        }
+        Utils.wipeBytes(value);
     }
 }

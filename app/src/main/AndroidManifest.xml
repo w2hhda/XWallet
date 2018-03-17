@@ -52,6 +52,15 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.activity.ManageAccountActivity"
+            android:exported="false"
+            android:label="@string/manage_account">
+            <intent-filter>
+                <action android:name="com.x.wallet.action.MANAGE_ACCOUNT_ACTION"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
         <provider android:name=".db.XWalletProvider"
             android:authorities="com.x.wallet"
             android:exported="false"/>

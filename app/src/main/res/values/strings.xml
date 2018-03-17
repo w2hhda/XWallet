@@ -29,4 +29,11 @@
     <string name="import_address_failed">地址导入失败</string>
     <string name="send_out_transaction">转账</string>
     <string name="receipt_transaction">收款</string>
+    <string name="manage_account">管理账户</string>
+    <string name="delete_account">删除钱包</string>
+    <string name="finish">完成</string>
+    <string name="copy">复制</string>
+    <string name="see_mnemonic">查看密语</string>
+    <string name="see_key">查看密钥</string>
+    <string name="password_check_error">密码错误，请检查</string>
 </resources>
