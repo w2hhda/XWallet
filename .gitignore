@@ -13,4 +13,6 @@ app/bin/
 ethwallet/bin/
 bitherj/bin/
 btclibrary/bin/
+ethwallet/src/main/jniLibs/
+ethwallet/src/obj/
 *.project
