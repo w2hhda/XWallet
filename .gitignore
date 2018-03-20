@@ -9,3 +9,8 @@ gradlew
 gradlew.bat
 ethwallet/build/
 ethwallet/ethwallet.iml
+app/bin/
+ethwallet/bin/
+bitherj/bin/
+btclibrary/bin/
+*.project

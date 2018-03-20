@@ -1,70 +1,92 @@
 package com.xwallet.ethwallet.api;
 
+import android.util.Log;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xwallet.ethwallet.data.EthAccountData;
+
+import net.bither.bitherj.core.AbstractHD;
+import net.bither.bitherj.crypto.hd.DeterministicKey;
+import net.bither.bitherj.crypto.hd.HDKeyDerivation;
+import net.bither.bitherj.crypto.mnemonic.MnemonicCode;
+import net.bither.bitherj.crypto.mnemonic.MnemonicException;
+import net.bither.bitherj.crypto.mnemonic.MnemonicHelper;
 
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Keys;
 import org.web3j.crypto.Wallet;
 import org.web3j.crypto.WalletFile;
-import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.ObjectMapperFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.SecureRandom;
 
 /**
  * Created by zhangxing on 18-3-13.
  */
 public class EthAccount {
-    private static EthAccount instance;
 
-    private EthAccount(){
+    protected Boolean isFromXRandom;
+    private EthAccountData ethAccountData;
+    protected transient byte[] seed;
+    protected transient byte[] mnemonicSeed;
+    private MnemonicCode mnemonicCode = MnemonicCode.instance();
 
-    }
+    public EthAccount(CharSequence password)
+            throws CipherException, InvalidAlgorithmParameterException, NoSuchProviderException,
+            NoSuchAlgorithmException, JsonProcessingException, MnemonicException.MnemonicLengthException{
+        SecureRandom random = new SecureRandom();
+        mnemonicSeed = new byte[16];
+        random.nextBytes(mnemonicSeed);
 
-    public static EthAccount getInstance() {
-        if (instance == null){
-            synchronized (EthAccount.class){
-                if (instance == null){
-                    instance = new EthAccount();
-                }
-            }
-        }
-        return instance;
-    }
+        seed = MnemonicHelper.seedFromMnemonic(mnemonicSeed);
+        Log.i("@@@@", "seed = " + seed);
+        DeterministicKey key = HDKeyDerivation.createMasterPrivateKey(seed);
 
-    public static String generateNewWalletFile(String password, File destinationDirectory, Boolean useFullScript)
-            throws NoSuchAlgorithmException, NoSuchProviderException
-            , CipherException, IOException, InvalidAlgorithmParameterException{
-        ECKeyPair ecKeypair = Keys.createEcKeyPair();
-        return  generateWalletFile(password, ecKeypair, destinationDirectory, useFullScript);
-    }
+        DeterministicKey account = getAccount(key);
 
-    public static String generateWalletFile(String password, ECKeyPair ecKeyPair, File file, Boolean useFullScript)
-        throws CipherException, IOException{
-        WalletFile walletFile;
-        if (useFullScript){
-            walletFile = Wallet.createStandard(password, ecKeyPair);
-        }else {
-            walletFile = Wallet.createLight(password, ecKeyPair);
-        }
-        String fileName = getWalletFileName(walletFile);
-        File desFile = new File(file, fileName);
+        //ECKeyPair ecKeyPair = ECKeyPair.create(account.getPrivKey());
+        //WalletFile walletFile = Wallet.createStandard(password.toString(), ecKeyPair);
+
+        DeterministicKey externalKey = account.deriveSoftened(AbstractHD.PathType.EXTERNAL_ROOT_PATH.getValue());
+        byte[] externalPub = externalKey.deriveSoftened(0).getPubKey();
+        //String address = walletFile.getAddress();
+        byte[] address = Keys.getAddress(externalPub);
+        Log.i("@@@@", " key = " + externalKey.deriveSoftened(0).getPrivKey().toString(16));
+
+
+
+        ECKeyPair keyPair = ECKeyPair.create(externalKey.deriveSoftened(0).getPrivKey());
+        WalletFile walletFile = Wallet.createStandard(password.toString(), keyPair);
+
+        Log.i("@@@@", "address = " + walletFile.getAddress());
         ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
-        objectMapper.writeValue(desFile, walletFile);
-        return  fileName;
+        String keyStore = objectMapper.writeValueAsString(walletFile);
+        Log.i("@@@@","keyStore = " + keyStore);
+
+        Log.i("@@@@", "code = " + MnemonicHelper.toMnemonic(mnemonicSeed));
+        //ethAccountData = new EthAccountData(address.toString(), keyStore);
+        //EncryptedData encryptedData
+
     }
 
-    private static String getWalletFileName(WalletFile walletFile){
-        return walletFile.getAddress();
+    protected DeterministicKey getAccount(DeterministicKey master) {
+        DeterministicKey purpose = master.deriveHardened(44);
+        DeterministicKey coinType = purpose.deriveHardened(60);
+        DeterministicKey account = coinType.deriveHardened(0);
+        purpose.wipe();
+        coinType.wipe();
+        return account;
     }
 
-    public static Boolean issValidPrivateKey(String privateKey){
-        return WalletUtils.isValidPrivateKey(privateKey);
+
+
+    public EthAccountData getEthAccountData(){
+        return ethAccountData;
     }
 
 }

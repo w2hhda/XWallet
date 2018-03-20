@@ -9,8 +9,9 @@ import com.x.wallet.XWalletApplication;
 import com.x.wallet.btclibrary.AccountData;
 import com.x.wallet.btclibrary.BtcAddressHelper;
 import com.x.wallet.db.XWalletProvider;
+import com.xwallet.ethwallet.api.EthAccountHelper;
+import com.xwallet.ethwallet.data.EthAccountData;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,6 +36,18 @@ public class AddressUtils {
                     Log.i("test3", "AddressUtils createAddress accountData is null");
                 }
                 break;
+            case AppUtils.COINTYPE.COIN_ETH:
+                EthAccountData ethAccountData = EthAccountHelper.create(password);
+                if (ethAccountData != null){
+                    ethAccountData.setCoinName(AppUtils.COIN_ARRAY[AppUtils.COINTYPE.COIN_ETH]);
+                    ethAccountData.setCoinName(accountName);
+                    Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, AppUtils.createEthContentValues(ethAccountData));
+                    return uri;
+                }else {
+                    Log.i("@@@@","create eth account fail");
+                }
+
+
         }
         return null;
     }

@@ -22,6 +22,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':btclibrary')
     compile 'com.squareup.okhttp3:okhttp:3.8.0'
     compile 'org.web3j:core-android:2.2.1'
     compile 'me.dm7.barcodescanner:zxing:1.8.4'
