@@ -4,6 +4,7 @@ import android.content.ContentValues;
 
 import com.x.wallet.btclibrary.AccountData;
 import com.x.wallet.db.DbUtils;
+import com.xwallet.ethwallet.data.EthAccountData;
 
 /**
  * Created by wuliang on 18-3-13.
@@ -23,6 +24,16 @@ public class AppUtils {
         values.put(DbUtils.DbColumns.ENCRYPT_SEED, accountData.getEncryptSeed());
         values.put(DbUtils.DbColumns.ENCRYPT_MNEMONIC, accountData.getEncryptMnemonic());
         return values;
+    }
+
+    public static ContentValues createEthContentValues(EthAccountData ethData) {
+        ContentValues values = new ContentValues();
+        values.put(DbUtils.DbColumns.ADDRESS, ethData.getmAddress());
+        values.put(DbUtils.DbColumns.NAME, ethData.getEthAccountName());
+        values.put(DbUtils.DbColumns.COIN_NAME, ethData.getCoinName());
+        values.put(DbUtils.DbColumns.ENCRYPT_SEED, ethData.getKeyStore());
+        values.put(DbUtils.DbColumns.ENCRYPT_MNEMONIC, ethData.getmEncryptMnemonic());
+        return  values;
     }
 
     public static int getMnemonicType(String mnemonicTypeText) {
