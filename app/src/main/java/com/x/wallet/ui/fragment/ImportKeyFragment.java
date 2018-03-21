@@ -30,7 +30,7 @@ public class ImportKeyFragment extends BaseImportFragment {
             @Override
             public void onClick(View view) {
                 if(TextUtils.isEmpty(mSetPasswordView.getPassword())){
-                    Toast.makeText(ImportKeyFragment.this.getActivity(), R.string.blank_password, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ImportKeyFragment.this.getActivity(), R.string.password_error_blank, Toast.LENGTH_LONG).show();
                     return;
                 }
                 if(mKeyEt.getText() == null || TextUtils.isEmpty(mKeyEt.getText().toString())){

@@ -2,6 +2,7 @@ package com.x.wallet.ui.view;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.EditText;
@@ -15,6 +16,7 @@ import com.x.wallet.R;
 
 public class AccountNameView extends LinearLayout {
     private EditText mAccountNameEt;
+    private static final int ACCOUNTNAME_MAX_LENGTH = 20;
 
     public AccountNameView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -28,6 +30,12 @@ public class AccountNameView extends LinearLayout {
     }
 
     public String getAccountName(){
-        return mAccountNameEt.getText() != null ? mAccountNameEt.getText().toString() : "";
+        return mAccountNameEt.getText() != null ? mAccountNameEt.getText().toString().trim() : "";
+    }
+
+    public boolean isAccountNameOk(){
+        if(TextUtils.isEmpty(mAccountNameEt.getText())) return false;
+        int length = mAccountNameEt.getText().toString().trim().length();
+        return length < ACCOUNTNAME_MAX_LENGTH && length > 0;
     }
 }

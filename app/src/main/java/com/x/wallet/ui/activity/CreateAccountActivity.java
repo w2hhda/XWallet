@@ -3,10 +3,7 @@ package com.x.wallet.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.x.wallet.AppUtils;
@@ -58,13 +55,29 @@ public class CreateAccountActivity extends BaseAppCompatActivity {
         mCreateAcountView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(TextUtils.isEmpty(mSetPasswordView.getPassword())){
-                    Toast.makeText(CreateAccountActivity.this, R.string.blank_password, Toast.LENGTH_LONG).show();
+                if(!mAccountNameView.isAccountNameOk()){
+                    Toast.makeText(CreateAccountActivity.this, R.string.account_name_error, Toast.LENGTH_LONG).show();
                     return;
                 }
-                new CreateAddressAsycTask(CreateAccountActivity.this, mCoinType,
-                        mSetPasswordView.getPassword(),
-                        mAccountNameView.getAccountName()).execute();
+
+                int passwordCheckResult = mSetPasswordView.isPasswordOk();
+                switch (passwordCheckResult){
+                    case SetPasswordView.PasswordErrorType.BLANK:
+                        Toast.makeText(CreateAccountActivity.this, R.string.password_error_blank, Toast.LENGTH_LONG).show();
+                        return;
+                    case SetPasswordView.PasswordErrorType.NOT_THE_SAME:
+                        Toast.makeText(CreateAccountActivity.this, R.string.password_error_not_the_same, Toast.LENGTH_LONG).show();
+                        return;
+                    case SetPasswordView.PasswordErrorType.SHORT:
+                        Toast.makeText(CreateAccountActivity.this, R.string.password_error_short, Toast.LENGTH_LONG).show();
+                        return;
+                    case SetPasswordView.PasswordErrorType.OK:
+                        new CreateAddressAsycTask(CreateAccountActivity.this, mCoinType,
+                                mSetPasswordView.getPassword(),
+                                mAccountNameView.getAccountName()).execute();
+                        return;
+                }
+
             }
         });
     }

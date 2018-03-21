@@ -34,7 +34,7 @@ public class ImportMnemonicFragment extends BaseImportFragment {
             @Override
             public void onClick(View view) {
                 if(TextUtils.isEmpty(mSetPasswordView.getPassword())){
-                    Toast.makeText(ImportMnemonicFragment.this.getActivity(), R.string.blank_password, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ImportMnemonicFragment.this.getActivity(), R.string.password_error_blank, Toast.LENGTH_LONG).show();
                     return;
                 }
                 if(mMnemonicEt.getText() == null || TextUtils.isEmpty(mMnemonicEt.getText().toString())){
