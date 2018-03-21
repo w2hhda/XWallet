@@ -7,7 +7,7 @@ import android.util.Log;
 import com.x.wallet.AppUtils;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.XWalletProvider;
-import com.x.wallet.lib.btc.AccountData;
+import com.x.wallet.lib.common.AccountData;
 import com.x.wallet.lib.btc.BtcAddressHelper;
 import com.x.wallet.lib.eth.api.EthAccountHelper;
 import com.x.wallet.lib.eth.data.EthAccountData;

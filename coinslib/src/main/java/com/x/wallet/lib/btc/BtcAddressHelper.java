@@ -2,7 +2,7 @@ package com.x.wallet.lib.btc;
 
 import android.util.Log;
 
-import com.x.wallet.lib.btc.AccountData;
+import com.x.wallet.lib.common.AccountData;
 
 import net.bither.bitherj.core.BtcCreateAddressHelper;
 import net.bither.bitherj.crypto.mnemonic.MnemonicException;

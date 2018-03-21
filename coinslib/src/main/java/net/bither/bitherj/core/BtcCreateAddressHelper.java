@@ -4,7 +4,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 
-import com.x.wallet.lib.btc.AccountData;
+import com.x.wallet.lib.common.AccountData;
 
 import net.bither.bitherj.crypto.DumpedPrivateKey;
 import net.bither.bitherj.crypto.EncryptedData;
@@ -12,7 +12,6 @@ import net.bither.bitherj.crypto.KeyCrypterException;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.crypto.hd.DeterministicKey;
 import net.bither.bitherj.crypto.hd.HDKeyDerivation;
-import net.bither.bitherj.crypto.mnemonic.MnemonicCode;
 import net.bither.bitherj.crypto.mnemonic.MnemonicException;
 import net.bither.bitherj.crypto.mnemonic.MnemonicHelper;
 import net.bither.bitherj.utils.Utils;

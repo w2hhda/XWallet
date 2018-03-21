@@ -1,4 +1,4 @@
-package com.x.wallet.lib.btc;
+package com.x.wallet.lib.common;
 
 /**
  * Created by wuliang on 18-3-14.
