@@ -2,9 +2,9 @@ package com.x.wallet.lib.eth.api;
 
 import android.util.Log;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.x.wallet.lib.eth.data.EthAccountData;
+import com.x.wallet.lib.common.AccountData;
+import com.x.wallet.lib.common.LibUtils;
 
 import net.bither.bitherj.core.AbstractHD;
 import net.bither.bitherj.crypto.EncryptedData;
@@ -13,7 +13,6 @@ import net.bither.bitherj.crypto.hd.HDKeyDerivation;
 import net.bither.bitherj.crypto.mnemonic.MnemonicException;
 import net.bither.bitherj.crypto.mnemonic.MnemonicHelper;
 
-import org.web3j.crypto.CipherException;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Wallet;
 import org.web3j.crypto.WalletFile;
@@ -26,14 +25,18 @@ import java.security.SecureRandom;
  */
 
 public class EthAccountCreateHelper {
-    public static EthAccountData createAccount(SecureRandom random, CharSequence password)
-            throws MnemonicException.MnemonicLengthException{
-        byte[] mnemonicSeed = new byte[16];
-        random.nextBytes(mnemonicSeed);
-        return create(mnemonicSeed, password);
+    public static AccountData createAccount(SecureRandom random, CharSequence password){
+        try{
+            byte[] mnemonicSeed = new byte[16];
+            random.nextBytes(mnemonicSeed);
+            return create(mnemonicSeed, password);
+        } catch (Exception e){
+            Log.e(LibUtils.TAG_ETH, "EthAccountCreateHelper createAccount exception", e);
+        }
+        return null;
     }
 
-    private static EthAccountData create(byte[] mnemonicSeed, CharSequence password)  throws MnemonicException.MnemonicLengthException{
+    private static AccountData create(byte[] mnemonicSeed, CharSequence password)  throws MnemonicException.MnemonicLengthException{
         byte[] rootSeed = MnemonicHelper.seedFromMnemonic(mnemonicSeed);
         EncryptedData encryptedMnemonic = new EncryptedData(mnemonicSeed, password);
 
@@ -53,7 +56,7 @@ public class EthAccountCreateHelper {
         return account;
     }
 
-    private static EthAccountData startToGenerateAccount(DeterministicKey  accountKey, EncryptedData encryptedMnemonic, CharSequence password ){
+    private static AccountData startToGenerateAccount(DeterministicKey  accountKey, EncryptedData encryptedMnemonic, CharSequence password ){
         DeterministicKey externalKey = accountKey.deriveSoftened(AbstractHD.PathType.EXTERNAL_ROOT_PATH.getValue());
         accountKey.wipe();
 
@@ -62,16 +65,15 @@ public class EthAccountCreateHelper {
         try {
             WalletFile walletFile = Wallet.createStandard(password.toString(), keyPair);
 
-            Log.i("@@@@", "address = " + walletFile.getAddress());
+            Log.i(LibUtils.TAG_ETH, "EthAccountCreateHelper startToGenerateAccount address = " + walletFile.getAddress());
             ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
             String keyStore = objectMapper.writeValueAsString(walletFile);
-            return new EthAccountData(walletFile.getAddress(), keyStore, encryptedMnemonic.toEncryptedString());
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        } catch (CipherException e){
-            e.printStackTrace();
+            return new AccountData(walletFile.getAddress(), null,
+                    encryptedMnemonic.toEncryptedString(), null,
+                    keyStore);
+        } catch (Exception e){
+            Log.i(LibUtils.TAG_ETH, "EthAccountCreateHelper startToGenerateAccount exception", e);
         }
-
         return null;
     }
 }

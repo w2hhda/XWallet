@@ -16,16 +16,6 @@ public class AppUtils {
 
     public static final String[] COIN_ARRAY = {"BTC", "ETH"};
 
-    public static ContentValues createContentValues(AccountData accountData) {
-        ContentValues values = new ContentValues();
-        values.put(DbUtils.DbColumns.ADDRESS, accountData.getAddress());
-        values.put(DbUtils.DbColumns.NAME, accountData.getAccountName());
-        values.put(DbUtils.DbColumns.COIN_NAME, accountData.getCoinName());
-        values.put(DbUtils.DbColumns.ENCRYPT_SEED, accountData.getEncryptSeed());
-        values.put(DbUtils.DbColumns.ENCRYPT_MNEMONIC, accountData.getEncryptMnemonic());
-        return values;
-    }
-
     public static ContentValues createEthContentValues(EthAccountData ethData) {
         ContentValues values = new ContentValues();
         values.put(DbUtils.DbColumns.ADDRESS, ethData.getmAddress());
@@ -40,11 +30,6 @@ public class AppUtils {
         return 0;
     }
 
-    public interface COINTYPE{
-        int COIN_BTC = 0;
-        int COIN_ETH = 1;
-    }
-
     public interface IMPORTTYPE{
         int IMPORT_TYPE_MNEMONIC = 0;
         int IMPORT_TYPE_KEY = 1;
@@ -54,4 +39,6 @@ public class AppUtils {
     public static final String ACTION_TYPE = "action_type";
     public static final String COIN_TYPE  = "coin_type";
     public static final String ACCOUNT_DATA = "account_data";
+
+    public static final String APP_TAG = "XWallet";
 }

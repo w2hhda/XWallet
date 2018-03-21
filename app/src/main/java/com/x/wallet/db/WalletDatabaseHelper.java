@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.x.wallet.AppUtils;
+
 /**
  * Created by wuliang on 18-3-14.
  */
@@ -40,13 +42,16 @@ public class WalletDatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void createTables(SQLiteDatabase db){
-        Log.i("test", "WalletDatabaseHelper createTables create");
+        Log.i(AppUtils.APP_TAG, "WalletDatabaseHelper createTables create");
         db.execSQL("CREATE TABLE " + XWalletProvider.TABLE_ACCOUNT + " (" +
                 DbUtils.DbColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 DbUtils.DbColumns.ADDRESS + " TEXT," +
                 DbUtils.DbColumns.NAME + " TEXT," +
                 DbUtils.DbColumns.COIN_NAME + " TEXT," +
+                DbUtils.DbColumns.COIN_TYPE + " INTEGER," +
                 DbUtils.DbColumns.ENCRYPT_SEED + " TEXT," +
-                DbUtils.DbColumns.ENCRYPT_MNEMONIC + " TEXT);");
+                DbUtils.DbColumns.ENCRYPT_MNEMONIC + " TEXT," +
+                DbUtils.DbColumns.ENCRYPT_PRIV_KEY + " TEXT," +
+                DbUtils.DbColumns.KEYSTORE + " TEXT);");
     }
 }

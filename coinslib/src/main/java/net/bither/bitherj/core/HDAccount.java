@@ -1,6 +1,6 @@
 package net.bither.bitherj.core;
 
-import com.x.wallet.btclibrary.AccountData;
+import com.x.wallet.lib.common.AccountData;
 
 import net.bither.bitherj.crypto.EncryptedData;
 import net.bither.bitherj.crypto.hd.DeterministicKey;
@@ -56,7 +56,7 @@ public class HDAccount {
         byte[] subExternalPub = externalKey.deriveSoftened(0).getPubKey();
         mAccountData = new AccountData(Utils.toAddress(Utils.sha256hash160(subExternalPub)),
                 encryptedHDSeed.toEncryptedString(),
-                encryptedMnemonicSeed.toEncryptedString());
+                encryptedMnemonicSeed.toEncryptedString(), null, null);
         externalKey.wipe();
     }
 

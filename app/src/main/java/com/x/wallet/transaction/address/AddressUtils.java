@@ -6,11 +6,12 @@ import android.util.Log;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.XWalletApplication;
+import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.common.AccountData;
 import com.x.wallet.lib.btc.BtcAddressHelper;
-import com.x.wallet.lib.eth.api.EthAccountHelper;
-import com.x.wallet.lib.eth.data.EthAccountData;
+import com.x.wallet.lib.common.CoinAddressHelper;
+import com.x.wallet.lib.common.LibUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,33 +22,18 @@ import java.util.List;
 
 public class AddressUtils {
     public static Uri createAddress(int coinType, String password, String accountName){
-        Log.i("test3", "AddressUtils createAddress coinType = " + coinType + ", password = " + password);
-        switch (coinType){
-            case AppUtils.COINTYPE.COIN_BTC:
-                AccountData accountData = BtcAddressHelper.create(password);
-                if(accountData != null){
-                    accountData.setCoinName(AppUtils.COIN_ARRAY[AppUtils.COINTYPE.COIN_BTC]);
-                    accountData.setAccountName(accountName);
-                    Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, AppUtils.createContentValues(accountData));
-                    Log.i("test3", "AddressUtils createAddress uri = " + uri);
-                    Log.i("test3", "AddressUtils createAddress accountData = " + accountData);
-                    return uri;
-                } else {
-                    Log.i("test3", "AddressUtils createAddress accountData is null");
-                }
-                break;
-            case AppUtils.COINTYPE.COIN_ETH:
-                EthAccountData ethAccountData = EthAccountHelper.create(password);
-                if (ethAccountData != null){
-                    ethAccountData.setCoinName(AppUtils.COIN_ARRAY[AppUtils.COINTYPE.COIN_ETH]);
-                    ethAccountData.setCoinName(accountName);
-                    Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, AppUtils.createEthContentValues(ethAccountData));
-                    return uri;
-                }else {
-                    Log.i("@@@@","create eth account fail");
-                }
-
-
+        Log.i(AppUtils.APP_TAG, "AddressUtils createAddress coinType = " + coinType + ", password = " + password);
+        AccountData accountData = CoinAddressHelper.createAddress(coinType, password);
+        if(accountData != null){
+            accountData.setCoinName(AppUtils.COIN_ARRAY[coinType]);
+            accountData.setAccountName(accountName);
+            accountData.setCoinType(coinType);
+            Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(accountData));
+            Log.i(AppUtils.APP_TAG, "AddressUtils createAddress uri = " + uri);
+            Log.i(AppUtils.APP_TAG, "AddressUtils createAddress accountData = " + accountData);
+            return uri;
+        } else {
+            Log.i(AppUtils.APP_TAG, "AddressUtils createAddress accountData is null");
         }
         return null;
     }
@@ -66,9 +52,9 @@ public class AddressUtils {
         List<String> words = Arrays.asList(mnemonicShuzu);
         AccountData accountData = BtcAddressHelper.createAddressFromImportMnemonic(words, password);
         if(accountData != null){
-            accountData.setCoinName(AppUtils.COIN_ARRAY[AppUtils.COINTYPE.COIN_BTC]);
+            accountData.setCoinName(AppUtils.COIN_ARRAY[LibUtils.COINTYPE.COIN_BTC]);
             accountData.setAccountName(accountName);
-            Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, AppUtils.createContentValues(accountData));
+            Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(accountData));
             Log.i("test3", "AddressUtils importAddressThroughMnemonic uri = " + uri);
             Log.i("test3", "AddressUtils importAddressThroughMnemonic accountData = " + accountData);
             return uri;

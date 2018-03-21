@@ -5,6 +5,7 @@ import android.util.Log;
 
 
 import com.x.wallet.lib.common.AccountData;
+import com.x.wallet.lib.common.LibUtils;
 
 import net.bither.bitherj.crypto.DumpedPrivateKey;
 import net.bither.bitherj.crypto.EncryptedData;
@@ -25,12 +26,16 @@ import java.util.List;
 
 public class BtcCreateAddressHelper {
 
-    public static AccountData createAddressFromRandom(SecureRandom random, CharSequence password)
-            throws MnemonicException.MnemonicLengthException {
-        byte[] mnemonicSeed = new byte[16];
-        random.nextBytes(mnemonicSeed);
+    public static AccountData createAddressFromRandom(SecureRandom random, CharSequence password){
+        try {
+            byte[] mnemonicSeed = new byte[16];
+            random.nextBytes(mnemonicSeed);
 
-        return create(mnemonicSeed, password);
+            return create(mnemonicSeed, password);
+        } catch (Exception e){
+            Log.e(LibUtils.TAG_BTC, "BtcCreateAddressHelper createAddressFromRandom exception", e);
+        }
+        return null;
     }
 
     public static AccountData createAddressFromImportMnemonic(List<String> words, CharSequence password){
@@ -38,7 +43,7 @@ public class BtcCreateAddressHelper {
             byte[] mnemonicSeed = MnemonicHelper.toEntropy(words);
             return create(mnemonicSeed, password);
         } catch (Exception e){
-            Log.e("BtcCreateAddressHelper", "createAddressFromImportMnemonic has a exception!", e);
+            Log.e(LibUtils.TAG_BTC, "BtcCreateAddressHelper createAddressFromImportMnemonic exception", e);
         }
         return null;
     }
@@ -74,7 +79,8 @@ public class BtcCreateAddressHelper {
         byte[] subExternalPub = externalKey.deriveSoftened(0).getPubKey();
         AccountData accountData = new AccountData(Utils.toAddress(Utils.sha256hash160(subExternalPub)),
                 encryptedHDSeed.toEncryptedString(),
-                encryptedMnemonicSeed.toEncryptedString());
+                encryptedMnemonicSeed.toEncryptedString(),
+                null, null);
         externalKey.wipe();
         return accountData;
     }

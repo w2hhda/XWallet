@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
+import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.ui.adapter.ViewPagerAdapter;
 import com.x.wallet.ui.fragment.ImportKeyFragment;
 import com.x.wallet.ui.fragment.ImportMnemonicFragment;
@@ -52,6 +53,6 @@ public class ImportAccountActivity extends AppCompatActivity {
 
     private void initData(){
         Intent intent = getIntent();
-        mCoinType = intent.getIntExtra(AppUtils.COIN_TYPE, AppUtils.COINTYPE.COIN_BTC);
+        mCoinType = intent.getIntExtra(AppUtils.COIN_TYPE, LibUtils.COINTYPE.COIN_BTC);
     }
 }

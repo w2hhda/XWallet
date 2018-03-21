@@ -11,6 +11,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.x.wallet.AppUtils;
+
 /**
  * Created by wuliang on 18-3-14.
  */
@@ -62,11 +64,11 @@ public class XWalletProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        Log.i("test", "XWalletProvider insert uri = " + uri);
+        Log.i(AppUtils.APP_TAG, "XWalletProvider insert uri = " + uri);
         if (URI_MATCHER.match(uri) == URI_ACCOUNT) {
             SQLiteDatabase db = mOpenHelper.getWritableDatabase();
             long rowId = db.insert(TABLE_ACCOUNT, null, values);
-            Log.i("test", "XWalletProvider insert rowId = " + rowId);
+            Log.i(AppUtils.APP_TAG, "XWalletProvider insert rowId = " + rowId);
             return Uri.parse(uri + "/" + rowId);
         }
         return null;
