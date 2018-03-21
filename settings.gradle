@@ -1,1 +1,1 @@
-include ':app', ':bitherj', ':ethwallet', ':btclibrary'
+include ':app', ':bitherj', ':coinslib'

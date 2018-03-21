@@ -1,0 +1,59 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 26
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    task ndkBuild(type: Exec) {
+        def rootDir = project.rootDir
+        def localProperties = new File(rootDir, "local.properties")
+        Properties properties = new Properties()
+        localProperties.withInputStream { instr ->
+            properties.load(instr)
+        }
+        def ndkDir = properties.getProperty('ndk.dir')
+
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            commandLine ndkDir + '\\ndk-build.cmd',
+                    'NDK_LIBS_OUT=main/jniLibs',
+                    'NDK_PROJECT_PATH=' + rootDir + '\\coinslib\\src',
+                    'APP_BUILD_SCRIPT=jni/Android.mk',
+                    '-C',
+                    file('src').absolutePath
+        } else {
+            commandLine ndkDir + '/ndk-build',
+                    'NDK_LIBS_OUT=main/jniLibs',
+                    'NDK_PROJECT_PATH=' + rootDir + '/coinslib/src',
+                    'APP_BUILD_SCRIPT=jni/Android.mk',
+                    '-C',
+                    file('src').absolutePath
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn ndkBuild
+    }
+
+}
+
+dependencies {
+    compile 'com.google.guava:guava:24.1-android'
+    compile 'com.squareup.okhttp3:okhttp:3.8.0'
+    compile 'org.web3j:core-android:2.2.1'
+    compile 'me.dm7.barcodescanner:zxing:1.8.4'
+}

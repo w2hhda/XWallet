@@ -2,9 +2,9 @@ package com.x.wallet;
 
 import android.content.ContentValues;
 
-import com.x.wallet.btclibrary.AccountData;
+import com.x.wallet.lib.btc.AccountData;
 import com.x.wallet.db.DbUtils;
-import com.xwallet.ethwallet.data.EthAccountData;
+import com.x.wallet.lib.eth.data.EthAccountData;
 
 /**
  * Created by wuliang on 18-3-13.

@@ -6,11 +6,11 @@ import android.util.Log;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.XWalletApplication;
-import com.x.wallet.btclibrary.AccountData;
-import com.x.wallet.btclibrary.BtcAddressHelper;
 import com.x.wallet.db.XWalletProvider;
-import com.xwallet.ethwallet.api.EthAccountHelper;
-import com.xwallet.ethwallet.data.EthAccountData;
+import com.x.wallet.lib.btc.AccountData;
+import com.x.wallet.lib.btc.BtcAddressHelper;
+import com.x.wallet.lib.eth.api.EthAccountHelper;
+import com.x.wallet.lib.eth.data.EthAccountData;
 
 import java.util.Arrays;
 import java.util.List;
