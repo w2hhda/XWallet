@@ -12,6 +12,7 @@ import com.x.wallet.lib.common.AccountData;
 import com.x.wallet.lib.btc.BtcAddressHelper;
 import com.x.wallet.lib.common.CoinAddressHelper;
 import com.x.wallet.lib.common.LibUtils;
+import com.x.wallet.lib.eth.api.EthAccountCreateHelper;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.List;
 
 public class AddressUtils {
     public static Uri createAddress(int coinType, String password, String accountName){
+
         Log.i(AppUtils.APP_TAG, "AddressUtils createAddress coinType = " + coinType + ", password = " + password);
         AccountData accountData = CoinAddressHelper.createAddress(coinType, password);
         if(accountData != null){
@@ -34,6 +36,7 @@ public class AddressUtils {
             return uri;
         } else {
             Log.i(AppUtils.APP_TAG, "AddressUtils createAddress accountData is null");
+
         }
         return null;
     }
@@ -50,9 +53,14 @@ public class AddressUtils {
         }
         Log.i("test3", "AddressUtils importAddressThroughMnemonic mnemonicShuzu.length = " + mnemonicShuzu.length);
         List<String> words = Arrays.asList(mnemonicShuzu);
-        AccountData accountData = BtcAddressHelper.createAddressFromImportMnemonic(words, password);
+        AccountData accountData;
+        if (coinType == LibUtils.COINTYPE.COIN_BTC) {
+            accountData = BtcAddressHelper.createAddressFromImportMnemonic(words, password);
+        }else {
+            accountData = EthAccountCreateHelper.importFromMnemonic(words, password);
+        }
         if(accountData != null){
-            accountData.setCoinName(AppUtils.COIN_ARRAY[LibUtils.COINTYPE.COIN_BTC]);
+            accountData.setCoinName(coinType + "");
             accountData.setAccountName(accountName);
             Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(accountData));
             Log.i("test3", "AddressUtils importAddressThroughMnemonic uri = " + uri);
@@ -65,10 +73,38 @@ public class AddressUtils {
     }
 
     public static Uri importAddressThroughKey(int coinType, String password, String accountName, String key) {
+        if (TextUtils.isEmpty(key)){
+            return null;
+        }
+        if (coinType == LibUtils.COINTYPE.COIN_ETH) {
+            AccountData accountData = EthAccountCreateHelper.importFromPrivateKey(key, password);
+            if (accountData != null) {
+                accountData.setCoinName(AppUtils.COIN_ARRAY[coinType]);
+                accountData.setAccountName(accountName);
+                Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(accountData));
+                return uri;
+            }
+        }else {
+
+        }
+
+
         return null;
     }
 
-    public static Uri importAddressThroughKeyStore(int coinType, String password, String accountName) {
+    public static Uri importAddressThroughKeyStore(int coinType, String password, String accountName, String keyStore) {
+        if (TextUtils.isEmpty(keyStore) || coinType != LibUtils.COINTYPE.COIN_ETH){
+            return null;
+        }
+
+        AccountData accountData = EthAccountCreateHelper.importFromKeyStore(keyStore, password);
+        if (accountData != null){
+            accountData.setCoinName(AppUtils.COIN_ARRAY[coinType]);
+            accountData.setAccountName(accountName);
+            Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(accountData));
+            return uri;
+        }else {
+        }
         return null;
     }
 }

@@ -12,6 +12,7 @@ import com.x.wallet.R;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.ui.adapter.ViewPagerAdapter;
 import com.x.wallet.ui.fragment.ImportKeyFragment;
+import com.x.wallet.ui.fragment.ImportKeyStoreFragment;
 import com.x.wallet.ui.fragment.ImportMnemonicFragment;
 
 /**
@@ -43,11 +44,16 @@ public class ImportAccountActivity extends AppCompatActivity {
         keyFragment.setArguments(bundle);
         adapter.addFragment(keyFragment, this.getResources().getText(R.string.key).toString());
 
+        ImportKeyStoreFragment keyStoreFragment = new ImportKeyStoreFragment();
+        keyStoreFragment.setArguments(bundle);
+        adapter.addFragment(keyStoreFragment, this.getResources().getText(R.string.keystore).toString());
+
         pager.setAdapter(adapter);
 
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText(this.getResources().getText(R.string.mnemonic)));
         tabLayout.addTab(tabLayout.newTab().setText(this.getResources().getText(R.string.key)));
+        tabLayout.addTab(tabLayout.newTab().setText(this.getResources().getText(R.string.keystore)));
         tabLayout.setupWithViewPager(pager);
     }
 

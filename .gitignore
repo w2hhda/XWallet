@@ -13,3 +13,6 @@ coinslib/coinslib.iml
 coinslib/src/main/jniLibs/
 coinslib/src/obj/
 *.project
+*.settings
+*.classpath
+*bin

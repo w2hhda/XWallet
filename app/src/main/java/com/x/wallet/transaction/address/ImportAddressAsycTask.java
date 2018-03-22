@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
+import com.x.wallet.lib.common.LibUtils;
 
 /**
  * Created by wuliang on 18-3-15.
@@ -24,6 +25,7 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Uri>{
     private String mMnemonic;
 
     private String mKey;
+    private String mKeyStore;
 
     private ProgressDialog mProgressDialog;
     private Context mContext;
@@ -47,7 +49,11 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Uri>{
     public ImportAddressAsycTask(Context context, int coinType, int importType, String password, String accountName,
                                  String key) {
         this(context, coinType, importType, password, accountName);
-        mKey = key;
+        if (coinType == LibUtils.COINTYPE.COIN_BTC) {
+            mKey = key;
+        }else {
+            mKeyStore = key;
+        }
     }
 
     @Override
@@ -73,7 +79,7 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Uri>{
             case AppUtils.IMPORTTYPE.IMPORT_TYPE_KEYSTORE:
                 return AddressUtils.importAddressThroughKeyStore(mCoinType,
                         mPassword,
-                        mAccountName);
+                        mAccountName, mKeyStore);
         }
         return null;
     }
