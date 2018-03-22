@@ -15,6 +15,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -40,6 +43,7 @@ public class AccountListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         mAccountListAdapter = new AccountListAdapter(getActivity(), null, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -65,6 +69,25 @@ public class AccountListFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         init(getLoaderManager());
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.add_acount_menu, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_add_account:
+                handleAccountAction(AppUtils.ACCOUNT_ACTION_TYPE_NEW);
+                return true;
+            case R.id.action_import_account:
+                handleAccountAction(AppUtils.ACCOUNT_ACTION_TYPE_IMPORT);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -94,16 +117,7 @@ public class AccountListFragment extends Fragment {
                 builder.setItems(AccountListFragment.this.getResources().getStringArray(R.array.account_action_array), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int which) {
-                        Intent intent = new Intent("com.x.wallet.action.COINTYPE_CHOOSE_ACTION");
-                        switch (which){
-                            case 0:
-                                intent.putExtra(AppUtils.ACTION_TYPE, AppUtils.ACCOUNT_ACTION_TYPE_NEW);
-                                break;
-                            case 1:
-                                intent.putExtra(AppUtils.ACTION_TYPE, AppUtils.ACCOUNT_ACTION_TYPE_IMPORT);
-                                break;
-                        }
-                        AccountListFragment.this.startActivity(intent);
+                        handleAccountAction(which);
                     }
                 });
                 builder.setTitle(R.string.add_account);
@@ -137,5 +151,12 @@ public class AccountListFragment extends Fragment {
         public void onLoaderReset(Loader<Cursor> loader) {
 
         }
+    }
+
+    private void handleAccountAction(int actionType){
+        Intent intent = new Intent("com.x.wallet.action.COINTYPE_CHOOSE_ACTION");
+        intent.putExtra(AppUtils.ACTION_TYPE, actionType);
+        AccountListFragment.this.startActivity(intent);
+        AccountListFragment.this.startActivity(intent);
     }
 }

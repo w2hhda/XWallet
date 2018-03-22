@@ -8,6 +8,16 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:statusBarColor">@color/colorPrimary</item>
+        <item name="android:actionOverflowButtonStyle">@style/CustomeOverflowBtnStyle</item>
+        <item name="actionOverflowMenuStyle">@style/CustomeOverflowMenuStyle</item>
+    </style>
+
+    <style name="CustomeOverflowBtnStyle" parent="@style/Widget.AppCompat.Light.ActionButton.Overflow">
+        <item name="android:src">@drawable/add_account_menu_icon</item>
+    </style>
+
+    <style name="CustomeOverflowMenuStyle" parent="@style/Widget.AppCompat.Light.PopupMenu.Overflow">
+        <item name="overlapAnchor">false</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
