@@ -1,11 +1,9 @@
 package com.x.wallet.ui.activity;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -21,7 +19,7 @@ import net.bither.bitherj.core.BtcCreateAddressHelper;
  * Created by wuliang on 18-3-16.
  */
 
-public class ManageAccountActivity extends BaseAppCompatActivity{
+public class ManageAccountActivity extends WithBackAppCompatActivity {
     private AccountItem mAccountItem;
     private TextView mAccountNameTv;
     private TextView mAddressTv;

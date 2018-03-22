@@ -6,7 +6,47 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.x.wallet.MainActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#f2f2f2">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/account_overview_height"
+        android:background="@color/account_overview_bg_color"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+        <TextView android:id="@+id/all_balance_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/all_balance_tv_marginTop"
+            android:text="≈0.00"
+            style="@style/AllBalanceTextStyle"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/all_balance_unit"
+            android:layout_marginTop="@dimen/all_balance_unit_marginTop"
+            style="@style/AllBalanceUnitTextStyle"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="@dimen/not_backup_warn_minWidth"
+            android:minHeight="@dimen/not_backup_warn_minHeight"
+            android:background="@drawable/not_backup_warn"
+            android:layout_marginTop="@dimen/not_backup_warn_marginTop"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/warn"
+                android:scaleType="fitCenter"
+                android:layout_marginEnd="10dp"/>
+            <TextView android:id="@+id/not_backup_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/NotBackupWarnTextStyle"
+                android:text="@string/not_backup_warn"/>
+        </LinearLayout>
+    </LinearLayout>
     <Button android:id="@+id/add_account_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -14,5 +54,6 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="#fff"/>
 </LinearLayout>

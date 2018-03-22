@@ -18,7 +18,7 @@ import com.x.wallet.ui.data.AccountItem;
  * Created by wuliang on 18-3-16.
  */
 
-public class AccountDetailActivity extends BaseAppCompatActivity {
+public class AccountDetailActivity extends WithBackAppCompatActivity {
     private AccountItem mAccountItem;
 
     private TextView mAddressTv;

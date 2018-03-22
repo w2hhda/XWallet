@@ -18,7 +18,7 @@ import com.x.wallet.ui.view.SetPasswordView;
  * Created by wuliang on 18-3-13.
  */
 
-public class CreateAccountActivity extends BaseAppCompatActivity {
+public class CreateAccountActivity extends WithBackAppCompatActivity {
     private CoinNameView mCoinNameView;
     private AccountNameView mAccountNameView;
     private SetPasswordView mSetPasswordView;

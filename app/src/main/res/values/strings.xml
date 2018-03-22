@@ -39,4 +39,6 @@
     <string name="password_error_not_the_same">两次输入的密码不符,不能创建地址</string>
     <string name="password_error_short">密码长度太短,不能创建地址</string>
     <string name="account_name_error">账户名不符合要求</string>
+    <string name="all_balance_unit">总资产(¥)</string>
+    <string name="not_backup_warn">未备份钱包存在风险，请立即备份</string>
 </resources>

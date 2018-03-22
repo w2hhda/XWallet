@@ -15,7 +15,7 @@ import com.x.wallet.R;
  * Created by wuliang on 18-3-13.
  */
 
-public class CoinTypeChooseActivity extends BaseAppCompatActivity {
+public class CoinTypeChooseActivity extends WithBackAppCompatActivity {
     private int mActionType;
 
     @Override

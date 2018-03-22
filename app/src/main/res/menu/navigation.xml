@@ -3,14 +3,12 @@
 
     <item
         android:id="@+id/navigation_account"
-        android:title="@string/title_account" />
-
-    <item
-        android:id="@+id/navigation_market_detail"
-        android:title="@string/title_market_detail" />
+        android:icon="@drawable/nav_item_account_icon_normal"
+        android:title="@string/title_account"/>
 
     <item
         android:id="@+id/navigation_setting"
+        android:icon="@drawable/nav_item_setting_icon_normal"
         android:title="@string/title_setting" />
 
 </menu>

@@ -4,15 +4,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.x.wallet.ui.activity.BaseAppCompatActivity;
 import com.x.wallet.ui.fragment.AccountListFragment;
-import com.x.wallet.ui.fragment.MarketDetailFragment;
 import com.x.wallet.ui.fragment.SettingsFragment;
 import com.x.wallet.ui.adapter.ViewPagerAdapter;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseAppCompatActivity {
 
     private ViewPager mViewPager;
     private MenuItem mMenuItem;
@@ -42,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 mMenuItem = mBottomNavigationView.getMenu().getItem(position);
                 mMenuItem.setChecked(true);
+                mMenuItem.setIcon(R.drawable.nav_item_account_icon_selected);
             }
 
             @Override
@@ -61,11 +61,8 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.navigation_account:
                         mViewPager.setCurrentItem(0);
                         break;
-                    case R.id.navigation_market_detail:
-                        mViewPager.setCurrentItem(1);
-                        break;
                     case R.id.navigation_setting:
-                        mViewPager.setCurrentItem(2);
+                        mViewPager.setCurrentItem(1);
                         break;
                 }
                 return true;
@@ -79,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
     private void setupViewPager() {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new AccountListFragment());
-        adapter.addFragment(new MarketDetailFragment());
         adapter.addFragment(new SettingsFragment());
         mViewPager.setAdapter(adapter);
     }
