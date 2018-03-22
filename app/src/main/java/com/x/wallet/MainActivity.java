@@ -41,7 +41,6 @@ public class MainActivity extends BaseAppCompatActivity {
                 }
                 mMenuItem = mBottomNavigationView.getMenu().getItem(position);
                 mMenuItem.setChecked(true);
-                mMenuItem.setIcon(R.drawable.nav_item_account_icon_selected);
             }
 
             @Override

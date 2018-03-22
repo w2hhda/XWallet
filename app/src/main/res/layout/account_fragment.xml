@@ -5,55 +5,119 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.x.wallet.MainActivity"
+    android:background="@color/main_bg_color"
     android:orientation="vertical"
-    android:background="#f2f2f2">
-    <LinearLayout
+    tools:context="com.x.wallet.MainActivity">
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/account_overview_height"
-        android:background="@color/account_overview_bg_color"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
-        <TextView android:id="@+id/all_balance_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/all_balance_tv_marginTop"
-            android:text="≈0.00"
-            style="@style/AllBalanceTextStyle"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/all_balance_unit"
-            android:layout_marginTop="@dimen/all_balance_unit_marginTop"
-            style="@style/AllBalanceUnitTextStyle"/>
+        android:background="@color/account_overview_bg_color">
+
         <LinearLayout
+            android:id="@+id/all_balance_container"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/account_overview_height"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/all_balance_tv"
+                style="@style/AllBalanceTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/all_balance_tv_marginTop"
+                android:text="≈0.00" />
+
+            <TextView
+                style="@style/AllBalanceUnitTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/all_balance_unit_marginTop"
+                android:text="@string/all_balance_unit" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/not_backup_warn_marginTop"
+                android:background="@drawable/not_backup_warn_bg"
+                android:gravity="center"
+                android:minHeight="@dimen/not_backup_warn_minHeight"
+                android:minWidth="@dimen/not_backup_warn_minWidth">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/warn" />
+
+                <TextView
+                    android:id="@+id/not_backup_tv"
+                    style="@style/NotBackupWarnTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/not_backup_warn" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/empty_ll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:minWidth="@dimen/not_backup_warn_minWidth"
-            android:minHeight="@dimen/not_backup_warn_minHeight"
-            android:background="@drawable/not_backup_warn"
-            android:layout_marginTop="@dimen/not_backup_warn_marginTop"
-            android:gravity="center">
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/AllBalanceTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_money" />
+
+            <TextView
+                style="@style/AllBalanceUnitTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/all_balance_unit_marginTop"
+                android:text="@string/all_money_will_show_here" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/add_account_ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone">
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/warn"
+                android:layout_marginTop="@dimen/no_wallet_icon_marginTop"
                 android:scaleType="fitCenter"
-                android:layout_marginEnd="10dp"/>
-            <TextView android:id="@+id/not_backup_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/NotBackupWarnTextStyle"
-                android:text="@string/not_backup_warn"/>
+                android:src="@drawable/no_wallet_icon" />
+
+            <Button
+                android:id="@+id/add_account_btn"
+                style="@style/AddAccountBtnTextStyle"
+                android:layout_width="@dimen/add_account_btn_width"
+                android:layout_height="@dimen/add_account_btn_height"
+                android:layout_marginTop="@dimen/add_account_btn_marginTop"
+                android:background="@drawable/add_account_btn_bg"
+                android:text="@string/add_account" />
         </LinearLayout>
-    </LinearLayout>
-    <Button android:id="@+id/add_account_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/add_account"/>
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#fff"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white" />
+    </FrameLayout>
 </LinearLayout>

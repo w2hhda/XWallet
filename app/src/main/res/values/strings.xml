@@ -44,4 +44,6 @@
     <string name="send_to_address">address</string>
     <string name="keystore">KeyStore</string>
     <string name="input_keystore_hint">请输入KeyStore</string>
+    <string name="no_money">暂无资产</string>
+    <string name="all_money_will_show_here">全部资产将会在这里显示</string>
 </resources>
