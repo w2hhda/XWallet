@@ -41,4 +41,7 @@
     <string name="account_name_error">账户名不符合要求</string>
     <string name="all_balance_unit">总资产(¥)</string>
     <string name="not_backup_warn">未备份钱包存在风险，请立即备份</string>
+    <string name="send_to_address">address</string>
+    <string name="keystore">KeyStore</string>
+    <string name="input_keystore_hint">请输入KeyStore</string>
 </resources>
