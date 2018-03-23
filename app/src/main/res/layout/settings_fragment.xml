@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_bg_color"
+    android:orientation="vertical"
+    tools:context="com.x.wallet.MainActivity">
+
+    <RelativeLayout
+        android:id="@+id/manage_account_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/settings_item_marginTop"
+        android:background="@android:color/white"
+        android:minHeight="@dimen/settings_item_height">
+
+        <ImageView
+            android:id="@+id/manage_wallet_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/settings_item_marginStart"
+            android:src="@drawable/manage_wallet_icon" />
+
+        <TextView
+            style="@style/SettingItemTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/settings_item_tv_marginStart"
+            android:layout_toEndOf="@id/manage_wallet_iv"
+            android:text="@string/manage_wallet" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/settings_item_marginEnd"
+            android:src="@drawable/into_icon" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/settings_item_divider_height" />
+
+    <RelativeLayout
+        android:id="@+id/feedback_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:minHeight="@dimen/settings_item_height">
+
+        <ImageView
+            android:id="@+id/feedback_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/settings_item_marginStart"
+            android:src="@drawable/feedback_icon" />
+
+        <TextView
+            style="@style/SettingItemTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/settings_item_tv_marginStart"
+            android:layout_toEndOf="@id/feedback_iv"
+            android:text="@string/feedback" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/settings_item_marginEnd"
+            android:src="@drawable/into_icon" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/settings_item_divider_height" />
+
+    <RelativeLayout
+        android:id="@+id/mark_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:minHeight="@dimen/settings_item_height">
+
+        <ImageView
+            android:id="@+id/mark_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/settings_item_marginStart"
+            android:src="@drawable/mark_icon" />
+
+        <TextView
+            style="@style/SettingItemTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/settings_item_tv_marginStart"
+            android:layout_toEndOf="@id/mark_iv"
+            android:text="@string/mark" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/settings_item_marginEnd"
+            android:src="@drawable/into_icon" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/settings_item_divider_height_low" />
+
+    <RelativeLayout
+        android:id="@+id/about_us_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:minHeight="@dimen/settings_item_height">
+
+        <ImageView
+            android:id="@+id/about_us_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/settings_item_marginStart"
+            android:src="@drawable/about_us_icon" />
+
+        <TextView
+            style="@style/SettingItemTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/settings_item_tv_marginStart"
+            android:layout_toEndOf="@id/about_us_iv"
+            android:text="@string/about" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/settings_item_marginEnd"
+            android:src="@drawable/into_icon" />
+    </RelativeLayout>
+</LinearLayout>

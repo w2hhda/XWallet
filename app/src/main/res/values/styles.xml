@@ -58,4 +58,9 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <style name="SettingItemTextStyle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#000</item>
+    </style>
+
 </resources>

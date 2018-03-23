@@ -21,4 +21,11 @@
     <dimen name="add_account_btn_height">40dp</dimen>
     <dimen name="add_account_btn_marginTop">20dp</dimen>
     <dimen name="no_wallet_icon_marginTop">59dp</dimen>
+    <dimen name="settings_item_marginEnd">30px</dimen>
+    <dimen name="settings_item_marginStart">16dp</dimen>
+    <dimen name="settings_item_tv_marginStart">10dp</dimen>
+    <dimen name="settings_item_marginTop">7dp</dimen>
+    <dimen name="settings_item_height">40dp</dimen>
+    <dimen name="settings_item_divider_height">7dp</dimen>
+    <dimen name="settings_item_divider_height_low">1px</dimen>
 </resources>

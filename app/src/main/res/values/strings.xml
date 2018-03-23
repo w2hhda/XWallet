@@ -46,4 +46,8 @@
     <string name="input_keystore_hint">请输入KeyStore</string>
     <string name="no_money">暂无资产</string>
     <string name="all_money_will_show_here">全部资产将会在这里显示</string>
+    <string name="manage_wallet">钱包管理</string>
+    <string name="feedback">意见反馈</string>
+    <string name="mark">评分</string>
+    <string name="about">关于</string>
 </resources>
