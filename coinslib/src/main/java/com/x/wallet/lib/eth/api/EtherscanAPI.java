@@ -1,8 +1,7 @@
 package com.x.wallet.lib.eth.api;
 
-import com.x.wallet.lib.eth.data.StorableWallet;
 import com.x.wallet.lib.eth.util.Key;
-import com.x.wallet.lib.eth.util.RequestCache;
+import com.x.wallet.lib.eth.util.CacheHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,10 +46,10 @@ public class EtherscanAPI {
      * @throws IOException Network exceptions
      */
     public void getInternalTransactions(String address, Callback b, boolean force) throws IOException {
-        if (!force && RequestCache.getInstance().contains(RequestCache.TYPE_TXS_INTERNAL, address)) {
+        if (!force && CacheHelper.instance().contains(CacheHelper.TYPE_TXS_INTERNAL, address)) {
             b.onResponse(null, new Response.Builder().code(200).message("").request(new Request.Builder()
                     .url("http://api.etherscan.io/api?module=account&action=txlistinternal&address=" + address + "&startblock=0&endblock=99999999&sort=asc&apikey=" + token)
-                    .build()).protocol(Protocol.HTTP_1_0).body(ResponseBody.create(MediaType.parse("JSON"), RequestCache.getInstance().get(RequestCache.TYPE_TXS_INTERNAL, address))).build());
+                    .build()).protocol(Protocol.HTTP_1_0).body(ResponseBody.create(MediaType.parse("JSON"), CacheHelper.instance().get(CacheHelper.TYPE_TXS_INTERNAL, address))).build());
             return;
         }
         get("http://api.etherscan.io/api?module=account&action=txlistinternal&address=" + address + "&startblock=0&endblock=99999999&sort=asc&apikey=" + token, b);
@@ -66,10 +65,10 @@ public class EtherscanAPI {
      * @throws IOException Network exceptions
      */
     public void getNormalTransactions(String address, Callback b, boolean force) throws IOException {
-        if (!force && RequestCache.getInstance().contains(RequestCache.TYPE_TXS_NORMAL, address)) {
+        if (!force && CacheHelper.instance().contains(CacheHelper.TYPE_TXS_NORMAL, address)) {
             b.onResponse(null, new Response.Builder().code(200).message("").request(new Request.Builder()
                     .url("http://api.etherscan.io/api?module=account&action=txlist&address=" + address + "&startblock=0&endblock=99999999&sort=asc&apikey=" + token)
-                    .build()).protocol(Protocol.HTTP_1_0).body(ResponseBody.create(MediaType.parse("JSON"), RequestCache.getInstance().get(RequestCache.TYPE_TXS_NORMAL, address))).build());
+                    .build()).protocol(Protocol.HTTP_1_0).body(ResponseBody.create(MediaType.parse("JSON"), CacheHelper.instance().get(CacheHelper.TYPE_TXS_NORMAL, address))).build());
             return;
         }
         get("http://api.etherscan.io/api?module=account&action=txlist&address=" + address + "&startblock=0&endblock=99999999&sort=asc&apikey=" + token, b);
@@ -95,29 +94,29 @@ public class EtherscanAPI {
      * @throws IOException Network exceptions
      */
     public void getTokenBalances(String address, Callback b, boolean force) throws IOException {
-        if (!force && RequestCache.getInstance().contains(RequestCache.TYPE_TOKEN, address)) {
+        if (!force && CacheHelper.instance().contains(CacheHelper.TYPE_TOKEN, address)) {
             b.onResponse(null, new Response.Builder().code(200).message("").request(new Request.Builder()
                     .url("https://api.ethplorer.io/getAddressInfo/" + address + "?apiKey=freekey")
-                    .build()).protocol(Protocol.HTTP_1_0).body(ResponseBody.create(MediaType.parse("JSON"), RequestCache.getInstance().get(RequestCache.TYPE_TOKEN, address))).build());
+                    .build()).protocol(Protocol.HTTP_1_0).body(ResponseBody.create(MediaType.parse("JSON"), CacheHelper.instance().get(CacheHelper.TYPE_TOKEN, address))).build());
             return;
         }
         get("http://api.ethplorer.io/getAddressInfo/" + address + "?apiKey=freekey", b);
     }
 
 
-    /**
-     * Download and save token icon in permanent image cache (TokenIconCache)
-     *
-     * @param c         Application context, used to load TokenIconCache if reinstanced
-     * @param tokenName Name of token
-     * @param lastToken Boolean defining whether this is the last icon to download or not. If so callback is called to refresh recyclerview (notifyDataSetChanged)
-     * @param callback  Callback to @see rehanced.com.simpleetherwallet.fragments.FragmentDetailOverview#onLastIconDownloaded()
-     * @throws IOException Network exceptions
-     */
+//    /**
+//     * Download and save token icon in permanent image cache (TokenIconCache)
+//     *
+//     * @param c         Application context, used to load TokenIconCache if reinstanced
+//     * @param tokenName Name of token
+//     * @param lastToken Boolean defining whether this is the last icon to download or not. If so callback is called to refresh recyclerview (notifyDataSetChanged)
+//     * @param callback  Callback to @see rehanced.com.simpleetherwallet.fragments.FragmentDetailOverview#onLastIconDownloaded()
+//     * @throws IOException Network exceptions
+//     */
 //    public void loadTokenIcon(final Context c, String tokenName, final boolean lastToken, final LastIconLoaded callback) throws IOException {
 //        if (tokenName.indexOf(" ") > 0)
 //            tokenName = tokenName.substring(0, tokenName.indexOf(" "));
-//        if (TokenIconCache.getInstance(c).contains(tokenName)) return;
+//        if (TokenIconCache.instance(c).contains(tokenName)) return;
 //
 //        if(tokenName.equalsIgnoreCase("OMGToken"))
 //            tokenName = "omise";
@@ -137,7 +136,7 @@ public class EtherscanAPI {
 //                InputStream inputStream = in.byteStream();
 //                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
 //                final Bitmap bitmap = BitmapFactory.decodeStream(bufferedInputStream);
-//                TokenIconCache.getInstance(c).put(c, tokenNamef, new BitmapDrawable(c.getResources(), bitmap).getBitmap());
+//                TokenIconCache.instance(c).put(c, tokenNamef, new BitmapDrawable(c.getResources(), bitmap).getBitmap());
 //                // if(lastToken) // TODO: resolve race condition
 //                callback.onLastIconDownloaded();
 //            }
@@ -165,10 +164,10 @@ public class EtherscanAPI {
     }
 
 
-    public void getBalances(ArrayList<StorableWallet> addresses, Callback b) throws IOException {
+    public void getBalances(ArrayList<String> addresses, Callback b) throws IOException {
         String url = "http://api.etherscan.io/api?module=account&action=balancemulti&address=";
-        for (StorableWallet address : addresses)
-            url += address.getPubKey() + ",";
+        for (String address : addresses)
+            url += address + ",";
         url = url.substring(0, url.length() - 1) + "&tag=latest&apikey=" + token; // remove last , AND add token
         get(url, b);
     }
