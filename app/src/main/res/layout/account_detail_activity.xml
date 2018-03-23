@@ -1,59 +1,168 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.x.wallet.MainActivity">
+    tools:context="com.x.wallet.ui.activity.AccountDetailActivity">
 
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/account_detail_top"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="#002e9e"
-        android:paddingBottom="20dip">
-
-        <TextView
-            android:id="@+id/address_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dip"
-            android:textColor="@android:color/white"
-            android:layout_gravity="center_horizontal"/>
-
-        <TextView
-            android:id="@+id/balance_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dip" />
+        android:layout_height="@dimen/account_detail_top_height"
+        android:layout_alignParentTop="true"
+        android:background="@color/colorPrimary">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dip"
-            android:paddingEnd="20dip"
-            android:paddingStart="20dip">
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/send_btn"
+            <TextView
+                android:id="@+id/balance_translate_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/send_out_transaction" />
+                android:text="0"
+                android:textColor="@android:color/white"
+                android:textSize="30sp" />
 
-            <Button
-                android:id="@+id/receipt_btn"
+            <TextView
+                android:id="@+id/balance_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/receipt_transaction" />
+                android:layout_marginTop="20dp"
+                android:text="0BTC"
+                android:textColor="@android:color/white"
+                android:textSize="15sp" />
         </LinearLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/contransaction_title_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/account_detail_top"
+        android:paddingTop="27dp"
+        android:gravity="center_vertical"
+        android:background="@color/main_bg_color">
+
+        <View
+            android:layout_width="@dimen/transactions_icon_width"
+            android:layout_height="@dimen/transactions_icon_height"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="#222543" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/transactions"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/transactions_title_textSize" />
     </LinearLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <FrameLayout
+        android:id="@+id/account_detail_center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:layout_below="@id/contransaction_title_container"
+        android:background="@color/main_bg_color">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/no_transaction_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_transaction"
+                android:layout_marginTop="20dp"/>
+        </LinearLayout>
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_above="@id/account_detail_bottom"
+        android:background="#727484" />
+
+    <LinearLayout
+        android:id="@+id/account_detail_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:minHeight="41dp">
+
+        <FrameLayout
+            android:id="@+id/send_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@android:color/white"
+            android:minHeight="41dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/send_transaction_icon" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/send_out_transaction"
+                    android:textColor="@color/send_btn_textColor"
+                    android:textSize="@dimen/send_btn_textSize" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/receipt_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            android:minHeight="41dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/receipt_transaction_icon" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/receipt_transaction"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/send_btn_textSize" />
+            </LinearLayout>
+        </FrameLayout>
+    </LinearLayout>
+</RelativeLayout>

@@ -50,4 +50,6 @@
     <string name="feedback">意见反馈</string>
     <string name="mark">评分</string>
     <string name="about">关于</string>
+    <string name="transactions">交易记录</string>
+    <string name="no_transaction">暂无交易记录</string>
 </resources>

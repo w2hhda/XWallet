@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="account_overview_bg_color">#232342</color>
     <color name="main_bg_color">#f2f2f2</color>
+    <color name="send_btn_textColor">#131431</color>
 </resources>

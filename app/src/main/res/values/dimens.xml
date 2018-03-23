@@ -28,4 +28,9 @@
     <dimen name="settings_item_height">40dp</dimen>
     <dimen name="settings_item_divider_height">7dp</dimen>
     <dimen name="settings_item_divider_height_low">1px</dimen>
+    <dimen name="transactions_title_textSize">12sp</dimen>
+    <dimen name="transactions_icon_width">4dp</dimen>
+    <dimen name="transactions_icon_height">9dp</dimen>
+    <dimen name="send_btn_textSize">14sp</dimen>
+    <dimen name="account_detail_top_height">115dp</dimen>
 </resources>

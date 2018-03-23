@@ -1,12 +1,8 @@
 package com.x.wallet.ui.activity;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -21,7 +17,7 @@ import com.x.wallet.ui.data.AccountItem;
 public class AccountDetailActivity extends WithBackAppCompatActivity {
     private AccountItem mAccountItem;
 
-    private TextView mAddressTv;
+    private TextView mBalanceTranslateTv;
     private TextView mBalanceTv;
     private View mSendOutBtn;
     private View mReceiptBtn;
@@ -37,27 +33,8 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         initViews();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        final MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.manage_account_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_manage_account){
-            Intent intent = new Intent("com.x.wallet.action.MANAGE_ACCOUNT_ACTION");
-            intent.putExtra(AppUtils.ACCOUNT_DATA, mAccountItem);
-            startActivity(intent);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     private void initViews(){
-        mAddressTv = findViewById(R.id.address_tv);
-        mAddressTv.setText(mAccountItem.getAddress());
+        mBalanceTranslateTv = findViewById(R.id.balance_translate_tv);
 
         mBalanceTv = findViewById(R.id.balance_tv);
         mSendOutBtn = findViewById(R.id.send_btn);
