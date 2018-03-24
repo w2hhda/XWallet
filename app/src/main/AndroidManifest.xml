@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.x.wallet">
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application android:name=".XWalletApplication"
         android:allowBackup="true"
@@ -64,6 +65,7 @@
         <provider android:name=".db.XWalletProvider"
             android:authorities="com.x.wallet"
             android:exported="false"/>
+        <service android:name=".service.SendTransactionService"/>
     </application>
 
 </manifest>
