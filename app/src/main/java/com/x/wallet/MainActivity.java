@@ -3,6 +3,7 @@ package com.x.wallet;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 
@@ -16,6 +17,8 @@ public class MainActivity extends BaseAppCompatActivity {
     private ViewPager mViewPager;
     private MenuItem mMenuItem;
     private BottomNavigationView mBottomNavigationView;
+    private ViewPagerAdapter adapter;
+    private Fragment[] fragments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,9 +76,22 @@ public class MainActivity extends BaseAppCompatActivity {
     }
 
     private void setupViewPager() {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new AccountListFragment());
-        adapter.addFragment(new SettingsFragment());
+        fragments = new Fragment[2];
+        fragments[0] = new AccountListFragment();
+        fragments[1] = new SettingsFragment();
+
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(fragments[0]);
+        adapter.addFragment(fragments[1]);
+        //adapter.addFragment(new AccountListFragment());
+        //adapter.addFragment(new SettingsFragment());
         mViewPager.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mViewPager.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 }
