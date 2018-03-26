@@ -3,10 +3,12 @@ package com.x.wallet.transaction.address;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import com.x.wallet.MainActivity;
 import com.x.wallet.R;
 
 /**
@@ -52,6 +54,9 @@ public class CreateAddressAsycTask extends AsyncTask<Void, Void, Uri>{
         }
         if(mContext instanceof Activity){
             ((Activity) mContext).finish();
+            Intent intent = new Intent(this.mContext, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            mContext.startActivity(intent);
         }
     }
 }
