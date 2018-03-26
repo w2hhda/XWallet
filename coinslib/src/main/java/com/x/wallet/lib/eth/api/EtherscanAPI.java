@@ -172,6 +172,11 @@ public class EtherscanAPI {
         get(url, b);
     }
 
+    public void getBalances(String addresses, Callback b) throws IOException {
+        String url = "http://api.etherscan.io/api?module=account&action=balancemulti&address=";
+        url = url + addresses + "&tag=latest&apikey=" + token; // remove last , AND add token
+        get(url, b);
+    }
 
     public void forwardTransaction(String raw, Callback b) throws IOException {
         get("http://api.etherscan.io/api?module=proxy&action=eth_sendRawTransaction&hex=" + raw + "&apikey=" + token, b);

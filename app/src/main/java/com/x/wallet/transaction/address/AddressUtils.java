@@ -27,9 +27,7 @@ public class AddressUtils {
         Log.i(AppUtils.APP_TAG, "AddressUtils createAddress coinType = " + coinType + ", password = " + password);
         AccountData accountData = CoinAddressHelper.createAddress(coinType, password);
         if(accountData != null){
-            accountData.setCoinName(AppUtils.COIN_ARRAY[coinType]);
-            accountData.setAccountName(accountName);
-            accountData.setCoinType(coinType);
+            fillAccountData(accountData, coinType, accountName);
             Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(accountData));
             Log.i(AppUtils.APP_TAG, "AddressUtils createAddress uri = " + uri);
             Log.i(AppUtils.APP_TAG, "AddressUtils createAddress accountData = " + accountData);
@@ -60,8 +58,7 @@ public class AddressUtils {
             accountData = EthAccountCreateHelper.importFromMnemonic(words, password);
         }
         if(accountData != null){
-            accountData.setCoinName(coinType + "");
-            accountData.setAccountName(accountName);
+            fillAccountData(accountData, coinType, accountName);
             Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(accountData));
             Log.i("test3", "AddressUtils importAddressThroughMnemonic uri = " + uri);
             Log.i("test3", "AddressUtils importAddressThroughMnemonic accountData = " + accountData);
@@ -79,8 +76,7 @@ public class AddressUtils {
         if (coinType == LibUtils.COINTYPE.COIN_ETH) {
             AccountData accountData = EthAccountCreateHelper.importFromPrivateKey(key, password);
             if (accountData != null) {
-                accountData.setCoinName(AppUtils.COIN_ARRAY[coinType]);
-                accountData.setAccountName(accountName);
+                fillAccountData(accountData, coinType, accountName);
                 Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(accountData));
                 return uri;
             }
@@ -99,12 +95,17 @@ public class AddressUtils {
 
         AccountData accountData = EthAccountCreateHelper.importFromKeyStore(keyStore, password);
         if (accountData != null){
-            accountData.setCoinName(AppUtils.COIN_ARRAY[coinType]);
-            accountData.setAccountName(accountName);
+            fillAccountData(accountData, coinType, accountName);
             Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(accountData));
             return uri;
         }else {
         }
         return null;
+    }
+
+    private static  void fillAccountData(AccountData accountData, int coinType, String accountName){
+        accountData.setCoinName(AppUtils.COIN_ARRAY[coinType]);
+        accountData.setAccountName(accountName);
+        accountData.setCoinType(coinType);
     }
 }

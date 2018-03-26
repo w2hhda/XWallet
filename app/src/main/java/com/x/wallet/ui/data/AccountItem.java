@@ -12,81 +12,109 @@ public class AccountItem implements Serializable {
     private String mAddress;
     private String mAccountName;
     private String mCoinName;
+    private int mCoinType;
     private String mEncryMnemonic;
     private String mEncrySeed;
-    private long mBalance;
+    private String mBalance;
 
     public AccountItem(String address, String accountName, String coinName,
-                       String encrySeed, String encryMnemonic,
-                       long balance) {
+                       int coinType, String encrySeed, String encryMnemonic,
+                       String balance) {
         mAddress = address;
         mAccountName = accountName;
         mCoinName = coinName;
+        mCoinType = coinType;
         mEncrySeed = encrySeed;
         mEncryMnemonic = encryMnemonic;
         mBalance = balance;
-    }
-
-    public void setAccountName(String accountName) {
-        mAccountName = accountName;
-    }
-
-    public void setCoinName(String coinName) {
-        mCoinName = coinName;
-    }
-
-    public void setBalance(long balance) {
-        mBalance = balance;
-    }
-
-    public void setAddress(String address) {
-        mAddress = address;
-    }
-
-    public void setEncrySeed(String encrySeed) {
-        mEncrySeed = encrySeed;
-    }
-
-    public void setEncryMnemonic(String encryMnemonic) {
-        mEncryMnemonic = encryMnemonic;
     }
 
     public String getAddress() {
         return mAddress;
     }
 
+    public void setAddress(String address) {
+        mAddress = address;
+    }
+
     public String getAccountName() {
         return mAccountName;
+    }
+
+    public void setAccountName(String accountName) {
+        mAccountName = accountName;
     }
 
     public String getCoinName() {
         return mCoinName;
     }
 
-    public long getBalance() {
-        return mBalance;
+    public void setCoinName(String coinName) {
+        mCoinName = coinName;
     }
 
-    public String getEncrySeed() {
-        return mEncrySeed;
+    public int getCoinType() {
+        return mCoinType;
+    }
+
+    public void setCoinType(int coinType) {
+        mCoinType = coinType;
     }
 
     public String getEncryMnemonic() {
         return mEncryMnemonic;
     }
 
+    public void setEncryMnemonic(String encryMnemonic) {
+        mEncryMnemonic = encryMnemonic;
+    }
+
+    public String getEncrySeed() {
+        return mEncrySeed;
+    }
+
+    public void setEncrySeed(String encrySeed) {
+        mEncrySeed = encrySeed;
+    }
+
+    public String getBalance() {
+        return mBalance;
+    }
+
+    public void setBalance(String balance) {
+        mBalance = balance;
+    }
+
     public static AccountItem createFromCursor(Cursor cursor){
         return new AccountItem(cursor.getString(COLUMN_ACCOUNT_ADDRESS),
                 cursor.getString(COLUMN_ACCOUNT_NAME),
                 cursor.getString(COLUMN_COIN_NAME),
+                cursor.getInt(COLUMN_COIN_TYPE),
                 cursor.getString(COLUMN_COIN_SEED),
                 cursor.getString(COLUMN_COIN_MNEMONIC),
-                0);
+                cursor.getString(COLUMN_BALANCE));
+    }
+
+    @Override
+    public String toString() {
+        return "AccountItem{" +
+                "mAddress='" + mAddress + '\'' +
+                ", mAccountName='" + mAccountName + '\'' +
+                ", mCoinName='" + mCoinName + '\'' +
+                ", mCoinType=" + mCoinType +
+                ", mEncryMnemonic='" + mEncryMnemonic + '\'' +
+                ", mEncrySeed='" + mEncrySeed + '\'' +
+                ", mBalance='" + mBalance + '\'' +
+                '}';
     }
 
     static final int COLUMN_ACCOUNT_ADDRESS         = 1;
     static final int COLUMN_ACCOUNT_NAME            = 2;
     static final int COLUMN_COIN_NAME               = 3;
-    static final int COLUMN_COIN_SEED               = 4;
-    static final int COLUMN_COIN_MNEMONIC           = 5;
+    static final int COLUMN_COIN_TYPE               = 4;
+    static final int COLUMN_COIN_SEED               = 5;
+    static final int COLUMN_COIN_MNEMONIC           = 6;
+    static final int COLUMN_RPIV_KEY                = 7;
+    static final int COLUMN_KEYSTORE                = 8;
+    static final int COLUMN_BALANCE                 = 9;
 }
