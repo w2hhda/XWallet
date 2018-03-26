@@ -12,6 +12,7 @@ import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.lib.eth.EthUtils;
+import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.ui.data.AccountItem;
 
 /**
@@ -26,6 +27,8 @@ public class AccountListItem extends RelativeLayout{
     private TextView mCoinBalanceUnitTv;
     private TextView mBalanceTv;
     private TextView mBalanceConversionTv;
+
+    private BalanceConversionUtils.RateUpdateListener mRateUpdateListener;
 
     public AccountListItem(Context context) {
         super(context);
@@ -60,6 +63,26 @@ public class AccountListItem extends RelativeLayout{
             mImageView.setImageResource(R.drawable.eth);
             mBalanceTv.setText(EthUtils.getBalanceText(mAccountItem.getBalance()));
             mCoinBalanceUnitTv.setText(R.string.coin_unit_eth);
+            updateBalanceConversionText();
+        }
+
+        mRateUpdateListener = new BalanceConversionUtils.RateUpdateListener() {
+            @Override
+            public void onRateUpdate() {
+                mImageView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateBalanceConversionText();
+                    }
+                });
+            }
+        };
+        BalanceConversionUtils.registerListener(mRateUpdateListener);
+    }
+
+    public void updateBalanceConversionText(){
+        if(mAccountItem != null){
+            mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, BalanceConversionUtils.calculateBalanceText(mAccountItem.getBalance())));
         }
     }
 

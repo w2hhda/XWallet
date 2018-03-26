@@ -74,7 +74,7 @@ public class AccountListFragment extends Fragment {
                 AccountListFragment.this.getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mAllBalanceTv.setText(AccountListFragment.this.getActivity().getString(R.string.all_balance, BalanceConversionUtils.calculateBalanceText()));
+                        mAllBalanceTv.setText(AccountListFragment.this.getActivity().getString(R.string.all_balance, BalanceConversionUtils.calculateAllBalanceText()));
                     }
                 });
             }
@@ -122,7 +122,7 @@ public class AccountListFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        BalanceConversionUtils.setRateUpdateListener(null);
+        BalanceConversionUtils.clearListener();
         if (mLoaderManager != null) {
             mLoaderManager.destroyLoader(ACCOUNT_LIST_LOADER);
             mLoaderManager = null;
@@ -173,15 +173,22 @@ public class AccountListFragment extends Fragment {
             mEmptyAccountViewContainer.setVisibility(View.GONE);
             mRecyclerView.setVisibility(View.VISIBLE);
             mAllBalanceViewContainer.setVisibility(View.VISIBLE);
-            mAddItem.setVisible(true);
-            mImportItem.setVisible(true);
+            updateMenuVisibility(true);
         } else {
             mAddAccountViewContainer.setVisibility(View.VISIBLE);
             mEmptyAccountViewContainer.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
             mAllBalanceViewContainer.setVisibility(View.GONE);
-            mAddItem.setVisible(false);
-            mImportItem.setVisible(false);
+            updateMenuVisibility(false);
+        }
+    }
+
+    private void updateMenuVisibility(boolean isVisible){
+        if(mAddItem != null){
+            mAddItem.setVisible(isVisible);
+        }
+        if(mImportItem != null){
+            mImportItem.setVisible(isVisible);
         }
     }
 

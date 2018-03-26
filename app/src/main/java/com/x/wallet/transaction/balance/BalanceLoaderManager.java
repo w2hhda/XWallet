@@ -205,6 +205,7 @@ public class BalanceLoaderManager extends BackgroundLoaderManager{
                                     UsdCnyBean usdCnyBean = new Gson().fromJson(response.body().string(), UsdCnyBean.class);
                                     BalanceConversionUtils.mUsdToCny = usdCnyBean.getRates().getCNY();
                                     BalanceConversionUtils.responseToListener();
+                                    BalanceConversionUtils.handleListener();
                                     Log.i(AppUtils.APP_TAG, "BalanceLoaderManager onResponse UsdToCny = " + usdCnyBean.getRates().getCNY());
                                 }
                             });

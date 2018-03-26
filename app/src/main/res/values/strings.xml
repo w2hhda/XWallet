@@ -56,4 +56,5 @@
     <string name="has_copied_address">地址已复制</string>
     <string name="coin_unit_eth">ETH</string>
     <string name="all_balance">"≈  <xliff:g id="value">%s</xliff:g>"</string>
+    <string name="item_balance">"≈  ¥<xliff:g id="value">%s</xliff:g>"</string>
 </resources>
