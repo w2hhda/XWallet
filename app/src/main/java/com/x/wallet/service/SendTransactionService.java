@@ -45,14 +45,12 @@ public class SendTransactionService extends IntentService {
     public final static String AMOUNT_TAG = "amount_tag";
     public final static String EXTRA_DATA_TAG = "extra_data_tag";
     public final static String PASSWORD_TAG = "password_tag";
+    private final BigInteger defaultGasLimit = new BigInteger("21000");
 
 
     public SendTransactionService(){
         super("SendTransactionService");
     }
-
-    private final String defaultGasPrice = "0x4a817c800";
-    private final String defaultGasLimit = "47e7c4";
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
@@ -122,13 +120,12 @@ public class SendTransactionService extends IntentService {
                         JSONObject jsonObject = new JSONObject(response.body().string());
                         String result = jsonObject.getString("result").substring(2);
                         BigInteger nonce = new BigInteger(result, 16);
-
-                        BigInteger gasP = new BigInteger(gasPrice, 16);
+                        BigInteger gasP = new BigInteger(gasPrice);
 
                         RawTransaction tx = RawTransaction.createTransaction(
                                 nonce,
                                 gasP,
-                                new BigInteger(gas_limit, 16),
+                                defaultGasLimit,
                                 toAddress,
                                 new BigDecimal(amount).multiply(ExchangeCalUtil.ONE_ETHER).toBigInteger(),
                                 extraData);

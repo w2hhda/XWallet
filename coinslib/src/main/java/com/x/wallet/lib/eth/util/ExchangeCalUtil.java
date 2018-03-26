@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
@@ -114,8 +115,8 @@ public class ExchangeCalUtil {
         }
     }
 
-    public double weiToEther(long weis) {
-        return new BigDecimal(weis).divide(ONE_ETHER, 8, BigDecimal.ROUND_DOWN).doubleValue();
+    public BigDecimal weiToEther(BigInteger weis) {
+        return new BigDecimal(weis).divide(ONE_ETHER, 8, BigDecimal.ROUND_DOWN);
     }
 
     public String convertRateExact(BigDecimal balance, double rate) {
