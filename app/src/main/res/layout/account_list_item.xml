@@ -2,24 +2,22 @@
 <com.x.wallet.ui.view.AccountListItem xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="10dip"
-    android:paddingLeft="16dip"
-    android:paddingRight="16dip"
-    android:paddingTop="10dip">
+    android:paddingEnd="@dimen/account_list_item_paddingEnd"
+    android:paddingStart="@dimen/account_list_item_paddingStart">
 
     <TextView
         android:id="@+id/account_name_tv"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dip"
+        android:paddingTop="10dip"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/account_name_tv"
         android:layout_marginTop="10dip"
-        android:minHeight="@dimen/account_list_item_minHeight"
-        android:paddingEnd="@dimen/account_list_item_paddingEnd"
-        android:paddingStart="@dimen/account_list_item_paddingStart">
+        android:minHeight="@dimen/account_list_item_minHeight">
 
         <ImageView
             android:id="@+id/coin_icon_iv"

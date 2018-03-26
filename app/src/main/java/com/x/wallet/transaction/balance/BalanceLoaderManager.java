@@ -1,7 +1,6 @@
 package com.x.wallet.transaction.balance;
 
 import android.content.ContentProviderOperation;
-import android.content.ContentProviderResult;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -15,8 +14,11 @@ import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.eth.EthUtils;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.data.BalanceResultBean;
+import com.x.wallet.lib.eth.data.PriceResultBean;
+import com.x.wallet.lib.eth.data.UsdCnyBean;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +44,7 @@ public class BalanceLoaderManager extends BackgroundLoaderManager{
     }
 
     public ItemLoadedFuture getBalance(String address, final ItemLoadedCallback<BalanceLoaded> callback) {
-        Log.i("test3", "BalanceLoaderManager getBalance address = " + address);
+        Log.i(AppUtils.APP_TAG, "BalanceLoaderManager getBalance address = " + address);
         if (TextUtils.isEmpty(address)) {
             return null;
         }
@@ -56,7 +58,7 @@ public class BalanceLoaderManager extends BackgroundLoaderManager{
 
         if (!taskExists) {
             mPendingTaskUris.add(address);
-            Log.i("test3", "BalanceLoaderManager getBalance start task.");
+            Log.i(AppUtils.APP_TAG, "BalanceLoaderManager getBalance start task.");
             Runnable task = new BalanceTask(address);
             mExecutor.execute(task);
         }
@@ -121,9 +123,11 @@ public class BalanceLoaderManager extends BackgroundLoaderManager{
                                     try{
                                         //1.parse
                                         BalanceResultBean balanceResultBean = new Gson().fromJson(response.body().string(), BalanceResultBean.class);
+                                        Log.i(AppUtils.APP_TAG, "BalanceLoaderManager onResponse message = " + balanceResultBean.getMessage());
                                         List<BalanceResultBean.ResultBean> userBeanList = balanceResultBean.getResult();
 
                                         //2.insert into db
+                                        BigDecimal tempAllBalance = new BigDecimal(0);
                                         final ArrayList<ContentProviderOperation> rawOperations = new ArrayList<ContentProviderOperation>();
                                         for(BalanceResultBean.ResultBean resultBean : userBeanList){
                                             final ContentProviderOperation.Builder updateBuilder = ContentProviderOperation
@@ -131,12 +135,16 @@ public class BalanceLoaderManager extends BackgroundLoaderManager{
                                             updateBuilder.withSelection(DbUtils.DbColumns.ADDRESS + " = ?", new String[] {EthUtils.removePrefix(resultBean.getAccount())});
                                             updateBuilder.withValue(DbUtils.DbColumns.BALANCE, resultBean.getBalance());
                                             rawOperations.add(updateBuilder.build());
+                                            tempAllBalance = tempAllBalance.add(new BigDecimal(resultBean.getBalance()));
                                         }
+                                        BalanceConversionUtils.mAllBalance = tempAllBalance;
                                         try{
-                                            ContentProviderResult[] updateResult = mContext.getContentResolver().applyBatch(XWalletProvider.AUTHORITY, rawOperations);
+                                            mContext.getContentResolver().applyBatch(XWalletProvider.AUTHORITY, rawOperations);
                                         }catch (Exception e){
                                             Log.e(AppUtils.APP_TAG, "BalanceLoaderManager onResponse exception", e);
                                         }
+
+                                        getEtherPrice();
                                     } finally {
                                         if(response != null){
                                             response.close();
@@ -167,6 +175,49 @@ public class BalanceLoaderManager extends BackgroundLoaderManager{
                         cursor.close();
                     }
                 }
+            }
+        }
+
+        private void getEtherPrice(){
+            try{
+                EtherscanAPI.getInstance().getEtherPrice(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.i(AppUtils.APP_TAG, "BalanceLoaderManager getEtherPrice onFailure exception", e);
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try{
+                            //1.parse
+                            PriceResultBean priceResultBean = new Gson().fromJson(response.body().string(), PriceResultBean.class);
+                            BalanceConversionUtils.mEthToUsd = priceResultBean.getResult().getEthusd();
+                            Log.i(AppUtils.APP_TAG, "BalanceLoaderManager onResponse getEtherPrice EthToUsd = " + priceResultBean.getResult().getEthusd());
+
+                            EtherscanAPI.getInstance().getPriceConversionRates("CNY", new Callback() {
+                                @Override
+                                public void onFailure(Call call, IOException e) {
+                                    Log.e(AppUtils.APP_TAG, "BalanceLoaderManager onFailure for getPriceConversionRates" , e);
+                                }
+
+                                @Override
+                                public void onResponse(Call call, Response response) throws IOException {
+                                    UsdCnyBean usdCnyBean = new Gson().fromJson(response.body().string(), UsdCnyBean.class);
+                                    BalanceConversionUtils.mUsdToCny = usdCnyBean.getRates().getCNY();
+                                    BalanceConversionUtils.responseToListener();
+                                    Log.i(AppUtils.APP_TAG, "BalanceLoaderManager onResponse UsdToCny = " + usdCnyBean.getRates().getCNY());
+                                }
+                            });
+                        } finally {
+                            if(response != null){
+                                response.close();
+                            }
+                        }
+
+                    }
+                });
+            } catch (Exception e){
+                Log.e(AppUtils.APP_TAG, "BalanceLoaderManager getEtherPrice exception", e);
             }
         }
     }

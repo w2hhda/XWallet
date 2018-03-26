@@ -24,8 +24,12 @@ public class EthUtils {
     }
 
     public static String getBalanceText(String balance) {
-        if (balance.equals("0")) return "0 ETH";
+        if (balance.equals("0")) return "0";
 
-        return new BigDecimal(balance).divide(new BigDecimal(1000000000000000000d), 6, BigDecimal.ROUND_UP).stripTrailingZeros().toString();
+        return translateWeiToEth(new BigDecimal(balance)).toString();
+    }
+
+    public static BigDecimal translateWeiToEth(BigDecimal weiValue){
+        return weiValue.divide(new BigDecimal(1000000000000000000d), 6, BigDecimal.ROUND_UP).stripTrailingZeros();
     }
 }
