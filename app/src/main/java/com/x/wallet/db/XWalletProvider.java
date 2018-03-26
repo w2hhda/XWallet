@@ -20,7 +20,7 @@ import com.x.wallet.AppUtils;
 public class XWalletProvider extends ContentProvider {
 
     static final String TABLE_ACCOUNT = "account";
-    private static final String AUTHORITY = "com.x.wallet";
+    public static final String AUTHORITY = "com.x.wallet";
     public static final Uri CONTENT_URI = Uri.parse("content://com.x.wallet/account");
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
@@ -65,23 +65,38 @@ public class XWalletProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         Log.i(AppUtils.APP_TAG, "XWalletProvider insert uri = " + uri);
+        Uri result = null;
         if (URI_MATCHER.match(uri) == URI_ACCOUNT) {
             SQLiteDatabase db = mOpenHelper.getWritableDatabase();
             long rowId = db.insert(TABLE_ACCOUNT, null, values);
             Log.i(AppUtils.APP_TAG, "XWalletProvider insert rowId = " + rowId);
-            return Uri.parse(uri + "/" + rowId);
+            result = Uri.parse(uri + "/" + rowId);
         }
-        return null;
+        if(result != null){
+            getContext().getContentResolver().notifyChange(CONTENT_URI, null);
+        }
+        return result;
     }
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        int count = db.delete(TABLE_ACCOUNT, selection, selectionArgs);
+        if(count > 0){
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return count;
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        int count = db.update(TABLE_ACCOUNT, values, selection, selectionArgs);
+        Log.i(AppUtils.APP_TAG, "XWalletProvider update count =" + count);
+        if(count > 0){
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return count;
     }
 
     private static final int URI_ACCOUNT                     = 0;

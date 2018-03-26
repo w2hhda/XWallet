@@ -20,9 +20,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
+import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.ui.adapter.AccountListAdapter;
 import com.x.wallet.ui.data.AccountItem;
@@ -33,10 +35,20 @@ import com.x.wallet.ui.view.AccountListItem;
  */
 
 public class AccountListFragment extends Fragment {
-    private RecyclerView mRecyclerView;
     private AccountListAdapter mAccountListAdapter;
-    private View mAddAccountView;
     private LoaderManager mLoaderManager;
+
+    private View mAllBalanceViewContainer;
+    private TextView mAllBalanceTv;
+    private View mEmptyAccountViewContainer;
+
+    private View mAddAccountViewContainer;
+    private View mAddAccountView;
+
+    private RecyclerView mRecyclerView;
+
+    private MenuItem mAddItem;
+    private MenuItem mImportItem;
 
     private static final int ACCOUNT_LIST_LOADER = 1;
 
@@ -54,14 +66,16 @@ public class AccountListFragment extends Fragment {
                 AccountListFragment.this.getActivity().startActivity(intent);
             }
         });
+
+        XWalletApplication.getApplication().getBalanceLoaderManager().getBalance(null);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.account_fragment, container, false);
+        initViews(view);
         initRecyclerView(view);
-        initAddAccountView(view);
         return view;
     }
 
@@ -75,6 +89,9 @@ public class AccountListFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.add_acount_menu, menu);
         super.onCreateOptionsMenu(menu,inflater);
+
+        mAddItem = menu.findItem(R.id.action_add_account);
+        mImportItem = menu.findItem(R.id.action_import_account);
     }
 
     @Override
@@ -108,7 +125,12 @@ public class AccountListFragment extends Fragment {
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this.getActivity(),DividerItemDecoration.VERTICAL));
     }
 
-    private void initAddAccountView(View rootView){
+    private void initViews(View rootView){
+        mAllBalanceViewContainer = rootView.findViewById(R.id.all_balance_container);
+        mAllBalanceTv = rootView.findViewById(R.id.all_balance_tv);
+        mEmptyAccountViewContainer = rootView.findViewById(R.id.empty_ll);
+
+        mAddAccountViewContainer = rootView.findViewById(R.id.add_account_ll);
         mAddAccountView = rootView.findViewById(R.id.add_account_btn);
         mAddAccountView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,6 +154,24 @@ public class AccountListFragment extends Fragment {
         mLoaderManager.initLoader(ACCOUNT_LIST_LOADER, args, new AccountListLoaderCallbacks());
     }
 
+    private void updateViewVisibility(int dataCount){
+        if(dataCount > 0){
+            mAddAccountViewContainer.setVisibility(View.GONE);
+            mEmptyAccountViewContainer.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mAllBalanceViewContainer.setVisibility(View.VISIBLE);
+            mAddItem.setVisible(true);
+            mImportItem.setVisible(true);
+        } else {
+            mAddAccountViewContainer.setVisibility(View.VISIBLE);
+            mEmptyAccountViewContainer.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.GONE);
+            mAllBalanceViewContainer.setVisibility(View.GONE);
+            mAddItem.setVisible(false);
+            mImportItem.setVisible(false);
+        }
+    }
+
     private class AccountListLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor> {
 
 
@@ -143,7 +183,8 @@ public class AccountListFragment extends Fragment {
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-            Log.i("test4", "AccountListFragment onLoadFinished cursor.count = " + cursor.getCount());
+            Log.i(AppUtils.APP_TAG, "AccountListFragment onLoadFinished cursor.count = " + cursor.getCount());
+            updateViewVisibility(cursor.getCount());
             mAccountListAdapter.swapCursor(cursor);
         }
 

@@ -20,6 +20,7 @@ public class DbUtils {
         String ENCRYPT_MNEMONIC = "encrypt_mnemonic";
         String ENCRYPT_PRIV_KEY = "encrypt_priv_key";
         String KEYSTORE = "keystore";
+        String BALANCE = "balance";
     }
 
     public static ContentValues createContentValues(AccountData accountData) {

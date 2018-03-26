@@ -16,16 +16,6 @@ public class AppUtils {
 
     public static final String[] COIN_ARRAY = {"BTC", "ETH"};
 
-    public static ContentValues createEthContentValues(EthAccountData ethData) {
-        ContentValues values = new ContentValues();
-        values.put(DbUtils.DbColumns.ADDRESS, ethData.getmAddress());
-        values.put(DbUtils.DbColumns.NAME, ethData.getEthAccountName());
-        values.put(DbUtils.DbColumns.COIN_NAME, ethData.getCoinName());
-        values.put(DbUtils.DbColumns.ENCRYPT_SEED, ethData.getKeyStore());
-        values.put(DbUtils.DbColumns.ENCRYPT_MNEMONIC, ethData.getmEncryptMnemonic());
-        return  values;
-    }
-
     public static int getMnemonicType(String mnemonicTypeText) {
         return 0;
     }

@@ -3,6 +3,8 @@ package com.x.wallet;
 import android.app.Application;
 import android.util.Log;
 
+import com.x.wallet.transaction.balance.BalanceLoaderManager;
+
 import net.bither.bitherj.crypto.mnemonic.MnemonicHelper;
 
 /**
@@ -11,11 +13,13 @@ import net.bither.bitherj.crypto.mnemonic.MnemonicHelper;
 
 public class XWalletApplication extends Application{
     private static XWalletApplication mXWalletApplication = null;
+    private BalanceLoaderManager mBalanceLoaderManager;
 
     @Override
     public void onCreate() {
         super.onCreate();
         mXWalletApplication = this;
+        mBalanceLoaderManager = new BalanceLoaderManager(getApplicationContext());
         initApp();
     }
 
@@ -34,5 +38,9 @@ public class XWalletApplication extends Application{
 
     synchronized public static XWalletApplication getApplication() {
         return mXWalletApplication;
+    }
+
+    public BalanceLoaderManager getBalanceLoaderManager() {
+        return mBalanceLoaderManager;
     }
 }

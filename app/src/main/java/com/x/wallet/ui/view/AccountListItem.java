@@ -4,11 +4,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.x.wallet.AppUtils;
 import com.x.wallet.R;
+import com.x.wallet.lib.common.LibUtils;
+import com.x.wallet.lib.eth.EthUtils;
 import com.x.wallet.ui.data.AccountItem;
 
 /**
@@ -18,8 +21,11 @@ import com.x.wallet.ui.data.AccountItem;
 public class AccountListItem extends RelativeLayout{
     private AccountItem mAccountItem;
     private TextView mAccountNameTv;
+    private ImageView mImageView;
     private TextView mCoinNameTv;
+    private TextView mCoinBalanceUnitTv;
     private TextView mBalanceTv;
+    private TextView mBalanceConversionTv;
 
     public AccountListItem(Context context) {
         super(context);
@@ -37,16 +43,24 @@ public class AccountListItem extends RelativeLayout{
     protected void onFinishInflate() {
         super.onFinishInflate();
         mAccountNameTv = findViewById(R.id.account_name_tv);
+        mImageView = findViewById(R.id.coin_icon_iv);
         mCoinNameTv = findViewById(R.id.coin_name_tv);
+        mCoinBalanceUnitTv = findViewById(R.id.coin_balance_unit_tv);
         mBalanceTv = findViewById(R.id.coin_balance_tv);
+        mBalanceConversionTv = findViewById(R.id.coin_balance_conversion_tv);
     }
 
     public void bind(Cursor cursor) {
         mAccountItem = AccountItem.createFromCursor(cursor);
         mAccountNameTv.setText(mAccountItem.getAccountName());
-        Log.i("test4", "AccountListItem bind = " + mAccountItem.getAccountName());
         mCoinNameTv.setText(mAccountItem.getCoinName());
-        mBalanceTv.setText(String.valueOf(mAccountItem.getBalance()));
+
+        Log.i(AppUtils.APP_TAG, "AccountListItem bind mAccountItem = " + mAccountItem);
+        if(mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_ETH){
+            mImageView.setImageResource(R.drawable.eth);
+            mBalanceTv.setText(EthUtils.getBalanceText(mAccountItem.getBalance()));
+            mCoinBalanceUnitTv.setText(R.string.coin_unit_eth);
+        }
     }
 
     public AccountItem getAccountItem() {

@@ -15,12 +15,12 @@ import com.x.wallet.ui.view.AccountListItem;
  * Created by wuliang on 18-3-16.
  */
 
-public class AccountListAdapter extends CursorRecyclerAdapter<AccountListAdapter.AccountViewHolder>{
+public class AccountListAdapter extends CursorRecyclerAdapter<AccountListAdapter.AccountViewHolder> {
 
     private final View.OnClickListener mViewClickListener;
 
     public AccountListAdapter(final Context context, final Cursor cursor,
-                                      final View.OnClickListener viewClickListener) {
+                              final View.OnClickListener viewClickListener) {
         super(context, cursor, 0);
         mViewClickListener = viewClickListener;
         setHasStableIds(true);
@@ -35,16 +35,14 @@ public class AccountListAdapter extends CursorRecyclerAdapter<AccountListAdapter
     @Override
     public AccountViewHolder createViewHolder(Context context, ViewGroup parent, int viewType) {
         final LayoutInflater layoutInflater = LayoutInflater.from(context);
-        final AccountListItem messageListItem = (AccountListItem)
-                layoutInflater.inflate(R.layout.account_list_item, null);
+        final AccountListItem messageListItem = (AccountListItem)layoutInflater.inflate(R.layout.account_list_item, null);
         return new AccountViewHolder(messageListItem, mViewClickListener);
     }
 
     public static class AccountViewHolder extends RecyclerView.ViewHolder {
         final View mView;
 
-        public AccountViewHolder(final View itemView,
-                                             final View.OnClickListener viewClickListener) {
+        public AccountViewHolder(final View itemView, final View.OnClickListener viewClickListener) {
             super(itemView);
             mView = itemView;
             mView.setOnClickListener(viewClickListener);
