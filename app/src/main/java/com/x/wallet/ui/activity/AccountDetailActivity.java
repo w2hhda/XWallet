@@ -1,6 +1,7 @@
 package com.x.wallet.ui.activity;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -22,6 +23,8 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     private View mSendOutBtn;
     private View mReceiptBtn;
 
+    public final static String SHARE_ADDRESS_EXTRA = "share_address_extra";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,5 +42,14 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         mBalanceTv = findViewById(R.id.balance_tv);
         mSendOutBtn = findViewById(R.id.send_btn);
         mReceiptBtn = findViewById(R.id.receipt_btn);
+
+        mReceiptBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent("com.x.wallet.action_SHARE_ADDRESS_QR_ACTION");
+                intent.putExtra(SHARE_ADDRESS_EXTRA,mAccountItem.getAddress());
+                startActivity(intent);
+            }
+        });
     }
 }

@@ -52,4 +52,6 @@
     <string name="about">关于</string>
     <string name="transactions">交易记录</string>
     <string name="no_transaction">暂无交易记录</string>
+    <string name="copy_address">复制地址</string>
+    <string name="has_copied_address">地址已复制</string>
 </resources>
