@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.x.wallet.AppUtils;
@@ -20,6 +22,7 @@ import com.x.wallet.ui.view.SetPasswordView;
 public class CreateAccountActivity extends WithBackAppCompatActivity {
     private AccountNameView mAccountNameView;
     private SetPasswordView mSetPasswordView;
+    private CheckBox mDeclareCheckBox;
     private View mCreateAcountView;
     private int mCoinType;
 
@@ -72,6 +75,14 @@ public class CreateAccountActivity extends WithBackAppCompatActivity {
                         return;
                 }
 
+            }
+        });
+
+        mDeclareCheckBox = findViewById(R.id.checkbox);
+        mDeclareCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                mCreateAcountView.setEnabled(isChecked);
             }
         });
     }
