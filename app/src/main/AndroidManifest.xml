@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.x.wallet">
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
+    package="com.x.wallet">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -12,7 +13,8 @@
         android:name="android.hardware.camera.autofocus"
         android:required="false" />
 
-    <application android:name=".XWalletApplication"
+    <application
+        android:name=".XWalletApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -23,43 +25,42 @@
             android:name=".MainActivity"
             android:label="@string/app_name">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.activity.CoinTypeChooseActivity"
-            android:label="@string/cointype_choose"
-            android:exported="false">
+            android:exported="false"
+            android:label="@string/cointype_choose">
             <intent-filter>
-                <action android:name="com.x.wallet.action.COINTYPE_CHOOSE_ACTION"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.x.wallet.action.COINTYPE_CHOOSE_ACTION" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.activity.CreateAccountActivity"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.x.wallet.action.CREATE_ACCOUNT_ACTION"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.x.wallet.action.CREATE_ACCOUNT_ACTION" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.activity.ImportAccountActivity"
-            android:label="@string/import_account"
-            android:exported="false">
+            android:exported="false"
+            android:label="@string/import_account">
             <intent-filter>
-                <action android:name="com.x.wallet.action.IMPORT_ACCOUNT_ACTION"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.x.wallet.action.IMPORT_ACCOUNT_ACTION" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.activity.AccountDetailActivity"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.x.wallet.action.SEE_ACCOUNT_DETAIL_ACTION"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.x.wallet.action.SEE_ACCOUNT_DETAIL_ACTION" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
@@ -67,29 +68,40 @@
             android:exported="false"
             android:label="@string/manage_account">
             <intent-filter>
-                <action android:name="com.x.wallet.action.MANAGE_ACCOUNT_ACTION"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.x.wallet.action.MANAGE_ACCOUNT_ACTION" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <provider android:name=".db.XWalletProvider"
+        <activity
+            android:name=".ui.activity.BackupMnemonicActivity"
+            android:label="@string/backup">
+            <intent-filter>
+                <action android:name="com.x.wallet.action.BACKUP_MNEMONIC_ACTION" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name=".db.XWalletProvider"
             android:authorities="com.x.wallet"
-            android:exported="false"/>
-        <service android:name=".service.SendTransactionService"/>
+            android:exported="false" />
+        <service android:name=".service.SendTransactionService" />
+
         <activity android:name=".ui.activity.ReceiveQRActivity">
             <intent-filter>
-                <action android:name="com.x.wallet.action_SHARE_ADDRESS_QR_ACTION"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.x.wallet.action_SHARE_ADDRESS_QR_ACTION" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.TransferActivity">
             <intent-filter>
-                <action android:name="com.x.wallet.action_TRANSFER_TO_ADDRESS_ACTION"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.x.wallet.action_TRANSFER_TO_ADDRESS_ACTION" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.ScanAddressQRActivity">
             <intent-filter>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 

@@ -131,4 +131,17 @@ public class EthAccountCreateHelper {
 
         return null;
     }
+
+    public static String restoreMnemonicFromKeyStore(String keyStore, String password){
+        try{
+            ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
+            WalletFile walletFile = mapper.readValue(keyStore, WalletFile.class);
+            ECKeyPair keyPair = Wallet.decrypt(password, walletFile);
+            keyPair.getPrivateKey();
+            return "";
+        } catch (Exception e){
+            Log.e(LibUtils.TAG_ETH, "EthAccountCreateHelper restoreMnemonicFromKeyStore ", e);
+        }
+        return "";
+    }
 }

@@ -64,4 +64,19 @@
     <string name="cancel">取消</string>
     <string name="app_declare">我已经仔细阅读并同意</string>
     <string name="privacy_policy">服务及隐私条款</string>
+    <string name="backup_rightnow">立即备份</string>
+    <string name="remind_backup_title">请立即备份您的钱包</string>
+    <string name="remind_backup_content1">我们强烈建议您在纸上写下助记词（备份词语），并将其保存在安全的地方。</string>
+    <string name="note">注意</string>
+    <string name="remind_backup_content2">助记词一旦遗失将无法复原。</string>
+    <string name="remind_backup_content3">任何人取得您的助记词可访问该钱包或使用您的资产</string>
+    <string name="backup">备份</string>
+    <string name="backup_mnemonic_note1">请将下方显示的单词正确抄写在纸上，这些单词可以帮助恢复你的钱包</string>
+    <string name="get_mnemonic">获取助记词</string>
+    <string name="next_step">下一步</string>
+    <string name="confirm_password_to_get_mnemonic">确认密码以获取助记词</string>
+    <string name="check_password_error">错误密码</string>
+    <string name="backup_confirm_mnemonic">确认你的助记词</string>
+    <string name="clear_mnemonic">清除助记词</string>
+    <string name="confirm">确认</string>
 </resources>

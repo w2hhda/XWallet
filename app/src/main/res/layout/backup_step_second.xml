@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/show_mnemonic_ll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingEnd="30dp"
+    android:paddingStart="30dp"
+    android:visibility="gone">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="66dp"
+        android:text="@string/backup_mnemonic_note1"
+        android:textColor="@color/colorPrimary"
+        android:textSize="17sp" />
+
+    <GridView
+        android:id="@+id/gridview"
+        android:layout_width="match_parent"
+        android:layout_height="233dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="33dp"
+        android:background="#eeeeee"
+        android:numColumns="3"
+        android:paddingBottom="33dp"
+        android:paddingTop="33dp" />
+
+    <Button
+        android:id="@+id/show_mnemonic_btn"
+        style="@style/CreateAccountBtnTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/create_account_btn_bg_selector"
+        android:text="@string/get_mnemonic" />
+</LinearLayout>
