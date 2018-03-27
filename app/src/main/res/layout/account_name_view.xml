@@ -4,16 +4,11 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/account_custome_name" />
-
     <EditText
         android:id="@+id/account_name_et"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dip"
-        android:hint="@string/account_custome_name_hint" />
+        android:hint="@string/account_custome_name_hint"
+        style="@style/CreateAccountInputTextStyle"/>
 </merge>
 

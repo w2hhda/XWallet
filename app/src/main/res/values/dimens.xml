@@ -33,4 +33,7 @@
     <dimen name="transactions_icon_height">9dp</dimen>
     <dimen name="send_btn_textSize">14sp</dimen>
     <dimen name="account_detail_top_height">115dp</dimen>
+    <dimen name="create_account_item_paddingSE">14dp</dimen>
+    <dimen name="create_account_item_marginTop">20dp</dimen>
+    <dimen name="create_account_item_marginBottom">10dp</dimen>
 </resources>

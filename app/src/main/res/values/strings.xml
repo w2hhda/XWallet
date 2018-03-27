@@ -11,11 +11,11 @@
     <string name="create_account_title">创建<xliff:g id="coin_name">%s</xliff:g>钱包</string>
     <string name="coin_type_title">币种类</string>
     <string name="account_custome_name">钱包名称</string>
-    <string name="account_custome_name_hint">至多20个字符</string>
+    <string name="account_custome_name_hint">钱包名称（至多20个字符）</string>
     <string name="set_password">设置密码</string>
     <string name="set_password_hint">请输入密码（至少6位）</string>
     <string name="confirm_password">确认密码</string>
-    <string name="confirm_password_hint">请再次输入密码确认</string>
+    <string name="confirm_password_hint">重复密码</string>
     <string name="create_address_success">地址创建成功</string>
     <string name="create_address_failed">地址创建失败</string>
     <string name="mnemonic">助记词</string>
@@ -62,4 +62,6 @@
     <string name="transfer_amount">转账额度</string>
     <string name="transfer_fax">手续费</string>
     <string name="cancel">取消</string>
+    <string name="app_declare">我已经仔细阅读并同意</string>
+    <string name="privacy_policy">服务及隐私条款</string>
 </resources>

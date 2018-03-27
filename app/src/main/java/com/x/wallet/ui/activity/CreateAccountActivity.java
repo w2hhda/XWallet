@@ -10,7 +10,6 @@ import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.transaction.address.CreateAddressAsycTask;
 import com.x.wallet.ui.view.AccountNameView;
-import com.x.wallet.ui.view.CoinNameView;
 import com.x.wallet.ui.view.SetPasswordView;
 
 
@@ -19,11 +18,9 @@ import com.x.wallet.ui.view.SetPasswordView;
  */
 
 public class CreateAccountActivity extends WithBackAppCompatActivity {
-    private CoinNameView mCoinNameView;
     private AccountNameView mAccountNameView;
     private SetPasswordView mSetPasswordView;
     private View mCreateAcountView;
-
     private int mCoinType;
 
     @Override
@@ -45,9 +42,6 @@ public class CreateAccountActivity extends WithBackAppCompatActivity {
     }
 
     private void initView(){
-        mCoinNameView = findViewById(R.id.coin_name_view);
-        mCoinNameView.setCoinName(AppUtils.COIN_ARRAY[mCoinType]);
-
         mAccountNameView = findViewById(R.id.account_name_view);
         mSetPasswordView = findViewById(R.id.set_password_view);
 

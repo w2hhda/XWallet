@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
@@ -10,36 +10,64 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dip"
-        android:orientation="vertical"
-        android:paddingEnd="16dip"
-        android:paddingStart="16dip">
+        android:orientation="vertical">
 
-        <com.x.wallet.ui.view.CoinNameView
-            android:id="@+id/coin_name_view"
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="10dp"
+            android:background="@color/main_bg_color" />
 
         <com.x.wallet.ui.view.AccountNameView
             android:id="@+id/account_name_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"/>
+            android:orientation="vertical"
+            android:paddingEnd="@dimen/create_account_item_paddingSE"
+            android:paddingStart="@dimen/create_account_item_paddingSE"
+            android:layout_marginTop="@dimen/create_account_item_marginTop"
+            android:layout_marginBottom="@dimen/create_account_item_marginBottom"/>
+
+        <include layout="@layout/create_account_divider_view" />
 
         <com.x.wallet.ui.view.SetPasswordView
             android:id="@+id/set_password_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"/>
+            android:orientation="vertical"
+            android:paddingEnd="@dimen/create_account_item_paddingSE"
+            android:paddingStart="@dimen/create_account_item_paddingSE" />
+
+        <include layout="@layout/create_account_divider_view" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="@dimen/create_account_item_paddingSE"
+            android:paddingStart="@dimen/create_account_item_paddingSE"
+            android:layout_marginTop="25dp">
+
+            <CheckBox
+                style="@style/CreateAccountInputTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_declare"/>
+
+            <TextView android:id="@+id/privacy_policy_tv"
+                style="@style/CreateAccountLinkTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/privacy_policy"
+                android:layout_marginStart="3dp"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/create_account_btn"
+            style="@style/CreateAccountBtnTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/create_account_btn_bg_selector"
+            android:text="@string/create_account"
+            android:layout_marginTop="48dp"/>
     </LinearLayout>
-
-    <Button
-        android:id="@+id/create_account_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dip"
-        android:text="@string/create_account" />
-</RelativeLayout>
-
+</ScrollView>
