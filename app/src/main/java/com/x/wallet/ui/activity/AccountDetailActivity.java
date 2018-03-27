@@ -51,5 +51,14 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        mSendOutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent("com.x.wallet.action_TRANSFER_TO_ADDRESS_ACTION");
+                intent.putExtra(SHARE_ADDRESS_EXTRA, mAccountItem.getAddress());
+                startActivity(intent);
+            }
+        });
     }
 }
