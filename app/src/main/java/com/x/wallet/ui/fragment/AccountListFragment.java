@@ -26,6 +26,7 @@ import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.XWalletProvider;
+import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.ui.adapter.AccountListAdapter;
 import com.x.wallet.ui.data.AccountItem;
@@ -215,9 +216,19 @@ public class AccountListFragment extends Fragment {
     }
 
     private void handleAccountAction(int actionType){
-        Intent intent = new Intent("com.x.wallet.action.COINTYPE_CHOOSE_ACTION");
-        intent.putExtra(AppUtils.ACTION_TYPE, actionType);
-        AccountListFragment.this.startActivity(intent);
-        AccountListFragment.this.startActivity(intent);
+//        Intent intent = new Intent("com.x.wallet.action.COINTYPE_CHOOSE_ACTION");
+//        intent.putExtra(AppUtils.ACTION_TYPE, actionType);
+//        AccountListFragment.this.startActivity(intent);
+//        AccountListFragment.this.startActivity(intent);
+
+        if(actionType == AppUtils.ACCOUNT_ACTION_TYPE_NEW){
+            Intent intent = new Intent("com.x.wallet.action.CREATE_ACCOUNT_ACTION");
+            intent.putExtra(AppUtils.COIN_TYPE, LibUtils.COINTYPE.COIN_ETH);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent("com.x.wallet.action.IMPORT_ACCOUNT_ACTION");
+            intent.putExtra(AppUtils.COIN_TYPE, LibUtils.COINTYPE.COIN_ETH);
+            startActivity(intent);
+        }
     }
 }
