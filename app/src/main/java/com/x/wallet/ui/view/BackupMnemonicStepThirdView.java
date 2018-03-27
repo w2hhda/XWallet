@@ -50,8 +50,10 @@ public class BackupMnemonicStepThirdView extends LinearLayout{
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 if(mCheckPositions.contains(position)){
                     mCheckPositions.remove(position);
+                    view.setSelected(false);
                 } else {
                     mCheckPositions.add(position);
+                    view.setSelected(true);
                 }
                 updateOutGridView();
             }
