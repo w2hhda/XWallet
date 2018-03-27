@@ -12,17 +12,18 @@ import com.x.wallet.R;
 import com.x.wallet.ui.data.GridItem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by wuliang on 18-3-27.
  */
 
-public class GridViewAdapter extends ArrayAdapter<GridItem> {
+public class GridViewAdapter extends ArrayAdapter<String> {
     private Context mContext;
     private int layoutResourceId;
-    private ArrayList<GridItem> mGridData = new ArrayList<GridItem>();
+    private List<String> mGridData = new ArrayList<String>();
 
-    public GridViewAdapter(Context context, int resource, ArrayList<GridItem> objects) {
+    public GridViewAdapter(Context context, int resource, List<String> objects) {
         super(context, resource, objects);
         this.mContext = context;
         this.layoutResourceId = resource;
@@ -42,8 +43,8 @@ public class GridViewAdapter extends ArrayAdapter<GridItem> {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        GridItem item = mGridData.get(position);
-        holder.textView.setText(item.getWord());
+        String word = mGridData.get(position);
+        holder.textView.setText(word);
         return convertView;
     }
 

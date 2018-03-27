@@ -7,9 +7,27 @@
     android:layout_height="match_parent"
     tools:context="com.x.wallet.ui.activity.BackupMnemonicActivity">
 
-    <include layout="@layout/backup_mnemonic_step_first" />
+    <com.x.wallet.ui.view.BackupMnemonicStepFirstView
+        android:id="@+id/remind_backup_ll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingEnd="20dp"
+        android:paddingStart="20dp"/>
 
-    <include layout="@layout/backup_step_second" />
+    <com.x.wallet.ui.view.BackupMnemonicStepSecondView
+        android:id="@+id/show_mnemonic_ll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingEnd="30dp"
+        android:paddingStart="30dp"
+        android:visibility="gone"/>
 
-    <include layout="@layout/backup_mnemonic_step_third"/>
+    <com.x.wallet.ui.view.BackupMnemonicStepThirdView
+        android:id="@+id/backup_step_last_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"/>
 </FrameLayout>

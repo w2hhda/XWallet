@@ -17,13 +17,16 @@ import com.x.wallet.R;
  */
 
 public class PasswordCheckDialogHelper {
-    public static void showPasswordDialog(Activity activity, final ConfirmBtnClickListener confirmBtnClickListener){
+    private TextView mFirstTv;
+    private Dialog mDialog;
+
+    public void showPasswordDialog(Activity activity, final ConfirmBtnClickListener confirmBtnClickListener){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         final LayoutInflater inflater = activity.getLayoutInflater();
         final View contentView = inflater.inflate(R.layout.password_confirm_dialog, null);
         builder.setView(contentView);
-        final Dialog dialog = builder.create();
-        final TextView firstTv = contentView.findViewById(R.id.tv);
+        mDialog = builder.create();
+        mFirstTv = contentView.findViewById(R.id.tv);
         final EditText passwordEt = contentView.findViewById(R.id.password_et);
         final View confirmBtn = contentView.findViewById(R.id.confirm_btn);
         View cancelBtn = contentView.findViewById(R.id.cancel_btn);
@@ -37,7 +40,7 @@ public class PasswordCheckDialogHelper {
             @Override
             public void onTextChanged(final CharSequence s, final int start, final int before,
                                       final int count) {
-                firstTv.setText(R.string.confirm_password_to_get_mnemonic);
+                mFirstTv.setText(R.string.confirm_password_to_get_mnemonic);
                 confirmBtn.setEnabled(s != null && s.length() > 0);
             }
 
@@ -49,26 +52,27 @@ public class PasswordCheckDialogHelper {
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean result = confirmBtnClickListener.onConfirmBtnClick(passwordEt.getText() != null ? passwordEt.getText().toString() : "");
-                if(result){
-                    if(dialog != null){
-                        dialog.dismiss();
-                    }
-                } else {
-                    firstTv.setText(R.string.check_password_error);
-                }
+                confirmBtnClickListener.onConfirmBtnClick(passwordEt.getText() != null ? passwordEt.getText().toString() : "");
             }
         });
 
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(dialog != null){
-                    dialog.dismiss();
-                }
+                dismissDialog();
             }
         });
-        dialog.show();
+        mDialog.show();
+    }
+
+    public void updatePasswordCheckError(){
+        mFirstTv.setText(R.string.check_password_error);
+    }
+
+    public void dismissDialog(){
+        if(mDialog != null){
+            mDialog.dismiss();
+        }
     }
 
     public interface ConfirmBtnClickListener{

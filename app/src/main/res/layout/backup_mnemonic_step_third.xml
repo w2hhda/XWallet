@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/backup_step_last_container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:visibility="gone">
-
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="66dp"
+        android:layout_marginTop="56dp"
         android:text="@string/backup_confirm_mnemonic"
         android:textColor="@color/colorPrimary"
         android:textSize="17sp" />
@@ -18,7 +12,7 @@
     <GridView
         android:id="@+id/output_gridview"
         android:layout_width="300dp"
-        android:layout_height="140dp"
+        android:layout_height="180dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="30dp"
         android:background="#eeeeee"
@@ -38,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="66dp"
+        android:layout_marginTop="36dp"
         android:text="@string/clear_mnemonic"
         android:textColor="#b2b2b2"
         android:textSize="14sp" />
@@ -52,4 +46,4 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/create_account_btn_bg_selector"
         android:text="@string/confirm" />
-</LinearLayout>
+</merge>

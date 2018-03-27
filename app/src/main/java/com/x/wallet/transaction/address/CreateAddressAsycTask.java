@@ -3,10 +3,12 @@ package com.x.wallet.transaction.address;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 
 /**
@@ -47,6 +49,9 @@ public class CreateAddressAsycTask extends AsyncTask<Void, Void, Uri>{
         mProgressDialog.dismiss();
         if(uri != null){
             Toast.makeText(mContext, R.string.create_address_success, Toast.LENGTH_LONG).show();
+            Intent intent = new Intent("com.x.wallet.action.BACKUP_MNEMONIC_ACTION");
+            intent.putExtra(AppUtils.ADDRESS_URI, uri);
+            mContext.startActivity(intent);
         }else {
             Toast.makeText(mContext, R.string.create_address_failed, Toast.LENGTH_LONG).show();
         }

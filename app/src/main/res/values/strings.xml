@@ -79,4 +79,6 @@
     <string name="backup_confirm_mnemonic">确认你的助记词</string>
     <string name="clear_mnemonic">清除助记词</string>
     <string name="confirm">确认</string>
+    <string name="backup_mnemonic_success">助记词备份成功</string>
+    <string name="backup_mnemonic_failed">助记词顺序不对，请确认</string>
 </resources>

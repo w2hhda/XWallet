@@ -49,6 +49,14 @@ public class XWalletProvider extends ContentProvider {
                         null, null,
                         sortOrder);
                 break;
+            case URI_ACCOUNT_ID:
+                cursor = db.query(TABLE_ACCOUNT,
+                        projection,
+                        DbUtils.DbColumns._ID + "=" + uri.getLastPathSegment(),
+                        selectionArgs,
+                        null, null,
+                        sortOrder);
+                break;
         }
         if (cursor != null) {
             cursor.setNotificationUri(getContext().getContentResolver(), CONTENT_URI);
@@ -100,7 +108,9 @@ public class XWalletProvider extends ContentProvider {
     }
 
     private static final int URI_ACCOUNT                     = 0;
+    private static final int URI_ACCOUNT_ID                  = 1;
     static {
         URI_MATCHER.addURI(AUTHORITY, "account", URI_ACCOUNT);
+        URI_MATCHER.addURI(AUTHORITY, "account/#", URI_ACCOUNT_ID);
     }
 }

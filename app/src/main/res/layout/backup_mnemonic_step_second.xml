@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/show_mnemonic_ll"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingEnd="30dp"
-    android:paddingStart="30dp"
-    android:visibility="gone">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView
         android:layout_width="match_parent"
@@ -37,4 +30,4 @@
         android:layout_marginTop="60dp"
         android:background="@drawable/create_account_btn_bg_selector"
         android:text="@string/get_mnemonic" />
-</LinearLayout>
+</merge>

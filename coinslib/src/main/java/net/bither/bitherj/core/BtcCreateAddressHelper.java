@@ -145,6 +145,24 @@ public class BtcCreateAddressHelper {
         return null;
     }
 
+    public static List<String> readMnemonicToList(String encryptMnemonic, String password){
+        byte[] mnemonicSeed = null;
+        try {
+            mnemonicSeed = decryptMnemonicSeed(encryptMnemonic, password);
+            if(mnemonicSeed == null){
+                Log.e("BtcCreateAddressHelper", "readMnemonicToList decrypt failed for decrypting failed!");
+                return null;
+            }
+            List<String> words = MnemonicHelper.toMnemonic(mnemonicSeed);
+            return words;
+        } catch (Exception e){
+            Log.e("BtcCreateAddressHelper", "readMnemonicToList decrypt failed for exception!", e);
+        } finally {
+            wipeByteShuzu(mnemonicSeed);
+        }
+        return null;
+    }
+
     private static byte[] decryptHDSeed(String encryptSeed, CharSequence password) throws MnemonicException.MnemonicLengthException {
         if (password == null || TextUtils.isEmpty(encryptSeed)) {
             return null;
