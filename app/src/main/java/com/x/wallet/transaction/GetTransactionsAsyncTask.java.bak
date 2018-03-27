@@ -1,0 +1,90 @@
+package com.x.wallet.transaction;
+
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
+
+import com.google.gson.Gson;
+import com.x.wallet.lib.eth.api.EtherscanAPI;
+import com.x.wallet.lib.eth.data.TransactionsResultBean;
+import com.x.wallet.ui.adapter.AccountDetailAdapter;
+import com.x.wallet.ui.data.TransactionItem;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
+/**
+ * Created by Nick on 27/3/2018.
+ */
+
+public class GetTransactionsAsyncTask extends AsyncTask<Void, Void, List<TransactionItem>> {
+    private AccountDetailAdapter adapter;
+    private String address;
+    private ProgressDialog mProgressDialog;
+
+    public GetTransactionsAsyncTask(Context context, AccountDetailAdapter adapter, String address) {
+        this.adapter = adapter;
+        this.address = address;
+        mProgressDialog = new ProgressDialog(context);
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        mProgressDialog.show();
+    }
+
+    @Override
+    protected List<TransactionItem> doInBackground(Void... voids) {
+        final List<TransactionItem> items = new ArrayList<>();
+
+        try {
+            //String address = "0xe2258d66b820fc4f0017017373c7b9f742596f27";
+            EtherscanAPI.getInstance().getNormalTransactions(address, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+
+                        TransactionsResultBean bean = new Gson().fromJson(response.body().string(), TransactionsResultBean.class);
+                        List<TransactionsResultBean.ReceiptBean> receiptBeans = bean.getResult();
+
+                        for(TransactionsResultBean.ReceiptBean receiptBean: receiptBeans){
+                            items.add(TransactionItem.createFromReceipt(receiptBean));
+                            Log.i("@@@@","receipts = " + TransactionItem.createFromReceipt(receiptBean));
+
+                        }
+
+                }
+            }, true);
+        }catch (IOException e){
+            Log.i("@@@@","exception in asyncTask");
+        }
+        //for(TransactionItem item: items) {
+            Log.i("@@@@", "add item in background:" + items.size());
+        //}
+        return items;
+    }
+
+    @Override
+    protected void onPostExecute(List<TransactionItem> items) {
+        super.onPostExecute(items);
+        Log.i("@@@@", "add item:" + items);
+
+        for(TransactionItem item: items) {
+            Log.i("@@@@", "add item:" + item.toString());
+        }
+        adapter.addItems(items);
+        mProgressDialog.dismiss();
+    }
+
+}

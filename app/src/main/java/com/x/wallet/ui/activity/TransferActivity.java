@@ -178,7 +178,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
                             @Override
                             public void run() {
                                 BigDecimal nowPrice = ExchangeCalUtil.getInstance().weiToEther(price.multiply(defaultGasLimit));
-                                setDefaultPrice(new BigDecimal(price));
+                                setDefaultPrice(nowPrice);
                                 priceTv.setText(nowPrice + "");
                             }
                         });

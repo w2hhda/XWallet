@@ -3,13 +3,32 @@ package com.x.wallet.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
+import com.x.wallet.lib.eth.api.EtherscanAPI;
+import com.x.wallet.lib.eth.data.TransactionsResultBean;
+import com.x.wallet.ui.adapter.AccountDetailAdapter;
 import com.x.wallet.ui.data.AccountItem;
+import com.x.wallet.ui.data.TransactionItem;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 /**
  * Created by wuliang on 18-3-16.
@@ -22,6 +41,11 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     private TextView mBalanceTv;
     private View mSendOutBtn;
     private View mReceiptBtn;
+    private View mNoTransactionView;
+    private RecyclerView mRecyclerView;
+    private AccountDetailAdapter adapter;
+    private List<TransactionItem> items;
+    private MyHandler handler;
 
     public final static String SHARE_ADDRESS_EXTRA = "share_address_extra";
 
@@ -33,6 +57,15 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         mAccountItem = (AccountItem) getIntent().getSerializableExtra(AppUtils.ACCOUNT_DATA);
         this.setTitle(mAccountItem.getAccountName());
 
+        items = new  ArrayList<>();
+        adapter = new AccountDetailAdapter(this , new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //into detail activity;
+            }
+        });
+        handler = new MyHandler();
+
         initViews();
     }
 
@@ -42,6 +75,17 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         mBalanceTv = findViewById(R.id.balance_tv);
         mSendOutBtn = findViewById(R.id.send_btn);
         mReceiptBtn = findViewById(R.id.receipt_btn);
+        mNoTransactionView = findViewById(R.id.no_transaction_view);
+        mBalanceTranslateTv.setText(mAccountItem.getBalance());
+        mBalanceTv.setText(mAccountItem.getBalance());
+        mNoTransactionView.setVisibility(View.GONE);
+
+        mRecyclerView = findViewById(R.id.recyclerView);
+        final LinearLayoutManager manager = new LinearLayoutManager(this);
+        mRecyclerView.setHasFixedSize(false);
+        mRecyclerView.setLayoutManager(manager);
+        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
 
         mReceiptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,5 +104,56 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
                 startActivity(intent);
             }
         });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            //String address = "0xe2258d66b820fc4f0017017373c7b9f742596f27";
+            EtherscanAPI.getInstance().getNormalTransactions(mAccountItem.getAddress(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+
+                    TransactionsResultBean bean = new Gson().fromJson(response.body().string(), TransactionsResultBean.class);
+                    List<TransactionsResultBean.ReceiptBean> receiptBeans = bean.getResult();
+
+                    items.clear();
+                    for(TransactionsResultBean.ReceiptBean receiptBean: receiptBeans){
+                        items.add(TransactionItem.createFromReceipt(receiptBean));
+                    }
+
+                    Message message = handler.obtainMessage();
+                    message.what = MyHandler.MSG_UPDATE;
+                    handler.sendMessage(message);
+
+
+                }
+            }, true);
+        }catch (IOException e){
+            Log.i("@@@@","exception in asyncTask");
+        }
+    }
+
+    private class MyHandler extends Handler{
+        public static final int  MSG_UPDATE = -1;
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case -1:
+                    adapter.addItems(items);
+                    break;
+                default:
+                        break;
+            }
+        }
     }
 }
