@@ -33,10 +33,17 @@
                 android:id="@+id/balance_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:text="0BTC"
                 android:textColor="@android:color/white"
                 android:textSize="15sp" />
+
+            <TextView android:id="@+id/address_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"/>
         </LinearLayout>
     </FrameLayout>
 

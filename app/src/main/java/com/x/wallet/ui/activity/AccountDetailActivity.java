@@ -39,6 +39,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
 
     private TextView mBalanceTranslateTv;
     private TextView mBalanceTv;
+    private TextView mAddressTv;
     private View mSendOutBtn;
     private View mReceiptBtn;
     private View mNoTransactionView;
@@ -73,6 +74,9 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         mBalanceTranslateTv = findViewById(R.id.balance_translate_tv);
 
         mBalanceTv = findViewById(R.id.balance_tv);
+        mAddressTv = findViewById(R.id.address_tv);
+        mAddressTv.setText(mAccountItem.getAddress());
+
         mSendOutBtn = findViewById(R.id.send_btn);
         mReceiptBtn = findViewById(R.id.receipt_btn);
         mNoTransactionView = findViewById(R.id.no_transaction_view);
