@@ -83,4 +83,5 @@
     <string name="backup_mnemonic_failed">助记词顺序不对，请确认</string>
     <string name="blank_all_balance">"≈  0.00"</string>
     <string name="blank_balance">≈  ¥0.00</string>
+    <string name="input_keystore_password_hint">输入Keystore密码</string>
 </resources>

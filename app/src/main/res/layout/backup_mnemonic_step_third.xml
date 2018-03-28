@@ -34,7 +34,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="36dp"
         android:text="@string/clear_mnemonic"
-        android:textColor="#b2b2b2"
+        android:textColor="@color/gray_b2"
         android:textSize="14sp" />
 
     <Button

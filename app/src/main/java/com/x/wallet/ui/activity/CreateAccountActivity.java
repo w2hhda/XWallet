@@ -12,6 +12,7 @@ import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.transaction.address.CreateAddressAsycTask;
 import com.x.wallet.ui.view.AccountNameView;
+import com.x.wallet.ui.view.PrivacyPolicyView;
 import com.x.wallet.ui.view.SetPasswordView;
 
 
@@ -22,7 +23,9 @@ import com.x.wallet.ui.view.SetPasswordView;
 public class CreateAccountActivity extends WithBackAppCompatActivity {
     private AccountNameView mAccountNameView;
     private SetPasswordView mSetPasswordView;
-    private CheckBox mDeclareCheckBox;
+
+    private PrivacyPolicyView mPrivacyPolicyView;
+
     private View mCreateAcountView;
     private int mCoinType;
 
@@ -78,8 +81,8 @@ public class CreateAccountActivity extends WithBackAppCompatActivity {
             }
         });
 
-        mDeclareCheckBox = findViewById(R.id.checkbox);
-        mDeclareCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mPrivacyPolicyView = findViewById(R.id.privacy_policy_container);
+        mPrivacyPolicyView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 mCreateAcountView.setEnabled(isChecked);

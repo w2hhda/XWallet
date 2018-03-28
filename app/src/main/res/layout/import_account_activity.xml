@@ -3,16 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/main_bg_color">
     <android.support.design.widget.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        app:tabSelectedTextColor="@android:color/black"
-        app:tabTextColor="@android:color/black"
-        app:tabIndicatorColor="?android:attr/colorAccent"
-        app:layout_scrollFlags="enterAlwaysCollapsed"/>
+        app:tabSelectedTextColor="@color/colorPrimary"
+        app:tabTextColor="@color/gray_textColor"
+        app:layout_scrollFlags="enterAlwaysCollapsed"
+        app:tabIndicatorColor="@color/colorPrimary"
+        app:tabBackground="@color/main_bg_color"
+        android:background="@color/main_bg_color"/>
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
