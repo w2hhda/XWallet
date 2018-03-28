@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.x.wallet.ui.view.ManageAllAccountListItem xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    card_view:cardBackgroundColor="@android:color/white"
+    card_view:cardCornerRadius="2dp"
+    card_view:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/manage_all_account_paddingTB"
+            android:paddingEnd="@dimen/manage_all_account_paddingSE"
+            android:paddingStart="@dimen/manage_all_account_paddingSE"
+            android:paddingTop="@dimen/manage_all_account_paddingTB">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_toStartOf="@+id/into_iv"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/account_name_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/manage_account_textColor"
+                        android:textSize="@dimen/manage_account_name_textSize" />
+
+                    <TextView
+                        android:id="@+id/not_backup_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/please_backup_bg"
+                        android:paddingEnd="3dp"
+                        android:paddingStart="3dp"
+                        android:text="@string/please_backup"
+                        android:textColor="@color/manage_account_textColor"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/address_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:textColor="@color/gray_b2"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@id/into_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="5dp"
+                android:src="@drawable/into_icon" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/gray_eb" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:paddingBottom="@dimen/manage_all_account_paddingTB"
+            android:paddingEnd="@dimen/manage_all_account_paddingSE"
+            android:paddingStart="@dimen/manage_all_account_paddingSE"
+            android:paddingTop="@dimen/manage_all_account_paddingTB">
+
+            <TextView
+                android:id="@+id/balance_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/manage_account_textColor"
+                android:textSize="@dimen/manage_account_name_textSize" />
+
+            <TextView
+                android:id="@+id/coin_balance_unit_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textColor="@color/gray_b2"
+                android:textSize="@dimen/manage_account_name_textSize" />
+        </LinearLayout>
+    </LinearLayout>
+
+</com.x.wallet.ui.view.ManageAllAccountListItem>

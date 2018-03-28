@@ -162,7 +162,7 @@ public class AccountListFragment extends Fragment {
         });
     }
 
-    public void init(final LoaderManager loaderManager) {
+    private void init(final LoaderManager loaderManager) {
         final Bundle args = new Bundle();
         mLoaderManager = loaderManager;
         mLoaderManager.initLoader(ACCOUNT_LIST_LOADER, args, new AccountListLoaderCallbacks());

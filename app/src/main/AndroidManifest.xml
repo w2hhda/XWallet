@@ -64,6 +64,23 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.activity.BackupMnemonicActivity"
+            android:label="@string/backup">
+            <intent-filter>
+                <action android:name="com.x.wallet.action.BACKUP_MNEMONIC_ACTION" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.activity.ManageAllAccountActivity"
+            android:exported="false"
+            android:label="@string/manage_account">
+            <intent-filter>
+                <action android:name="com.x.wallet.action.MANAGE_ALL_ACCOUNT_ACTION" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".ui.activity.ManageAccountActivity"
             android:exported="false"
             android:label="@string/manage_account">
@@ -72,15 +89,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.activity.BackupMnemonicActivity"
-            android:label="@string/backup">
-            <intent-filter>
-                <action android:name="com.x.wallet.action.BACKUP_MNEMONIC_ACTION" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
         <provider
             android:name=".db.XWalletProvider"
             android:authorities="com.x.wallet"

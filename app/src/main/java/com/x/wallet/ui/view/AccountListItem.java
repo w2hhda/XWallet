@@ -54,6 +54,9 @@ public class AccountListItem extends RelativeLayout{
     }
 
     public void bind(Cursor cursor) {
+        if(mRateUpdateListener != null){
+            BalanceConversionUtils.unRegisterListener(mRateUpdateListener);
+        }
         mAccountItem = AccountItem.createFromCursor(cursor);
         mAccountNameTv.setText(mAccountItem.getAccountName());
         mCoinNameTv.setText(mAccountItem.getCoinName());

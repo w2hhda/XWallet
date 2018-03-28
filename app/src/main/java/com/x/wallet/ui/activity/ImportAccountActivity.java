@@ -19,7 +19,7 @@ import com.x.wallet.ui.fragment.ImportMnemonicFragment;
  * Created by wuliang on 18-3-16.
  */
 
-public class ImportAccountActivity extends AppCompatActivity {
+public class ImportAccountActivity extends WithBackAppCompatActivity {
     private int mCoinType;
 
     @Override
