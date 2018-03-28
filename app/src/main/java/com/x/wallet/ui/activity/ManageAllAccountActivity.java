@@ -1,5 +1,6 @@
 package com.x.wallet.ui.activity;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,6 +17,9 @@ import com.x.wallet.R;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.ui.adapter.ManageAllAccountListAdapter;
+import com.x.wallet.ui.data.AccountItem;
+import com.x.wallet.ui.view.AccountListItem;
+import com.x.wallet.ui.view.ManageAllAccountListItem;
 
 /**
  * Created by wuliang on 18-3-28.
@@ -46,7 +50,11 @@ public class ManageAllAccountActivity extends WithBackAppCompatActivity {
         mManageAllAccountListAdapter = new ManageAllAccountListAdapter(this, null, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                final ManageAllAccountListItem listItem = (ManageAllAccountListItem) view;
+                AccountItem accountItem = listItem.getAccountItem();
+                Intent intent = new Intent("com.x.wallet.action.MANAGE_ACCOUNT_ACTION");
+                intent.putExtra(AppUtils.ACCOUNT_DATA, accountItem);
+                startActivity(intent);
             }
         });
 

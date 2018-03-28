@@ -53,4 +53,8 @@ public class ManageAllAccountListItem extends CardView {
         mBalanceTv.setText(EthUtils.getBalanceText(mAccountItem.getBalance()));
         mCoinBalanceUnitTv.setText(R.string.coin_unit_eth);
     }
+
+    public AccountItem getAccountItem() {
+        return mAccountItem;
+    }
 }

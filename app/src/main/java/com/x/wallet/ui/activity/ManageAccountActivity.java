@@ -63,7 +63,7 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
             }
         });
 
-        mDeleteView = findViewById(R.id.delete_account_btn);
+        mDeleteView = findViewById(R.id.delete_account_tv);
     }
 
     private void showPasswordDialog(final int importType){

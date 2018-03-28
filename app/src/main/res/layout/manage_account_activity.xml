@@ -1,76 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/main_bg_color">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/white"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/account_name_tv"
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/account_detail_top_height"
+            android:background="@color/colorPrimary">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/account_name_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/address_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/gray_b2"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dip"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"/>
+            android:paddingEnd="20dip"
+            android:paddingStart="20dip">
+
+            <TextView
+                android:id="@+id/mnemonic_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginBottom="15dip"
+                android:layout_marginTop="15dip"
+                android:text="@string/backup_mnemonic"
+                android:textColor="@color/gray_66"
+                android:textSize="16sp"/>
+
+            <include layout="@layout/into_view" />
+        </RelativeLayout>
+
+
+        <include layout="@layout/create_account_divider_view_without_padding" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="20dip"
+            android:paddingStart="20dip">
+
+            <TextView
+                android:id="@+id/key_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dip"
+                android:layout_marginTop="15dip"
+                android:text="@string/backup_key"
+                android:textColor="@color/gray_66"
+                android:textSize="16sp"/>
+
+            <include layout="@layout/into_view" />
+        </RelativeLayout>
+
+        <include layout="@layout/create_account_divider_view_without_padding" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="20dip"
+            android:paddingStart="20dip">
+
+            <TextView
+                android:id="@+id/keystore_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dip"
+                android:layout_marginTop="15dip"
+                android:text="@string/backup_keystore"
+                android:textColor="@color/gray_66"
+                android:textSize="16sp"/>
+
+            <include layout="@layout/into_view" />
+        </RelativeLayout>
+
+        <include layout="@layout/create_account_high_divider_view" />
 
         <TextView
-            android:id="@+id/address_tv"
+            android:id="@+id/delete_account_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dip"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"/>
-
-        <TextView
-            android:id="@+id/balance_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="30dip"
-            android:layout_marginTop="10dip"
-            android:text="0"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="15dip"
-            android:background="#cacaca" />
-
-        <TextView android:id="@+id/mnemonic_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dip"
             android:layout_marginBottom="15dip"
-            android:paddingStart="20dip"
-            android:text="@string/mnemonic" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:background="#cacaca" />
-
-        <TextView android:id="@+id/key_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:layout_marginTop="15dip"
-            android:layout_marginBottom="15dip"
-            android:paddingStart="20dip"
-            android:text="@string/key" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="15dip"
-            android:background="#cacaca" />
-
-        <Button android:id="@+id/delete_account_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="@string/delete_account"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center"
-            android:layout_marginTop="30dip"/>
+            android:textColor="@color/gray_b2"
+            android:textSize="16sp"
+            android:gravity="center"/>
     </LinearLayout>
 </ScrollView>
