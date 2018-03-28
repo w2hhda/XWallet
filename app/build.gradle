@@ -8,6 +8,8 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
+
+        multiDexEnabled true
     }
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
@@ -33,4 +35,5 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation project(':coinslib')
     compile 'com.google.code.gson:gson:2.8.2'
+    compile 'com.android.support:multidex:1.0.3'
 }
