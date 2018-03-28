@@ -3,7 +3,6 @@ package com.x.wallet.ui.activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 
 import com.x.wallet.AppUtils;

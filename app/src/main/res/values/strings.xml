@@ -81,4 +81,6 @@
     <string name="confirm">确认</string>
     <string name="backup_mnemonic_success">助记词备份成功</string>
     <string name="backup_mnemonic_failed">助记词顺序不对，请确认</string>
+    <string name="blank_all_balance">"≈  0.00"</string>
+    <string name="blank_balance">≈  ¥0.00</string>
 </resources>

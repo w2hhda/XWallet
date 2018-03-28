@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,8 +15,10 @@ import com.x.wallet.R;
 import com.x.wallet.ui.adapter.GridViewAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by wuliang on 18-3-27.
@@ -29,6 +30,7 @@ public class BackupMnemonicStepThirdView extends LinearLayout{
     private GridView mInputGridView;
 
     private List<String> mInitialWords;
+    private List<String> mShuffleWords;
     private LinkedHashSet<Integer> mCheckPositions;
 
     private View mLastBtn;
@@ -79,22 +81,22 @@ public class BackupMnemonicStepThirdView extends LinearLayout{
     private void updateOutGridView(){
         List<String> gridData = new ArrayList<>();
         for (Integer position : mCheckPositions) {
-            gridData.add(mInitialWords.get(position));
+            gridData.add(mShuffleWords.get(position));
         }
         mOutGridView.setAdapter(new GridViewAdapter(mContext, R.layout.grid_item, gridData));
     }
 
     public void initWords(List<String> words) {
-        mInitialWords = words;
+        mShuffleWords = words;
+        mInitialWords = new ArrayList<>(words);
+        Collections.shuffle(words, new Random(20));
         mInputGridView.setAdapter(new GridViewAdapter(mContext, R.layout.confirm_grid_item, words));
         mCheckPositions = new LinkedHashSet<>();
     }
 
     private boolean isTheWordTheSame(){
-        int index = 0;
         for (Integer position : mCheckPositions) {
-            if(index != position) return false;
-            index++;
+            if(!mInitialWords.get(position).equals(mShuffleWords.get(position))) return false;
         }
         return true;
     }

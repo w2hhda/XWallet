@@ -65,7 +65,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/coin_balance_conversion_tv_marginTop"
-                android:text="≈  ¥0.00" />
+                android:text="@string/blank_balance" />
         </LinearLayout>
 
         <ImageView
