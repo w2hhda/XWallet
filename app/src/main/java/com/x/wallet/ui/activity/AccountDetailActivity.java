@@ -21,6 +21,7 @@ import com.x.wallet.lib.eth.data.TransactionsResultBean;
 import com.x.wallet.ui.adapter.AccountDetailAdapter;
 import com.x.wallet.ui.data.AccountItem;
 import com.x.wallet.ui.data.TransactionItem;
+import com.x.wallet.ui.view.TransactionListItem;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,7 +63,11 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         adapter = new AccountDetailAdapter(this , new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //into detail activity;
+                TransactionListItem listItem = (TransactionListItem)view;
+                TransactionItem item = listItem.getmTransactionItem();
+                Intent intent = new Intent("com.x.wallet.action_SEE_TRANSACTION_DETAIL");
+                intent.putExtra(AppUtils.TRANSACTION_ITEM, item);
+                startActivity(intent);
             }
         });
         handler = new MyHandler();
@@ -82,8 +87,6 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         mNoTransactionView = findViewById(R.id.no_transaction_view);
         mBalanceTranslateTv.setText(mAccountItem.getBalance());
         mBalanceTv.setText(mAccountItem.getBalance());
-        mNoTransactionView.setVisibility(View.GONE);
-
         mRecyclerView = findViewById(R.id.recyclerView);
         final LinearLayoutManager manager = new LinearLayoutManager(this);
         mRecyclerView.setHasFixedSize(false);
@@ -130,12 +133,18 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
 
                     items.clear();
                     for(TransactionsResultBean.ReceiptBean receiptBean: receiptBeans){
-                        items.add(TransactionItem.createFromReceipt(receiptBean));
+                        Boolean isReceive = true;
+                        if (receiptBean.getFrom().equalsIgnoreCase(mAccountItem.getAddress())){
+                            isReceive = false;
+                        }
+                        items.add(TransactionItem.createFromReceipt(receiptBean, isReceive));
                     }
 
-                    Message message = handler.obtainMessage();
-                    message.what = MyHandler.MSG_UPDATE;
-                    handler.sendMessage(message);
+                    if (items.size() > 0) {
+                        Message message = handler.obtainMessage();
+                        message.what = MyHandler.MSG_UPDATE;
+                        handler.sendMessage(message);
+                    }
 
 
                 }
@@ -153,6 +162,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             super.handleMessage(msg);
             switch (msg.what){
                 case -1:
+                    mNoTransactionView.setVisibility(View.GONE);
                     adapter.addItems(items);
                     break;
                 default:

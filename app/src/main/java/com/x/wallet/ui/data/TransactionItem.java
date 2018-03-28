@@ -3,12 +3,16 @@ package com.x.wallet.ui.data;
 import com.x.wallet.lib.eth.data.TransactionsResultBean;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
 /**
  * Created by Nick on 27/3/2018.
  */
 
 public class TransactionItem implements Serializable {
+    public final static String TRANSACTION_TYPE_RECEIVE = "is_receive";
+    public final static String TRANSACTION_TYPE_TRANSFER_OUT = "is_transfer_out";
+
     private String toAddress;
     private String fromAddress;
     private String receiptHash;
@@ -34,15 +38,22 @@ public class TransactionItem implements Serializable {
         this.nonce = nonce;
     }
 
-    public static TransactionItem createFromReceipt(TransactionsResultBean.ReceiptBean receipts){
+    public static TransactionItem createFromReceipt(TransactionsResultBean.ReceiptBean receipts, Boolean isReceive){
         TransactionItem item = new TransactionItem();
         item.setToAddress(receipts.getTo());
         item.setFromAddress(receipts.getFrom());
         item.setReceiptHash(receipts.getHash());
         item.setAmount(receipts.getValue());
         item.setTimeStamp(receipts.getTimeStamp());
-        item.setTransactionFax(receipts.getCumulativeGasUsed());
+        BigInteger gasUsed = new BigInteger(receipts.getGasUsed());
+        BigInteger gasPrice = new BigInteger(receipts.getGasPrice());
+        item.setTransactionFax(gasUsed.multiply(gasPrice).toString());
         item.setNonce(receipts.getNonce());
+        if (isReceive){
+            item.setTransactionType(TRANSACTION_TYPE_RECEIVE);
+        }else {
+            item.setTransactionType(TRANSACTION_TYPE_TRANSFER_OUT);
+        }
 
         return item;
 

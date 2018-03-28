@@ -53,18 +53,24 @@ public class TransactionListItem extends RelativeLayout{
     public void bind(TransactionItem item) {
         mTransactionItem = item;
 
-        mTransactionName.setText(item.getFromAddress() + item.getToAddress());
-
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date(Long.parseLong(item.getTimeStamp()) * 1000L);
         String time = sdf.format(date);
 
         mTimeStamp.setText(time);
-        mAmount.setText(ExchangeCalUtil.getInstance().weiToEther(new BigInteger(item.getAmount())).toString());
-        mCoinType.setText(item.getmCoinType());
+        //mCoinType.setText(item.getmCoinType());
 
-        //have to check in/out
-        mTransactionType.setImageResource(R.drawable.transaction_in);
+        String amount = ExchangeCalUtil.getInstance().weiToEther(new BigInteger(item.getAmount())).stripTrailingZeros().toPlainString();
+        if (item.getTransactionType().equalsIgnoreCase(TransactionItem.TRANSACTION_TYPE_RECEIVE)){
+            mTransactionType.setImageResource(R.drawable.transaction_in);
+            mAmount.setText(amount);
+            mTransactionName.setText("From: " + item.getFromAddress());
+        }else {
+            mTransactionType.setImageResource(R.drawable.transaction_out);
+            mAmount.setText("-" + amount);
+            mAmount.setTextColor(getResources().getColor(R.color.colorRed));
+            mTransactionName.setText("To: " + item.getToAddress());
+        }
 
     }
 

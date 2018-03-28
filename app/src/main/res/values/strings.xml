@@ -81,4 +81,7 @@
     <string name="confirm">确认</string>
     <string name="backup_mnemonic_success">助记词备份成功</string>
     <string name="backup_mnemonic_failed">助记词顺序不对，请确认</string>
+    <string name="transaction_detail">交易明细</string>
+    <string name="transfer_from_address">转出地址</string>
+    <string name="transfer_hash">转账串号</string>
 </resources>
