@@ -1,5 +1,6 @@
 package com.x.wallet.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -60,22 +61,11 @@ public class CreateAccountActivity extends WithBackAppCompatActivity {
                     return;
                 }
 
-                int passwordCheckResult = mSetPasswordView.isPasswordOk();
-                switch (passwordCheckResult){
-                    case SetPasswordView.PasswordErrorType.BLANK:
-                        Toast.makeText(CreateAccountActivity.this, R.string.password_error_blank, Toast.LENGTH_LONG).show();
-                        return;
-                    case SetPasswordView.PasswordErrorType.NOT_THE_SAME:
-                        Toast.makeText(CreateAccountActivity.this, R.string.password_error_not_the_same, Toast.LENGTH_LONG).show();
-                        return;
-                    case SetPasswordView.PasswordErrorType.SHORT:
-                        Toast.makeText(CreateAccountActivity.this, R.string.password_error_short, Toast.LENGTH_LONG).show();
-                        return;
-                    case SetPasswordView.PasswordErrorType.OK:
-                        new CreateAddressAsycTask(CreateAccountActivity.this, mCoinType,
-                                mSetPasswordView.getPassword(),
-                                mAccountNameView.getAccountName()).execute();
-                        return;
+                boolean passwordCheckResult = mSetPasswordView.checkInputPassword(CreateAccountActivity.this);
+                if(passwordCheckResult){
+                    new CreateAddressAsycTask(CreateAccountActivity.this, mCoinType,
+                            mSetPasswordView.getPassword(),
+                            mAccountNameView.getAccountName()).execute();
                 }
 
             }

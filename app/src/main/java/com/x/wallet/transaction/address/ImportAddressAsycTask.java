@@ -27,35 +27,20 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Uri>{
     private String mMnemonic;
 
     private String mKey;
+
     private String mKeyStore;
+    private String mKeyStorePassword;
 
     private ProgressDialog mProgressDialog;
     private Context mContext;
 
-    public ImportAddressAsycTask(Context context, int coinType, int importType, String password, String accountName) {
+    public ImportAddressAsycTask(Context context, int importType, int coinType, String password, String accountName) {
         mContext = context;
         mCoinType = coinType;
         mImportType = importType;
         mPassword = password;
         mAccountName = accountName;
         mProgressDialog = new ProgressDialog(context);
-    }
-
-    public ImportAddressAsycTask(Context context, int coinType, int importType, String password, String accountName,
-                                 int mnemonicType, String mnemonic) {
-        this(context, coinType, importType, password, accountName);
-        mMnemonicType = mnemonicType;
-        mMnemonic = mnemonic;
-    }
-
-    public ImportAddressAsycTask(Context context, int coinType, int importType, String password, String accountName,
-                                 String key) {
-        this(context, coinType, importType, password, accountName);
-        if (coinType == LibUtils.COINTYPE.COIN_BTC) {
-            mKey = key;
-        }else {
-            mKeyStore = key;
-        }
     }
 
     @Override
@@ -81,7 +66,7 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Uri>{
             case AppUtils.IMPORTTYPE.IMPORT_TYPE_KEYSTORE:
                 return AddressUtils.importAddressThroughKeyStore(mCoinType,
                         mPassword,
-                        mAccountName, mKeyStore);
+                        mAccountName, mKeyStore, mKeyStorePassword);
         }
         return null;
     }
@@ -96,9 +81,19 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Uri>{
         }
         if(mContext instanceof Activity){
             ((Activity) mContext).finish();
-            Intent intent = new Intent(this.mContext, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            mContext.startActivity(intent);
         }
+    }
+
+    public void setMnemonic(String mnemonic) {
+        this.mMnemonic = mnemonic;
+    }
+
+    public void setKeyStore(String keyStore, String keyStorePassword) {
+        mKeyStore = keyStore;
+        mKeyStorePassword = keyStorePassword;
+    }
+
+    public void setKey(String key) {
+        mKey = key;
     }
 }

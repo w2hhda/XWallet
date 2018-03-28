@@ -41,15 +41,15 @@ public class AddressUtils {
 
     public static Uri importAddressThroughMnemonic(int coinType, String password, String accountName, int mnemonicType, String mnemonic) {
         if(TextUtils.isEmpty(mnemonic)){
-            Log.i("test3", "AddressUtils importAddressThroughMnemonic mnemonic is null!");
+            Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughMnemonic mnemonic is null!");
             return null;
         }
         String[] mnemonicShuzu = mnemonic.split(" ");
         if(mnemonicShuzu == null){
-            Log.i("test3", "AddressUtils importAddressThroughMnemonic mnemonicShuzu is null!");
+            Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughMnemonic mnemonicShuzu is null!");
             return null;
         }
-        Log.i("test3", "AddressUtils importAddressThroughMnemonic mnemonicShuzu.length = " + mnemonicShuzu.length);
+        Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughMnemonic mnemonicShuzu.length = " + mnemonicShuzu.length);
         List<String> words = Arrays.asList(mnemonicShuzu);
         AccountData accountData;
         if (coinType == LibUtils.COINTYPE.COIN_BTC) {
@@ -60,17 +60,18 @@ public class AddressUtils {
         if(accountData != null){
             fillAccountData(accountData, coinType, accountName);
             Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(accountData));
-            Log.i("test3", "AddressUtils importAddressThroughMnemonic uri = " + uri);
-            Log.i("test3", "AddressUtils importAddressThroughMnemonic accountData = " + accountData);
+            Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughMnemonic uri = " + uri);
+            Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughMnemonic accountData = " + accountData);
             return uri;
         } else {
-            Log.i("test3", "AddressUtils importAddressThroughMnemonic accountData is null");
+            Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughMnemonic accountData is null");
         }
         return null;
     }
 
     public static Uri importAddressThroughKey(int coinType, String password, String accountName, String key) {
         if (TextUtils.isEmpty(key)){
+            Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughKey key is null!");
             return null;
         }
         if (coinType == LibUtils.COINTYPE.COIN_ETH) {
@@ -78,27 +79,33 @@ public class AddressUtils {
             if (accountData != null) {
                 fillAccountData(accountData, coinType, accountName);
                 Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(accountData));
+                Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughKey uri = " + uri);
+                Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughKey accountData = " + accountData);
                 return uri;
+            } else {
+                Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughKey accountData is null");
             }
-        }else {
+        } else {
 
         }
-
-
         return null;
     }
 
-    public static Uri importAddressThroughKeyStore(int coinType, String password, String accountName, String keyStore) {
+    public static Uri importAddressThroughKeyStore(int coinType, String password, String accountName, String keyStore, String keyStorePassword) {
         if (TextUtils.isEmpty(keyStore) || coinType != LibUtils.COINTYPE.COIN_ETH){
+            Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughKeyStore keyStore is null!");
             return null;
         }
 
-        AccountData accountData = EthAccountCreateHelper.importFromKeyStore(keyStore, password);
+        AccountData accountData = EthAccountCreateHelper.importFromKeyStore(keyStore, keyStorePassword, password);
         if (accountData != null){
             fillAccountData(accountData, coinType, accountName);
             Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(accountData));
+            Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughKeyStore uri = " + uri);
+            Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughKeyStore accountData = " + accountData);
             return uri;
-        }else {
+        } else {
+            Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughKeyStore accountData is null");
         }
         return null;
     }

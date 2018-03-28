@@ -29,18 +29,22 @@ public class ImportKeyFragment extends BaseImportFragment {
         mImportAccountView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(TextUtils.isEmpty(mSetPasswordView.getPassword())){
-                    Toast.makeText(ImportKeyFragment.this.getActivity(), R.string.password_error_blank, Toast.LENGTH_LONG).show();
+                boolean passwordCheckResult = mSetPasswordView.checkInputPassword(ImportKeyFragment.this.getActivity());
+                if(!passwordCheckResult){
                     return;
                 }
                 if(mKeyEt.getText() == null || TextUtils.isEmpty(mKeyEt.getText().toString())){
                     Toast.makeText(ImportKeyFragment.this.getActivity(), R.string.blank_key, Toast.LENGTH_LONG).show();
                     return;
                 }
-                new ImportAddressAsycTask(ImportKeyFragment.this.getActivity(), mCoinType, AppUtils.IMPORTTYPE.IMPORT_TYPE_KEY,
+                ImportAddressAsycTask task = new ImportAddressAsycTask(ImportKeyFragment.this.getActivity(),
+                        AppUtils.IMPORTTYPE.IMPORT_TYPE_KEY,
+                        mCoinType,
                         mSetPasswordView.getPassword(),
-                        mAccountNameView.getAccountName(),
-                        mKeyEt.getText().toString()).execute();
+                        mAccountNameView.getAccountName());
+                task.setKey(mKeyEt.getText().toString());
+                task.execute();
+
             }
         });
         return view;

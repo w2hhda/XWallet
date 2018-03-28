@@ -24,6 +24,8 @@
     <string name="mnemonic_style">助记词格式</string>
     <string name="input_key_hint">请输入私钥</string>
     <string name="blank_key">私钥为空，无法导入</string>
+    <string name="blank_keystore">Keystore为空，无法导入</string>
+    <string name="blank_keystore_password">Keystore密码为空，无法导入</string>
     <string name="import_address_success">地址导入成功</string>
     <string name="import_address_failed">地址导入失败</string>
     <string name="send_out_transaction">转账</string>

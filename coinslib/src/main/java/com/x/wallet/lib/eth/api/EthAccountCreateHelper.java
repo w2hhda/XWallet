@@ -98,16 +98,21 @@ public class EthAccountCreateHelper {
         }
 
         return null;
-
     }
 
-    public static AccountData importFromKeyStore(String keyStore, String password){
+    public static AccountData importFromKeyStore(String keyStore, String keyStorePassword, String password){
         try{
             ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
             WalletFile file = mapper.readValue(keyStore, WalletFile.class);
             if (file != null){
-                ECKeyPair pair = Wallet.decrypt(password, file);
-                return new AccountData(file.getAddress(), null, null, pair.getPrivateKey().toString(), keyStore);
+                ECKeyPair pair = Wallet.decrypt(keyStorePassword, file);
+
+                WalletFile walletFile = Wallet.createStandard(password, pair);
+                ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
+                String newKeyStore = objectMapper.writeValueAsString(walletFile);
+                String address = "0x" + walletFile.getAddress();
+
+                return new AccountData(address, null, null, null, newKeyStore);
             }
         }catch (CipherException e){
 

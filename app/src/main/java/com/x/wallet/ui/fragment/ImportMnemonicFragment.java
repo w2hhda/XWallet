@@ -30,18 +30,22 @@ public class ImportMnemonicFragment extends BaseImportFragment {
         mImportAccountView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(TextUtils.isEmpty(mSetPasswordView.getPassword())){
-                    Toast.makeText(ImportMnemonicFragment.this.getActivity(), R.string.password_error_blank, Toast.LENGTH_LONG).show();
+                boolean passwordCheckResult = mSetPasswordView.checkInputPassword(ImportMnemonicFragment.this.getActivity());
+                if(!passwordCheckResult){
                     return;
                 }
+
                 if(mMnemonicEt.getText() == null || TextUtils.isEmpty(mMnemonicEt.getText().toString())){
                     Toast.makeText(ImportMnemonicFragment.this.getActivity(), R.string.blank_key, Toast.LENGTH_LONG).show();
                     return;
                 }
-                new ImportAddressAsycTask(ImportMnemonicFragment.this.getActivity(), mCoinType, AppUtils.IMPORTTYPE.IMPORT_TYPE_MNEMONIC,
+                ImportAddressAsycTask task = new ImportAddressAsycTask(ImportMnemonicFragment.this.getActivity(),
+                        AppUtils.IMPORTTYPE.IMPORT_TYPE_MNEMONIC,
+                        mCoinType,
                         mSetPasswordView.getPassword(),
-                        mAccountNameView.getAccountName(),
-                        mMnemonicEt.getText().toString()).execute();
+                        mAccountNameView.getAccountName());
+                task.setMnemonic(mMnemonicEt.getText().toString());
+                task.execute();
             }
         });
         return view;

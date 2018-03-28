@@ -7,8 +7,11 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.x.wallet.R;
+import com.x.wallet.transaction.address.CreateAddressAsycTask;
+import com.x.wallet.ui.activity.CreateAccountActivity;
 
 import net.bither.bitherj.crypto.SecureCharSequence;
 
@@ -36,7 +39,7 @@ public class SetPasswordView extends LinearLayout{
         return mPasswordEt.getText() != null ? mPasswordEt.getText().toString() : null;
     }
 
-    public int isPasswordOk(){
+    private int isPasswordOk(){
         if(TextUtils.isEmpty(mPasswordEt.getText())){
             return PasswordErrorType.BLANK;
         }
@@ -64,6 +67,24 @@ public class SetPasswordView extends LinearLayout{
         }
 
         return PasswordErrorType.OK;
+    }
+
+    public boolean checkInputPassword(Context context){
+        int passwordCheckResult = isPasswordOk();
+        switch (passwordCheckResult){
+            case SetPasswordView.PasswordErrorType.BLANK:
+                Toast.makeText(context, R.string.password_error_blank, Toast.LENGTH_LONG).show();
+                return false;
+            case SetPasswordView.PasswordErrorType.NOT_THE_SAME:
+                Toast.makeText(context, R.string.password_error_not_the_same, Toast.LENGTH_LONG).show();
+                return false;
+            case SetPasswordView.PasswordErrorType.SHORT:
+                Toast.makeText(context, R.string.password_error_short, Toast.LENGTH_LONG).show();
+                return false;
+            case SetPasswordView.PasswordErrorType.OK:
+                return true;
+        }
+        return false;
     }
 
     public interface PasswordErrorType{
