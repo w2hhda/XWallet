@@ -46,16 +46,14 @@ public class BackupMnemonicStepThirdView extends LinearLayout{
         super.onFinishInflate();
         mOutGridView = findViewById(R.id.output_gridview);
         mInputGridView = findViewById(R.id.input_gridview);
-
+        mInputGridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
         mInputGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 if(mCheckPositions.contains(position)){
                     mCheckPositions.remove(position);
-                    view.setSelected(false);
                 } else {
                     mCheckPositions.add(position);
-                    view.setSelected(true);
                 }
                 updateOutGridView();
             }
@@ -95,8 +93,10 @@ public class BackupMnemonicStepThirdView extends LinearLayout{
     }
 
     private boolean isTheWordTheSame(){
+        int index = 0;
         for (Integer position : mCheckPositions) {
-            if(!mInitialWords.get(position).equals(mShuffleWords.get(position))) return false;
+            if(!mInitialWords.get(index).equals(mShuffleWords.get(position))) return false;
+            index++;
         }
         return true;
     }
