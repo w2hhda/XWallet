@@ -47,7 +47,7 @@ public class BalanceConversionUtils {
     }
 
     public static String calculateAllBalanceText() {
-        if(mEthToUsd == 0 || mUsdToCny == 0){
+        if(mEthToUsd == 0 || mUsdToCny == 0 || mAllBalance.compareTo(BigDecimal.ZERO) == 0){
             return ZERO;
         }
 
@@ -56,7 +56,7 @@ public class BalanceConversionUtils {
     }
 
     public static String calculateBalanceText(String balance) {
-        if(mEthToUsd == 0 || mUsdToCny == 0){
+        if(mEthToUsd == 0 || mUsdToCny == 0 || ZERO.equals(balance)){
             return ZERO;
         }
 

@@ -127,7 +127,7 @@ public class BalanceLoaderManager extends BackgroundLoaderManager{
                                         List<BalanceResultBean.ResultBean> userBeanList = balanceResultBean.getResult();
 
                                         //2.insert into db
-                                        BigDecimal tempAllBalance = new BigDecimal(0);
+                                        BigDecimal tempAllBalance = BigDecimal.ZERO;
                                         final ArrayList<ContentProviderOperation> rawOperations = new ArrayList<ContentProviderOperation>();
                                         for(BalanceResultBean.ResultBean resultBean : userBeanList){
                                             final ContentProviderOperation.Builder updateBuilder = ContentProviderOperation
@@ -143,8 +143,9 @@ public class BalanceLoaderManager extends BackgroundLoaderManager{
                                         }catch (Exception e){
                                             Log.e(AppUtils.APP_TAG, "BalanceLoaderManager onResponse exception", e);
                                         }
-
-                                        getEtherPrice();
+                                        if(tempAllBalance.compareTo(BigDecimal.ZERO) == 1){
+                                            getEtherPrice();
+                                        }
                                     } finally {
                                         if(response != null){
                                             response.close();
