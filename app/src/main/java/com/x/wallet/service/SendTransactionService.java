@@ -140,7 +140,7 @@ public class SendTransactionService extends IntentService {
                         );
 
                         Log.i("@@@@","tx = " + tx.toString());
-                        byte[] signed = TransactionEncoder.signMessage(tx  ,credentials);
+                        byte[] signed = TransactionEncoder.signMessage(tx ,(byte) 1 ,credentials);
 
                     pushTransaction(signed);
                     }catch (JSONException e){
