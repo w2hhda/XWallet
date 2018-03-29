@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +15,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.util.ExchangeCalUtil;
@@ -104,13 +107,32 @@ public class TransferActivity extends WithBackAppCompatActivity {
             @Override
             public void onClick(View view) {
                 final AlertDialog dialog = new AlertDialog.Builder(TransferActivity.this).create();
-                final View dialogView = TransferActivity.this.getLayoutInflater().inflate(R.layout.confirm_password_dialog, null);
+                final View dialogView = TransferActivity.this.getLayoutInflater().inflate(R.layout.password_confirm_dialog, null);
                 dialog.setView(dialogView);
                 dialog.show();
 
-                Button cancelbtn = dialogView.findViewById(R.id.DialogCancel);
-                Button confirmBtn = dialogView.findViewById(R.id.DialogConfirm);
-                final EditText passwordEdit = dialogView.findViewById(R.id.dialogPasswordEdit);
+                Button cancelbtn = dialogView.findViewById(R.id.cancel_btn);
+                final Button confirmBtn = dialogView.findViewById(R.id.confirm_btn);
+                TextView dialogTitle = dialogView.findViewById(R.id.tv);
+                dialogTitle.setText(getResources().getString(R.string.confirm_password));
+                final EditText passwordEdit = dialogView.findViewById(R.id.password_et);
+
+                passwordEdit.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence c, int i, int i1, int i2) {
+                        confirmBtn.setEnabled(c != null && c.length() > 0);
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
 
                 cancelbtn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -173,7 +195,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
                         final String result = object.getString("result").substring(2);
                         final BigInteger price = new BigInteger(result, 16);
 
-                        Log.i("@@@@","result gas resukt = " + result + "price = " + price);
+                        Log.i(AppUtils.APP_TAG,"gas price = " + price);
                         TransferActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
