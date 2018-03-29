@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/settings_item_marginTop"
-        android:background="@android:color/white"
+        android:background="@drawable/item_bg_selector"
         android:minHeight="@dimen/settings_item_height">
 
         <ImageView
@@ -51,7 +51,7 @@
         android:id="@+id/feedback_rl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
+        android:background="@drawable/item_bg_selector"
         android:minHeight="@dimen/settings_item_height">
 
         <ImageView
@@ -88,7 +88,7 @@
         android:id="@+id/mark_rl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
+        android:background="@drawable/item_bg_selector"
         android:minHeight="@dimen/settings_item_height">
 
         <ImageView
@@ -125,7 +125,7 @@
         android:id="@+id/about_us_rl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
+        android:background="@drawable/item_bg_selector"
         android:minHeight="@dimen/settings_item_height">
 
         <ImageView
