@@ -3,8 +3,8 @@ package com.x.wallet.lib.eth.api;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.x.wallet.lib.common.AccountData;
 import com.x.wallet.lib.common.LibUtils;
 
@@ -16,11 +16,9 @@ import net.bither.bitherj.crypto.mnemonic.MnemonicException;
 import net.bither.bitherj.crypto.mnemonic.MnemonicHelper;
 
 import org.web3j.crypto.CipherException;
-import org.web3j.crypto.Credentials;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Wallet;
 import org.web3j.crypto.WalletFile;
-import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.ObjectMapperFactory;
 
 import java.io.IOException;
@@ -91,13 +89,15 @@ public class EthAccountCreateHelper {
         try {
             //Credentials credentials = WalletUtils.loadCredentials(password, privateKey);
             BigInteger key = new BigInteger(privateKey, 16);
-            ECKeyPair keyPair = ECKeyPair.create(key);
-            WalletFile walletFile = Wallet.createStandard(password, keyPair);
-            return  new AccountData(walletFile.getAddress(), null, null, null,privateKey);
-        } catch (CipherException e){
-
+            WalletFile walletFile = createWalletFileFromKey(key, password);
+            if(walletFile != null){
+                String address = "0x" + walletFile.getAddress();
+                String keyStore = getKeyStoreFromWalletFile(walletFile);
+                return  new AccountData(address, null, null, privateKey, keyStore);
+            }
+        } catch (Exception e){
+            Log.e(LibUtils.TAG_ETH, "EthAccountCreateHelper importFromPrivateKey exception", e);
         }
-
         return null;
     }
 
@@ -109,8 +109,7 @@ public class EthAccountCreateHelper {
                 ECKeyPair pair = Wallet.decrypt(keyStorePassword, file);
 
                 WalletFile walletFile = Wallet.createStandard(password, pair);
-                ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
-                String newKeyStore = objectMapper.writeValueAsString(walletFile);
+                String newKeyStore = getKeyStoreFromWalletFile(walletFile);
                 String address = "0x" + walletFile.getAddress();
 
                 return new AccountData(address, null, null, null, newKeyStore);
@@ -131,8 +130,7 @@ public class EthAccountCreateHelper {
                 ECKeyPair pair = Wallet.decrypt(keyStorePassword, file);
 
                 WalletFile walletFile = Wallet.createStandard(password, pair);
-                ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
-                return objectMapper.writeValueAsString(walletFile);
+                return getKeyStoreFromWalletFile(walletFile);
             }
         } catch (Exception e){
             Log.e(LibUtils.TAG_ETH, "EthAccountCreateHelper generateKeyStoreWithNewPassword exception ", e);
@@ -181,5 +179,20 @@ public class EthAccountCreateHelper {
 
     public static String encryptPrivKey(String rawPrivKey, String newPassword) {
         return null;
+    }
+
+    private static WalletFile createWalletFileFromKey(BigInteger key, String password){
+        try {
+            ECKeyPair keyPair = ECKeyPair.create(key);
+            return Wallet.createStandard(password, keyPair);
+        } catch (CipherException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static String getKeyStoreFromWalletFile(WalletFile walletFile) throws JsonProcessingException {
+        ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
+        return objectMapper.writeValueAsString(walletFile);
     }
 }
