@@ -34,6 +34,7 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * Created by wuliang on 18-3-16.
@@ -150,26 +151,26 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
+                    ResponseBody body = response.body();
+                    if(body != null){
+                        TransactionsResultBean bean = new Gson().fromJson(body.string(), TransactionsResultBean.class);
+                        List<TransactionsResultBean.ReceiptBean> receiptBeans = bean.getResult();
 
-                    TransactionsResultBean bean = new Gson().fromJson(response.body().string(), TransactionsResultBean.class);
-                    List<TransactionsResultBean.ReceiptBean> receiptBeans = bean.getResult();
-
-                    items.clear();
-                    for(TransactionsResultBean.ReceiptBean receiptBean: receiptBeans){
-                        Boolean isReceive = true;
-                        if (receiptBean.getFrom().equalsIgnoreCase(mAccountItem.getAddress())){
-                            isReceive = false;
+                        items.clear();
+                        for(TransactionsResultBean.ReceiptBean receiptBean: receiptBeans){
+                            Boolean isReceive = true;
+                            if (receiptBean.getFrom().equalsIgnoreCase(mAccountItem.getAddress())){
+                                isReceive = false;
+                            }
+                            items.add(TransactionItem.createFromReceipt(receiptBean, isReceive));
                         }
-                        items.add(TransactionItem.createFromReceipt(receiptBean, isReceive));
+
+                        if (items.size() > 0) {
+                            Message message = handler.obtainMessage();
+                            message.what = MyHandler.MSG_UPDATE;
+                            handler.sendMessage(message);
+                        }
                     }
-
-                    if (items.size() > 0) {
-                        Message message = handler.obtainMessage();
-                        message.what = MyHandler.MSG_UPDATE;
-                        handler.sendMessage(message);
-                    }
-
-
                 }
             }, true);
         }catch (IOException e){

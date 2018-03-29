@@ -25,6 +25,7 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * Created by wuliang on 18-3-26.
@@ -121,30 +122,33 @@ public class BalanceLoaderManager extends BackgroundLoaderManager{
                                 @Override
                                 public void onResponse(Call call, Response response) throws IOException {
                                     try{
-                                        //1.parse
-                                        BalanceResultBean balanceResultBean = new Gson().fromJson(response.body().string(), BalanceResultBean.class);
-                                        Log.i(AppUtils.APP_TAG, "BalanceLoaderManager onResponse message = " + balanceResultBean.getMessage());
-                                        List<BalanceResultBean.ResultBean> userBeanList = balanceResultBean.getResult();
+                                        ResponseBody body = response.body();
+                                        if(body != null){
+                                            //1.parse
+                                            BalanceResultBean balanceResultBean = new Gson().fromJson(body.string(), BalanceResultBean.class);
+                                            Log.i(AppUtils.APP_TAG, "BalanceLoaderManager onResponse message = " + balanceResultBean.getMessage());
+                                            List<BalanceResultBean.ResultBean> userBeanList = balanceResultBean.getResult();
 
-                                        //2.insert into db
-                                        BigDecimal tempAllBalance = BigDecimal.ZERO;
-                                        final ArrayList<ContentProviderOperation> rawOperations = new ArrayList<ContentProviderOperation>();
-                                        for(BalanceResultBean.ResultBean resultBean : userBeanList){
-                                            final ContentProviderOperation.Builder updateBuilder = ContentProviderOperation
-                                                    .newUpdate(XWalletProvider.CONTENT_URI);
-                                            updateBuilder.withSelection(DbUtils.DbColumns.ADDRESS + " = ?", new String[] {EthUtils.removePrefix(resultBean.getAccount())});
-                                            updateBuilder.withValue(DbUtils.DbColumns.BALANCE, resultBean.getBalance());
-                                            rawOperations.add(updateBuilder.build());
-                                            tempAllBalance = tempAllBalance.add(new BigDecimal(resultBean.getBalance()));
-                                        }
-                                        BalanceConversionUtils.mAllBalance = tempAllBalance;
-                                        try{
-                                            mContext.getContentResolver().applyBatch(XWalletProvider.AUTHORITY, rawOperations);
-                                        }catch (Exception e){
-                                            Log.e(AppUtils.APP_TAG, "BalanceLoaderManager onResponse exception", e);
-                                        }
-                                        if(tempAllBalance.compareTo(BigDecimal.ZERO) == 1){
-                                            getEtherPrice();
+                                            //2.insert into db
+                                            BigDecimal tempAllBalance = BigDecimal.ZERO;
+                                            final ArrayList<ContentProviderOperation> rawOperations = new ArrayList<ContentProviderOperation>();
+                                            for(BalanceResultBean.ResultBean resultBean : userBeanList){
+                                                final ContentProviderOperation.Builder updateBuilder = ContentProviderOperation
+                                                        .newUpdate(XWalletProvider.CONTENT_URI);
+                                                updateBuilder.withSelection(DbUtils.DbColumns.ADDRESS + " = ?", new String[] {EthUtils.removePrefix(resultBean.getAccount())});
+                                                updateBuilder.withValue(DbUtils.DbColumns.BALANCE, resultBean.getBalance());
+                                                rawOperations.add(updateBuilder.build());
+                                                tempAllBalance = tempAllBalance.add(new BigDecimal(resultBean.getBalance()));
+                                            }
+                                            BalanceConversionUtils.mAllBalance = tempAllBalance;
+                                            try{
+                                                mContext.getContentResolver().applyBatch(XWalletProvider.AUTHORITY, rawOperations);
+                                            }catch (Exception e){
+                                                Log.e(AppUtils.APP_TAG, "BalanceLoaderManager onResponse exception", e);
+                                            }
+                                            if(tempAllBalance.compareTo(BigDecimal.ZERO) == 1){
+                                                getEtherPrice();
+                                            }
                                         }
                                     } finally {
                                         if(response != null){
@@ -157,7 +161,6 @@ public class BalanceLoaderManager extends BackgroundLoaderManager{
                                             }
                                         });
                                     }
-
                                 }
                             });
                         } catch (Exception e){
@@ -190,26 +193,32 @@ public class BalanceLoaderManager extends BackgroundLoaderManager{
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         try{
-                            //1.parse
-                            PriceResultBean priceResultBean = new Gson().fromJson(response.body().string(), PriceResultBean.class);
-                            BalanceConversionUtils.mEthToUsd = priceResultBean.getResult().getEthusd();
-                            Log.i(AppUtils.APP_TAG, "BalanceLoaderManager onResponse getEtherPrice EthToUsd = " + priceResultBean.getResult().getEthusd());
+                            ResponseBody body = response.body();
+                            if(body != null){
+                                //1.parse
+                                PriceResultBean priceResultBean = new Gson().fromJson(body.string(), PriceResultBean.class);
+                                BalanceConversionUtils.mEthToUsd = priceResultBean.getResult().getEthusd();
+                                Log.i(AppUtils.APP_TAG, "BalanceLoaderManager onResponse getEtherPrice EthToUsd = " + priceResultBean.getResult().getEthusd());
 
-                            EtherscanAPI.getInstance().getPriceConversionRates("CNY", new Callback() {
-                                @Override
-                                public void onFailure(Call call, IOException e) {
-                                    Log.e(AppUtils.APP_TAG, "BalanceLoaderManager onFailure for getPriceConversionRates" , e);
-                                }
+                                EtherscanAPI.getInstance().getPriceConversionRates("CNY", new Callback() {
+                                    @Override
+                                    public void onFailure(Call call, IOException e) {
+                                        Log.e(AppUtils.APP_TAG, "BalanceLoaderManager onFailure for getPriceConversionRates" , e);
+                                    }
 
-                                @Override
-                                public void onResponse(Call call, Response response) throws IOException {
-                                    UsdCnyBean usdCnyBean = new Gson().fromJson(response.body().string(), UsdCnyBean.class);
-                                    BalanceConversionUtils.mUsdToCny = usdCnyBean.getRates().getCNY();
-                                    BalanceConversionUtils.responseToListener();
-                                    BalanceConversionUtils.handleListener();
-                                    Log.i(AppUtils.APP_TAG, "BalanceLoaderManager onResponse UsdToCny = " + usdCnyBean.getRates().getCNY());
-                                }
-                            });
+                                    @Override
+                                    public void onResponse(Call call, Response response) throws IOException {
+                                        ResponseBody body2 = response.body();
+                                        if (body2 != null){
+                                            UsdCnyBean usdCnyBean = new Gson().fromJson(body2.string(), UsdCnyBean.class);
+                                            BalanceConversionUtils.mUsdToCny = usdCnyBean.getRates().getCNY();
+                                            BalanceConversionUtils.responseToListener();
+                                            BalanceConversionUtils.handleListener();
+                                            Log.i(AppUtils.APP_TAG, "BalanceLoaderManager onResponse UsdToCny = " + usdCnyBean.getRates().getCNY());
+                                        }
+                                    }
+                                });
+                            }
                         } finally {
                             if(response != null){
                                 response.close();
