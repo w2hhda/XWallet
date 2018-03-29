@@ -1,5 +1,6 @@
 package com.x.wallet.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.transaction.address.CreateAddressAsycTask;
 import com.x.wallet.ui.view.AccountNameView;
+import com.x.wallet.ui.view.PrivacyPolicyView;
 import com.x.wallet.ui.view.SetPasswordView;
 
 
@@ -22,7 +24,9 @@ import com.x.wallet.ui.view.SetPasswordView;
 public class CreateAccountActivity extends WithBackAppCompatActivity {
     private AccountNameView mAccountNameView;
     private SetPasswordView mSetPasswordView;
-    private CheckBox mDeclareCheckBox;
+
+    private PrivacyPolicyView mPrivacyPolicyView;
+
     private View mCreateAcountView;
     private int mCoinType;
 
@@ -57,29 +61,18 @@ public class CreateAccountActivity extends WithBackAppCompatActivity {
                     return;
                 }
 
-                int passwordCheckResult = mSetPasswordView.isPasswordOk();
-                switch (passwordCheckResult){
-                    case SetPasswordView.PasswordErrorType.BLANK:
-                        Toast.makeText(CreateAccountActivity.this, R.string.password_error_blank, Toast.LENGTH_LONG).show();
-                        return;
-                    case SetPasswordView.PasswordErrorType.NOT_THE_SAME:
-                        Toast.makeText(CreateAccountActivity.this, R.string.password_error_not_the_same, Toast.LENGTH_LONG).show();
-                        return;
-                    case SetPasswordView.PasswordErrorType.SHORT:
-                        Toast.makeText(CreateAccountActivity.this, R.string.password_error_short, Toast.LENGTH_LONG).show();
-                        return;
-                    case SetPasswordView.PasswordErrorType.OK:
-                        new CreateAddressAsycTask(CreateAccountActivity.this, mCoinType,
-                                mSetPasswordView.getPassword(),
-                                mAccountNameView.getAccountName()).execute();
-                        return;
+                boolean passwordCheckResult = mSetPasswordView.checkInputPassword(CreateAccountActivity.this);
+                if(passwordCheckResult){
+                    new CreateAddressAsycTask(CreateAccountActivity.this, mCoinType,
+                            mSetPasswordView.getPassword(),
+                            mAccountNameView.getAccountName()).execute();
                 }
 
             }
         });
 
-        mDeclareCheckBox = findViewById(R.id.checkbox);
-        mDeclareCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mPrivacyPolicyView = findViewById(R.id.privacy_policy_container);
+        mPrivacyPolicyView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 mCreateAcountView.setEnabled(isChecked);

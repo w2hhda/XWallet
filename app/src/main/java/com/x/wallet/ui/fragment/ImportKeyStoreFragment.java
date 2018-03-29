@@ -19,6 +19,7 @@ import com.x.wallet.transaction.address.ImportAddressAsycTask;
 
 public class ImportKeyStoreFragment extends BaseImportFragment {
     private EditText mKeyStoreEt;
+    private EditText mKeyStorePasswordEt;
 
     @Nullable
     @Override
@@ -26,21 +27,30 @@ public class ImportKeyStoreFragment extends BaseImportFragment {
         final View view = inflater.inflate(R.layout.import_keystore_fragment, container, false);
         initCommonView(view);
         mKeyStoreEt = view.findViewById(R.id.keystore_et);
+        mKeyStorePasswordEt = view.findViewById(R.id.keystore_password_et);
+
         mImportAccountView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(TextUtils.isEmpty(mSetPasswordView.getPassword())){
-                    Toast.makeText(ImportKeyStoreFragment.this.getActivity(), R.string.password_error_blank, Toast.LENGTH_LONG).show();
+                boolean passwordCheckResult = mSetPasswordView.checkInputPassword(ImportKeyStoreFragment.this.getActivity());
+                if(!passwordCheckResult){
                     return;
                 }
                 if(mKeyStoreEt.getText() == null || TextUtils.isEmpty(mKeyStoreEt.getText().toString())){
-                    Toast.makeText(ImportKeyStoreFragment.this.getActivity(), R.string.blank_key, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ImportKeyStoreFragment.this.getActivity(), R.string.blank_keystore, Toast.LENGTH_LONG).show();
                     return;
                 }
-                new ImportAddressAsycTask(ImportKeyStoreFragment.this.getActivity(), mCoinType, AppUtils.IMPORTTYPE.IMPORT_TYPE_KEYSTORE,
+                if(mKeyStorePasswordEt.getText() == null || TextUtils.isEmpty(mKeyStorePasswordEt.getText().toString())){
+                    Toast.makeText(ImportKeyStoreFragment.this.getActivity(), R.string.blank_keystore_password, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                ImportAddressAsycTask task = new ImportAddressAsycTask(ImportKeyStoreFragment.this.getActivity(),
+                        AppUtils.IMPORTTYPE.IMPORT_TYPE_KEYSTORE,
+                        mCoinType,
                         mSetPasswordView.getPassword(),
-                        mAccountNameView.getAccountName(),
-                        mKeyStoreEt.getText().toString()).execute();
+                        mAccountNameView.getAccountName());
+                task.setKeyStore(mKeyStoreEt.getText().toString(), mKeyStorePasswordEt.getText().toString());
+                task.execute();
             }
         });
         return view;

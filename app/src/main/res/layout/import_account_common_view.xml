@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.x.wallet.ui.view.AccountNameView
+        android:id="@+id/account_name_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/create_account_item_marginBottom"
+        android:layout_marginTop="@dimen/create_account_item_marginTop"
+        android:orientation="vertical" />
+
+    <include layout="@layout/create_account_divider_view_without_padding" />
+
+    <com.x.wallet.ui.view.SetPasswordView
+        android:id="@+id/set_password_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <include layout="@layout/create_account_divider_view_without_padding" />
+
+    <com.x.wallet.ui.view.PrivacyPolicyView
+        android:id="@+id/privacy_policy_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp" />
+
+    <Button
+        android:id="@+id/import_account_btn"
+        style="@style/CreateAccountBtnTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="48dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/create_account_btn_bg_selector"
+        android:enabled="false"
+        android:text="@string/import_account" />
+</merge>

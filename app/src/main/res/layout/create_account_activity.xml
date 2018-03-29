@@ -10,55 +10,35 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingEnd="@dimen/create_account_item_paddingSE"
+        android:paddingStart="@dimen/create_account_item_paddingSE">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:background="@color/main_bg_color" />
+        <include layout="@layout/create_account_high_divider_view"/>
 
         <com.x.wallet.ui.view.AccountNameView
             android:id="@+id/account_name_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingEnd="@dimen/create_account_item_paddingSE"
-            android:paddingStart="@dimen/create_account_item_paddingSE"
             android:layout_marginTop="@dimen/create_account_item_marginTop"
             android:layout_marginBottom="@dimen/create_account_item_marginBottom"/>
 
-        <include layout="@layout/create_account_divider_view" />
+        <include layout="@layout/create_account_divider_view_without_padding" />
 
         <com.x.wallet.ui.view.SetPasswordView
             android:id="@+id/set_password_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingEnd="@dimen/create_account_item_paddingSE"
-            android:paddingStart="@dimen/create_account_item_paddingSE" />
+            android:orientation="vertical"/>
 
-        <include layout="@layout/create_account_divider_view" />
+        <include layout="@layout/create_account_divider_view_without_padding" />
 
-        <LinearLayout
+        <com.x.wallet.ui.view.PrivacyPolicyView
+            android:id="@+id/privacy_policy_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingEnd="@dimen/create_account_item_paddingSE"
-            android:paddingStart="@dimen/create_account_item_paddingSE"
-            android:layout_marginTop="25dp">
-
-            <CheckBox android:id="@+id/checkbox"
-                style="@style/CreateAccountInputTextStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/app_declare"/>
-
-            <TextView android:id="@+id/privacy_policy_tv"
-                style="@style/CreateAccountLinkTextStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/privacy_policy"
-                android:layout_marginStart="3dp"/>
-        </LinearLayout>
+            android:layout_marginTop="25dp"/>
 
         <Button
             android:id="@+id/create_account_btn"
@@ -69,6 +49,7 @@
             android:background="@drawable/create_account_btn_bg_selector"
             android:text="@string/create_account"
             android:layout_marginTop="48dp"
+            android:layout_marginBottom="10dp"
             android:enabled="false"/>
     </LinearLayout>
 </ScrollView>

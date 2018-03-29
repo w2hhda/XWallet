@@ -24,11 +24,13 @@
     <string name="mnemonic_style">助记词格式</string>
     <string name="input_key_hint">请输入私钥</string>
     <string name="blank_key">私钥为空，无法导入</string>
+    <string name="blank_keystore">Keystore为空，无法导入</string>
+    <string name="blank_keystore_password">Keystore密码为空，无法导入</string>
     <string name="import_address_success">地址导入成功</string>
     <string name="import_address_failed">地址导入失败</string>
     <string name="send_out_transaction">转账</string>
     <string name="receipt_transaction">收款</string>
-    <string name="manage_account">管理账户</string>
+    <string name="manage_account">管理钱包</string>
     <string name="delete_account">删除钱包</string>
     <string name="finish">完成</string>
     <string name="copy">复制</string>
@@ -84,4 +86,11 @@
     <string name="transaction_detail">交易明细</string>
     <string name="transfer_from_address">转出地址</string>
     <string name="transfer_hash">转账串号</string>
+    <string name="blank_all_balance">"≈  0.00"</string>
+    <string name="blank_balance">≈  ¥0.00</string>
+    <string name="input_keystore_password_hint">输入Keystore密码</string>
+    <string name="please_backup">请备份</string>
+    <string name="backup_mnemonic">备份助记词</string>
+    <string name="backup_key">备份密钥</string>
+    <string name="backup_keystore">备份KeyStore</string>
 </resources>
