@@ -51,7 +51,7 @@ public class BalanceConversionUtils {
             return ZERO;
         }
 
-        BigDecimal result = EthUtils.translateWeiToEth(mAllBalance).multiply(new BigDecimal(mEthToUsd * mUsdToCny)).setScale(6, BigDecimal.ROUND_UP);
+        BigDecimal result = EthUtils.translateWeiToEth(mAllBalance).multiply(new BigDecimal(mEthToUsd * mUsdToCny)).setScale(2, BigDecimal.ROUND_UP);
         return result.stripTrailingZeros().toString();
     }
 
@@ -60,7 +60,7 @@ public class BalanceConversionUtils {
             return ZERO;
         }
 
-        BigDecimal result = EthUtils.translateWeiToEth(balance).multiply(new BigDecimal(mEthToUsd * mUsdToCny)).setScale(6, BigDecimal.ROUND_UP);
+        BigDecimal result = EthUtils.translateWeiToEth(balance).multiply(new BigDecimal(mEthToUsd * mUsdToCny)).setScale(2, BigDecimal.ROUND_UP);
         return result.stripTrailingZeros().toString();
     }
 

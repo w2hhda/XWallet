@@ -16,14 +16,18 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
+import com.x.wallet.lib.eth.EthUtils;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.data.TransactionsResultBean;
+import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.ui.adapter.AccountDetailAdapter;
 import com.x.wallet.ui.data.AccountItem;
 import com.x.wallet.ui.data.TransactionItem;
 import com.x.wallet.ui.view.TransactionListItem;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +54,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     private MyHandler handler;
 
     public final static String SHARE_ADDRESS_EXTRA = "share_address_extra";
+    private BalanceConversionUtils.RateUpdateListener mRateUpdateListener;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,8 +90,6 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         mSendOutBtn = findViewById(R.id.send_btn);
         mReceiptBtn = findViewById(R.id.receipt_btn);
         mNoTransactionView = findViewById(R.id.no_transaction_view);
-        mBalanceTranslateTv.setText(mAccountItem.getBalance());
-        mBalanceTv.setText(mAccountItem.getBalance());
         mRecyclerView = findViewById(R.id.recyclerView);
         final LinearLayoutManager manager = new LinearLayoutManager(this);
         mRecyclerView.setHasFixedSize(false);
@@ -111,6 +114,26 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        updateBalanceConversionText();
+        BigDecimal balance = new BigDecimal(mAccountItem.getBalance());
+        String balanceInEth = EthUtils.translateWeiToEth(balance).stripTrailingZeros().toPlainString();
+        mBalanceTv.setText(balanceInEth + "ETH");
+        if(mRateUpdateListener != null){
+            BalanceConversionUtils.unRegisterListener(mRateUpdateListener);
+        }
+        mRateUpdateListener = new BalanceConversionUtils.RateUpdateListener() {
+            @Override
+            public void onRateUpdate() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateBalanceConversionText();
+                    }
+                });
+            }
+        };
+        BalanceConversionUtils.registerListener(mRateUpdateListener);
 
     }
 
@@ -168,6 +191,12 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
                 default:
                         break;
             }
+        }
+    }
+
+    public void updateBalanceConversionText(){
+        if(mAccountItem != null){
+            mBalanceTranslateTv.setText(getResources().getString(R.string.item_balance, BalanceConversionUtils.calculateBalanceText(mAccountItem.getBalance())));
         }
     }
 }
