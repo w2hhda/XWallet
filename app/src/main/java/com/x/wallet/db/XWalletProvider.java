@@ -88,8 +88,16 @@ public class XWalletProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
+        int count = 0;
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        int count = db.delete(TABLE_ACCOUNT, selection, selectionArgs);
+        int match = URI_MATCHER.match(uri);
+        switch (match){
+            case URI_ACCOUNT:
+                break;
+            case URI_ACCOUNT_ID:
+                count = db.delete(TABLE_ACCOUNT, DbUtils.DbColumns._ID + "=" + uri.getLastPathSegment(), null);
+                break;
+        }
         if(count > 0){
             getContext().getContentResolver().notifyChange(uri, null);
         }

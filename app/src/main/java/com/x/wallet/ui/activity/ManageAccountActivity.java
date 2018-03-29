@@ -3,6 +3,7 @@ package com.x.wallet.ui.activity;
 import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,10 +11,12 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.db.XWalletProvider;
+import com.x.wallet.transaction.DeleteAccountAsycTask;
 import com.x.wallet.transaction.key.DecryptKeyAsycTask;
 import com.x.wallet.transaction.keystore.DecryptKeyStoreAsycTask;
 import com.x.wallet.ui.data.AccountItem;
@@ -146,12 +149,31 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
         mPasswordCheckDialogHelper.showPasswordDialog(this, new PasswordCheckDialogHelper.ConfirmBtnClickListener() {
             @Override
             public boolean onConfirmBtnClick(String password, Context context) {
-                new DecryptKeyStoreAsycTask(context, mAccountItem.getCoinType(), "",
+                new DecryptKeyStoreAsycTask(context, mAccountItem.getCoinType(), mAccountItem.getKeyStore(),
                         password, new DecryptKeyStoreAsycTask.OnDecryptKeyStoreFinishedListener() {
                     @Override
                     public void onDecryptKeyStoreFinished(String keyStore) {
                         if(!TextUtils.isEmpty(keyStore)){
                             mPasswordCheckDialogHelper.dismissDialog();
+                            ContentShowDialogHelper.showConfirmDialog(mActivity, R.string.delete_account
+                                    , mActivity.getResources().getString(R.string.confirm_delete_account, mAccountItem.getAccountName())
+                                    , new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                    new DeleteAccountAsycTask(mActivity, mAccountItem.getId(), new DeleteAccountAsycTask.OnDeleteFinishedListener() {
+                                        @Override
+                                        public void onDeleteFinished(int count) {
+                                            if(count > 0){
+                                                Toast.makeText(mActivity, R.string.delete_account_success, Toast.LENGTH_LONG).show();
+                                                mActivity.finish();
+                                            } else {
+                                                Toast.makeText(mActivity, R.string.delete_account_failed, Toast.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    }).execute();
+                                }
+                            });
                         } else {
                             mPasswordCheckDialogHelper.updatePasswordCheckError();
                         }

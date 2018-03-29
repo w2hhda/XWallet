@@ -105,6 +105,27 @@
             <include layout="@layout/into_view" />
         </RelativeLayout>
 
+        <include layout="@layout/create_account_divider_view_without_padding" />
+
+        <RelativeLayout android:id="@+id/change_password_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="20dip"
+            android:paddingStart="20dip"
+            android:background="@drawable/item_bg_selector">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dip"
+                android:layout_marginTop="15dip"
+                android:text="@string/change_password"
+                android:textColor="@color/gray_66"
+                android:textSize="16sp" />
+
+            <include layout="@layout/into_view" />
+        </RelativeLayout>
+
         <include layout="@layout/create_account_high_divider_view" />
 
         <TextView

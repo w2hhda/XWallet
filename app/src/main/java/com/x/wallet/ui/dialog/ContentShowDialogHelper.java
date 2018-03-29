@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -52,5 +53,14 @@ public class ContentShowDialogHelper {
             }
         });
         dialog.show();
+    }
+
+    public static void showConfirmDialog(final Context context, int titleId, String message, DialogInterface.OnClickListener listener){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(titleId);
+        builder.setMessage(message);
+        builder.setPositiveButton(R.string.confirm, listener);
+        builder.setNegativeButton(R.string.cancel, null);
+        builder.show();
     }
 }
