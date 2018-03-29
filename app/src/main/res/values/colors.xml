@@ -9,6 +9,7 @@
     <color name="address_title_textColor">#666666</color>
     <color name="indicator_color">#b2b2b2</color>
     <color name="divider_color">#d6d6d6</color>
+    <color name="colorRed">#ff0000</color>
     <color name="gray_textColor">#999999</color>
     <color name="gray_df">#dfdfdf</color>
     <color name="gray_b2">#b2b2b2</color>

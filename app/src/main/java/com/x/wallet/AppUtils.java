@@ -24,6 +24,7 @@ public class AppUtils {
     public static final String COIN_TYPE  = "coin_type";
     public static final String ACCOUNT_DATA = "account_data";
     public static final String ADDRESS_URI = "address_uri";
+    public static final String TRANSACTION_ITEM = "transaction_item";
 
     public static final String APP_TAG = "XWallet";
 }

@@ -113,6 +113,13 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.activity.TransactionDetailActivity">
+            <intent-filter>
+                <action android:name="com.x.wallet.action_SEE_TRANSACTION_DETAIL"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>
