@@ -1,19 +1,24 @@
 package com.x.wallet.ui.activity;
 
-import android.app.AlertDialog;
+import android.app.Activity;
+import android.content.ContentUris;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
+import com.x.wallet.db.XWalletProvider;
+import com.x.wallet.transaction.key.DecryptKeyAsycTask;
+import com.x.wallet.transaction.keystore.DecryptKeyStoreAsycTask;
 import com.x.wallet.ui.data.AccountItem;
-
-import net.bither.bitherj.core.BtcCreateAddressHelper;
+import com.x.wallet.ui.dialog.ContentShowDialogHelper;
+import com.x.wallet.ui.dialog.PasswordCheckDialogHelper;
 
 /**
  * Created by wuliang on 18-3-16.
@@ -23,78 +28,137 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
     private AccountItem mAccountItem;
     private TextView mAccountNameTv;
     private TextView mAddressTv;
-    private TextView mBalanceTv;
 
     private View mMnemonicView;
     private View mKeyView;
+    private View mKeyStoreView;
 
     private View mDeleteView;
+    private Activity mActivity;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.manage_account_activity);
-
+        mActivity = this;
         mAccountItem = (AccountItem) getIntent().getSerializableExtra(AppUtils.ACCOUNT_DATA);
 
         initViews();
     }
 
     private void initViews(){
-        mAddressTv = findViewById(R.id.address_tv);
-        mAddressTv.setText(mAccountItem.getAddress());
+
         mAccountNameTv = findViewById(R.id.account_name_tv);
         mAccountNameTv.setText(mAccountItem.getAccountName());
 
-        mBalanceTv = findViewById(R.id.balance_tv);
+        mAddressTv = findViewById(R.id.address_tv);
+        mAddressTv.setText(mAccountItem.getAddress());
 
         mMnemonicView = findViewById(R.id.mnemonic_tv);
         mMnemonicView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showPasswordDialog(AppUtils.IMPORTTYPE.IMPORT_TYPE_MNEMONIC);
+                Uri uri = ContentUris.withAppendedId(XWalletProvider.CONTENT_URI, mAccountItem.getId());
+                Intent intent = new Intent("com.x.wallet.action.BACKUP_MNEMONIC_ACTION");
+                intent.putExtra(AppUtils.ADDRESS_URI, uri);
+                startActivity(intent);
             }
         });
         mKeyView = findViewById(R.id.key_tv);
         mKeyView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showPasswordDialog(AppUtils.IMPORTTYPE.IMPORT_TYPE_KEY);
+                showPasswordCheckDialogForKey();
+            }
+        });
+
+        mKeyStoreView = findViewById(R.id.keystore_tv);
+        mKeyStoreView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPasswordCheckDialogForKeyStore();
             }
         });
 
         mDeleteView = findViewById(R.id.delete_account_tv);
-    }
-
-    private void showPasswordDialog(final int importType){
-        final LayoutInflater inflater = this.getLayoutInflater();
-        final View contentView = inflater.inflate(R.layout.backup_account_dialog, null);
-        final EditText passwordEt = contentView.findViewById(R.id.password_et);
-        View passwordCheckBtn = contentView.findViewById(R.id.check_password_btn);
-        final TextView resultTv = contentView.findViewById(R.id.result_tv);
-
-        passwordCheckBtn.setOnClickListener(new View.OnClickListener() {
+        mDeleteView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(passwordEt.getText() == null || TextUtils.isEmpty(passwordEt.getText())){
-                    return;
-                }
-                String result = importType == AppUtils.IMPORTTYPE.IMPORT_TYPE_MNEMONIC ?
-                        BtcCreateAddressHelper.readMnemonic(mAccountItem.getEncryMnemonic(), passwordEt.getText().toString()):
-                        BtcCreateAddressHelper.readPrivateKey(mAccountItem.getEncrySeed(), passwordEt.getText().toString());
-                if(TextUtils.isEmpty(result)){
-                    resultTv.setText(R.string.password_check_error);
-                }else {
-                    resultTv.setText(result);
-                }
+                showPasswordCheckDialogForDelete();
             }
         });
+    }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(importType == AppUtils.IMPORTTYPE.IMPORT_TYPE_MNEMONIC ?
-                R.string.see_mnemonic : R.string.see_key);
-        builder.setView(contentView);
-        builder.setNegativeButton(R.string.finish, null);
-        builder.show();
+    /**
+     * BtcCreateAddressHelper.readMnemonic(mAccountItem.getEncryMnemonic(), passwordEt.getText().toString()):
+     BtcCreateAddressHelper.readPrivateKey(mAccountItem.getEncrySeed(), passwordEt.getText().toString());
+     */
+
+    private void showPasswordCheckDialogForKey(){
+        final PasswordCheckDialogHelper mPasswordCheckDialogHelper = new PasswordCheckDialogHelper();
+
+        mPasswordCheckDialogHelper.showPasswordDialog(this, new PasswordCheckDialogHelper.ConfirmBtnClickListener() {
+            @Override
+            public boolean onConfirmBtnClick(String password, Context context) {
+                new DecryptKeyAsycTask(context, mAccountItem.getCoinType(), "", mAccountItem.getKeyStore(),
+                        password, new DecryptKeyAsycTask.OnDecryptKeyFinishedListener() {
+                    @Override
+                    public void onDecryptKeyFinished(String key) {
+                        if(!TextUtils.isEmpty(key)){
+                            mPasswordCheckDialogHelper.dismissDialog();
+                            ContentShowDialogHelper.showContentDialog(mActivity, R.string.backup_key, R.string.copy_key, key);
+                        } else {
+                            mPasswordCheckDialogHelper.updatePasswordCheckError();
+                        }
+                    }
+                }).execute();
+                return true;
+            }
+        }, R.string.confirm_password);
+    }
+
+    private void showPasswordCheckDialogForKeyStore(){
+        final PasswordCheckDialogHelper mPasswordCheckDialogHelper = new PasswordCheckDialogHelper();
+
+        mPasswordCheckDialogHelper.showPasswordDialog(this, new PasswordCheckDialogHelper.ConfirmBtnClickListener() {
+            @Override
+            public boolean onConfirmBtnClick(String password, Context context) {
+                new DecryptKeyStoreAsycTask(context, mAccountItem.getCoinType(), mAccountItem.getKeyStore(),
+                        password, new DecryptKeyStoreAsycTask.OnDecryptKeyStoreFinishedListener() {
+                    @Override
+                    public void onDecryptKeyStoreFinished(String keyStore) {
+                        if(!TextUtils.isEmpty(keyStore)){
+                            mPasswordCheckDialogHelper.dismissDialog();
+                            ContentShowDialogHelper.showContentDialog(mActivity, R.string.backup_keystore, R.string.copy_keystore, keyStore);
+                        } else {
+                            mPasswordCheckDialogHelper.updatePasswordCheckError();
+                        }
+                    }
+                }).execute();
+                return true;
+            }
+        }, R.string.confirm_password);
+    }
+
+    private void showPasswordCheckDialogForDelete(){
+        final PasswordCheckDialogHelper mPasswordCheckDialogHelper = new PasswordCheckDialogHelper();
+
+        mPasswordCheckDialogHelper.showPasswordDialog(this, new PasswordCheckDialogHelper.ConfirmBtnClickListener() {
+            @Override
+            public boolean onConfirmBtnClick(String password, Context context) {
+                new DecryptKeyStoreAsycTask(context, mAccountItem.getCoinType(), "",
+                        password, new DecryptKeyStoreAsycTask.OnDecryptKeyStoreFinishedListener() {
+                    @Override
+                    public void onDecryptKeyStoreFinished(String keyStore) {
+                        if(!TextUtils.isEmpty(keyStore)){
+                            mPasswordCheckDialogHelper.dismissDialog();
+                        } else {
+                            mPasswordCheckDialogHelper.updatePasswordCheckError();
+                        }
+                    }
+                }).execute();
+                return true;
+            }
+        }, R.string.confirm_password);
     }
 }

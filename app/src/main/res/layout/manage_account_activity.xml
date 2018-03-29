@@ -40,14 +40,16 @@
             </LinearLayout>
         </FrameLayout>
 
-        <RelativeLayout
+        <include layout="@layout/create_account_high_divider_view" />
+
+        <RelativeLayout android:id="@+id/mnemonic_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingEnd="20dip"
-            android:paddingStart="20dip">
+            android:paddingStart="20dip"
+            android:background="@drawable/item_bg_selector">
 
             <TextView
-                android:id="@+id/mnemonic_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -55,7 +57,7 @@
                 android:layout_marginTop="15dip"
                 android:text="@string/backup_mnemonic"
                 android:textColor="@color/gray_66"
-                android:textSize="16sp"/>
+                android:textSize="16sp" />
 
             <include layout="@layout/into_view" />
         </RelativeLayout>
@@ -63,42 +65,42 @@
 
         <include layout="@layout/create_account_divider_view_without_padding" />
 
-        <RelativeLayout
+        <RelativeLayout android:id="@+id/key_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingEnd="20dip"
-            android:paddingStart="20dip">
+            android:paddingStart="20dip"
+            android:background="@drawable/item_bg_selector">
 
             <TextView
-                android:id="@+id/key_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dip"
                 android:layout_marginTop="15dip"
                 android:text="@string/backup_key"
                 android:textColor="@color/gray_66"
-                android:textSize="16sp"/>
+                android:textSize="16sp" />
 
             <include layout="@layout/into_view" />
         </RelativeLayout>
 
         <include layout="@layout/create_account_divider_view_without_padding" />
 
-        <RelativeLayout
+        <RelativeLayout android:id="@+id/keystore_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingEnd="20dip"
-            android:paddingStart="20dip">
+            android:paddingStart="20dip"
+            android:background="@drawable/item_bg_selector">
 
             <TextView
-                android:id="@+id/keystore_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dip"
                 android:layout_marginTop="15dip"
                 android:text="@string/backup_keystore"
                 android:textColor="@color/gray_66"
-                android:textSize="16sp"/>
+                android:textSize="16sp" />
 
             <include layout="@layout/into_view" />
         </RelativeLayout>
@@ -109,11 +111,12 @@
             android:id="@+id/delete_account_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dip"
-            android:layout_marginTop="15dip"
+            android:paddingBottom="15dip"
+            android:paddingTop="15dip"
+            android:gravity="center"
             android:text="@string/delete_account"
-            android:textColor="@color/gray_b2"
+            android:textColor="@color/delete_btn_textcolor_selector"
             android:textSize="16sp"
-            android:gravity="center"/>
+            android:background="@drawable/item_bg_selector"/>
     </LinearLayout>
 </ScrollView>

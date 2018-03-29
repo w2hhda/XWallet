@@ -1,5 +1,6 @@
 package com.x.wallet.lib.eth.api;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -137,16 +138,23 @@ public class EthAccountCreateHelper {
         return null;
     }
 
-    public static String restoreMnemonicFromKeyStore(String keyStore, String password){
+    public static String restoreKeyFromKeyStore(String keyStore, String password) {
         try{
             ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
             WalletFile walletFile = mapper.readValue(keyStore, WalletFile.class);
             ECKeyPair keyPair = Wallet.decrypt(password, walletFile);
-            keyPair.getPrivateKey();
-            return "";
+            return keyPair != null ? keyPair.getPrivateKey().toString(16) : null;
         } catch (Exception e){
-            Log.e(LibUtils.TAG_ETH, "EthAccountCreateHelper restoreMnemonicFromKeyStore ", e);
+            Log.e(LibUtils.TAG_ETH, "EthAccountCreateHelper restoreKeyFromKeyStore ", e);
         }
         return "";
+    }
+
+    public static String checkPasswordForKeyStore(String keyStore, String password) {
+        String result = restoreKeyFromKeyStore(keyStore, password);
+        if(TextUtils.isEmpty(result)){
+            return null;
+        }
+        return keyStore;
     }
 }

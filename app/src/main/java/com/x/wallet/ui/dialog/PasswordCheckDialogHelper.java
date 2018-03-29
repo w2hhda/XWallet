@@ -1,8 +1,9 @@
-package com.x.wallet.ui;
+package com.x.wallet.ui.dialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -19,14 +20,17 @@ import com.x.wallet.R;
 public class PasswordCheckDialogHelper {
     private TextView mFirstTv;
     private Dialog mDialog;
+    private Context mContext;
 
-    public void showPasswordDialog(Activity activity, final ConfirmBtnClickListener confirmBtnClickListener){
+    public void showPasswordDialog(Activity activity, final ConfirmBtnClickListener confirmBtnClickListener, final int strId){
+        mContext = activity;
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         final LayoutInflater inflater = activity.getLayoutInflater();
         final View contentView = inflater.inflate(R.layout.password_confirm_dialog, null);
         builder.setView(contentView);
         mDialog = builder.create();
         mFirstTv = contentView.findViewById(R.id.tv);
+        mFirstTv.setText(strId);
         final EditText passwordEt = contentView.findViewById(R.id.password_et);
         final View confirmBtn = contentView.findViewById(R.id.confirm_btn);
         View cancelBtn = contentView.findViewById(R.id.cancel_btn);
@@ -40,7 +44,7 @@ public class PasswordCheckDialogHelper {
             @Override
             public void onTextChanged(final CharSequence s, final int start, final int before,
                                       final int count) {
-                mFirstTv.setText(R.string.confirm_password_to_get_mnemonic);
+                mFirstTv.setText(strId);
                 confirmBtn.setEnabled(s != null && s.length() > 0);
             }
 
@@ -52,7 +56,7 @@ public class PasswordCheckDialogHelper {
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                confirmBtnClickListener.onConfirmBtnClick(passwordEt.getText() != null ? passwordEt.getText().toString() : "");
+                confirmBtnClickListener.onConfirmBtnClick(passwordEt.getText() != null ? passwordEt.getText().toString() : "", mContext);
             }
         });
 
@@ -76,6 +80,6 @@ public class PasswordCheckDialogHelper {
     }
 
     public interface ConfirmBtnClickListener{
-        boolean onConfirmBtnClick(String password);
+        boolean onConfirmBtnClick(String password, Context context);
     }
 }

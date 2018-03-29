@@ -93,4 +93,8 @@
     <string name="backup_mnemonic">备份助记词</string>
     <string name="backup_key">备份密钥</string>
     <string name="backup_keystore">备份KeyStore</string>
+    <string name="copy_ok">复制成功</string>
+    <string name="copy_failed">复制失败</string>
+    <string name="copy_key">复制密钥</string>
+    <string name="copy_keystore">复制KeyStore</string>
 </resources>

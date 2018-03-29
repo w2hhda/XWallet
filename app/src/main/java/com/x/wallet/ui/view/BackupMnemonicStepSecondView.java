@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 
 import com.x.wallet.R;
 import com.x.wallet.transaction.mnemonic.DecryptMnemonicAsycTask;
-import com.x.wallet.ui.PasswordCheckDialogHelper;
+import com.x.wallet.ui.dialog.PasswordCheckDialogHelper;
 import com.x.wallet.ui.adapter.GridViewAdapter;
 
 import java.util.List;
@@ -60,7 +60,7 @@ public class BackupMnemonicStepSecondView extends LinearLayout {
 
         mPasswordCheckDialogHelper.showPasswordDialog((Activity)mContext, new PasswordCheckDialogHelper.ConfirmBtnClickListener() {
             @Override
-            public boolean onConfirmBtnClick(String password) {
+            public boolean onConfirmBtnClick(String password, Context context) {
                 new DecryptMnemonicAsycTask(mContext, mUri, password, new DecryptMnemonicAsycTask.OnDecryptMnemonicFinishedListener() {
                     @Override
                     public void onDecryptMnemonicFinished(List<String> words) {
@@ -76,7 +76,7 @@ public class BackupMnemonicStepSecondView extends LinearLayout {
                 }).execute();
                 return true;
             }
-        });
+        }, R.string.confirm_password_to_get_mnemonic);
     }
 
     private void updateShowMnemonicBtn(){

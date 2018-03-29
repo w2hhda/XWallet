@@ -9,24 +9,32 @@ import java.io.Serializable;
  */
 
 public class AccountItem implements Serializable {
+    private long mId;
     private String mAddress;
     private String mAccountName;
     private String mCoinName;
     private int mCoinType;
-    private String mEncryMnemonic;
     private String mEncrySeed;
+    private String mEncryMnemonic;
+    private String mKeyStore;
     private String mBalance;
 
-    public AccountItem(String address, String accountName, String coinName,
-                       int coinType, String encrySeed, String encryMnemonic,
+    public AccountItem(long id, String address, String accountName, String coinName,
+                       int coinType, String encrySeed, String encryMnemonic, String keyStore,
                        String balance) {
+        mId = id;
         mAddress = address;
         mAccountName = accountName;
         mCoinName = coinName;
         mCoinType = coinType;
         mEncrySeed = encrySeed;
         mEncryMnemonic = encryMnemonic;
+        mKeyStore = keyStore;
         mBalance = balance;
+    }
+
+    public long getId() {
+        return mId;
     }
 
     public String getAddress() {
@@ -77,6 +85,14 @@ public class AccountItem implements Serializable {
         mEncrySeed = encrySeed;
     }
 
+    public String getKeyStore() {
+        return mKeyStore;
+    }
+
+    public void setKeyStore(String keyStore) {
+        mKeyStore = keyStore;
+    }
+
     public String getBalance() {
         return mBalance;
     }
@@ -86,12 +102,14 @@ public class AccountItem implements Serializable {
     }
 
     public static AccountItem createFromCursor(Cursor cursor){
-        return new AccountItem(cursor.getString(COLUMN_ACCOUNT_ADDRESS),
+        return new AccountItem(cursor.getLong(COLUMN_ID),
+                cursor.getString(COLUMN_ACCOUNT_ADDRESS),
                 cursor.getString(COLUMN_ACCOUNT_NAME),
                 cursor.getString(COLUMN_COIN_NAME),
                 cursor.getInt(COLUMN_COIN_TYPE),
                 cursor.getString(COLUMN_COIN_SEED),
                 cursor.getString(COLUMN_COIN_MNEMONIC),
+                cursor.getString(COLUMN_KEYSTORE),
                 cursor.getString(COLUMN_BALANCE));
     }
 
@@ -108,6 +126,7 @@ public class AccountItem implements Serializable {
                 '}';
     }
 
+    static final int COLUMN_ID                      = 0;
     static final int COLUMN_ACCOUNT_ADDRESS         = 1;
     static final int COLUMN_ACCOUNT_NAME            = 2;
     static final int COLUMN_COIN_NAME               = 3;
