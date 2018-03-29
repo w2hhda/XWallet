@@ -123,6 +123,23 @@ public class EthAccountCreateHelper {
         return null;
     }
 
+    public static String generateKeyStoreWithNewPassword(String keyStore, String keyStorePassword, String password){
+        try{
+            ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
+            WalletFile file = mapper.readValue(keyStore, WalletFile.class);
+            if (file != null){
+                ECKeyPair pair = Wallet.decrypt(keyStorePassword, file);
+
+                WalletFile walletFile = Wallet.createStandard(password, pair);
+                ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
+                return objectMapper.writeValueAsString(walletFile);
+            }
+        } catch (Exception e){
+            Log.e(LibUtils.TAG_ETH, "EthAccountCreateHelper generateKeyStoreWithNewPassword exception ", e);
+        }
+        return null;
+    }
+
     public static AccountData importFromMnemonic(List<String> mnemonicWords, String password){
         try {
             byte[] mnemonicSeed = MnemonicHelper.toEntropy(mnemonicWords);
@@ -156,5 +173,13 @@ public class EthAccountCreateHelper {
             return null;
         }
         return keyStore;
+    }
+
+    public static String decryptPrivKey(String privKey, String oldPassword) {
+        return privKey;
+    }
+
+    public static String encryptPrivKey(String rawPrivKey, String newPassword) {
+        return null;
     }
 }

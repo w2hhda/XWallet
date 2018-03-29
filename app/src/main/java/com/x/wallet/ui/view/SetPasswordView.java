@@ -39,16 +39,20 @@ public class SetPasswordView extends LinearLayout{
         return mPasswordEt.getText() != null ? mPasswordEt.getText().toString() : null;
     }
 
-    private int isPasswordOk(){
-        if(TextUtils.isEmpty(mPasswordEt.getText())){
+    public boolean checkInputPassword(Context context){
+        return checkInputPassword(context, mPasswordEt, mConfirmPasswordEt);
+    }
+
+    private static int isPasswordOk(EditText passwordEt, EditText confirmPasswordEt){
+        if(TextUtils.isEmpty(passwordEt.getText())){
             return PasswordErrorType.BLANK;
         }
 
         SecureCharSequence password = null;
         SecureCharSequence passwordConfirm = null;
         try{
-            password = new SecureCharSequence(mPasswordEt.getText());
-            passwordConfirm = new SecureCharSequence(mConfirmPasswordEt.getText());
+            password = new SecureCharSequence(passwordEt.getText());
+            passwordConfirm = new SecureCharSequence(confirmPasswordEt.getText());
 
             if(password.length() < 6){
                 return PasswordErrorType.SHORT;
@@ -69,8 +73,26 @@ public class SetPasswordView extends LinearLayout{
         return PasswordErrorType.OK;
     }
 
-    public boolean checkInputPassword(Context context){
-        int passwordCheckResult = isPasswordOk();
+    public static boolean isPasswordTheSame(EditText passwordEt, EditText confirmPasswordEt){
+        SecureCharSequence password = null;
+        SecureCharSequence passwordConfirm = null;
+        try{
+            password = new SecureCharSequence(passwordEt.getText());
+            passwordConfirm = new SecureCharSequence(confirmPasswordEt.getText());
+            return password.equals(passwordConfirm);
+        } finally {
+            if(password != null){
+                password.wipe();
+            }
+            if(passwordConfirm != null){
+                passwordConfirm.wipe();
+            }
+        }
+    }
+
+
+    public static boolean checkInputPassword(Context context, EditText passwordEt, EditText confirmPasswordEt){
+        int passwordCheckResult = isPasswordOk(passwordEt, confirmPasswordEt);
         switch (passwordCheckResult){
             case SetPasswordView.PasswordErrorType.BLANK:
                 Toast.makeText(context, R.string.password_error_blank, Toast.LENGTH_LONG).show();

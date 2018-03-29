@@ -170,11 +170,16 @@ public class BtcCreateAddressHelper {
         return new EncryptedData(encryptSeed).decrypt(password);
     }
 
-    private static byte[] decryptMnemonicSeed(String encryptMnemonic, CharSequence password) throws KeyCrypterException {
-        if (password == null || TextUtils.isEmpty(encryptMnemonic)) {
-            return null;
+    public static byte[] decryptMnemonicSeed(String encryptMnemonic, CharSequence password){
+        try{
+            if (password == null || TextUtils.isEmpty(encryptMnemonic)) {
+                return null;
+            }
+            return new EncryptedData(encryptMnemonic).decrypt(password);
+        } catch (Exception e){
+            Log.e(LibUtils.TAG_BTC, "BtcCreateAddressHelperdecryptMnemonicSeed decrypt failed for exception!", e);
         }
-        return new EncryptedData(encryptMnemonic).decrypt(password);
+        return null;
     }
 
     private static void wipeByteShuzu(byte[] value) {
@@ -182,5 +187,10 @@ public class BtcCreateAddressHelper {
             return;
         }
         Utils.wipeBytes(value);
+    }
+
+    public static String encryptMnemonicSeed(byte[] dataToEncrypt, CharSequence password){
+        EncryptedData encryptedMnemonicSeed = new EncryptedData(dataToEncrypt, password, false);
+        return encryptedMnemonicSeed.toEncryptedString();
     }
 }

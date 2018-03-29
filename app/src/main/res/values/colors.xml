@@ -16,4 +16,5 @@
     <color name="gray_eb">#ebebeb</color>
     <color name="manage_account_textColor">#131431</color>
     <color name="gray_66">#666666</color>
+    <color name="error_warn_color">#ff5534</color>
 </resources>

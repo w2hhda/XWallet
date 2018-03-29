@@ -1,5 +1,8 @@
 package com.x.wallet;
 
+import android.content.Context;
+import android.os.Build;
+
 /**
  * Created by wuliang on 18-3-13.
  */
@@ -12,6 +15,14 @@ public class AppUtils {
 
     public static int getMnemonicType(String mnemonicTypeText) {
         return 0;
+    }
+
+    public static int getColor(Context context, int colorId) {
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
+            return context.getResources().getColor(colorId);
+        } else{
+            return context.getResources().getColor(colorId, null);
+        }
     }
 
     public interface IMPORTTYPE{

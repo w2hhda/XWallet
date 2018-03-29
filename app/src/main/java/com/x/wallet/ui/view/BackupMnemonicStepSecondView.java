@@ -60,7 +60,7 @@ public class BackupMnemonicStepSecondView extends LinearLayout {
 
         mPasswordCheckDialogHelper.showPasswordDialog((Activity)mContext, new PasswordCheckDialogHelper.ConfirmBtnClickListener() {
             @Override
-            public boolean onConfirmBtnClick(String password, Context context) {
+            public void onConfirmBtnClick(String password, Context context) {
                 new DecryptMnemonicAsycTask(mContext, mUri, password, new DecryptMnemonicAsycTask.OnDecryptMnemonicFinishedListener() {
                     @Override
                     public void onDecryptMnemonicFinished(List<String> words) {
@@ -74,7 +74,6 @@ public class BackupMnemonicStepSecondView extends LinearLayout {
                         }
                     }
                 }).execute();
-                return true;
             }
         }, R.string.confirm_password_to_get_mnemonic);
     }

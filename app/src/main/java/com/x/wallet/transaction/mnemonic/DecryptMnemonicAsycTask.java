@@ -49,8 +49,7 @@ public class DecryptMnemonicAsycTask extends AsyncTask<Void, Void, List<String>>
                 if(cursor.moveToFirst()){
                     String encryptMnemonic = cursor.getString(0);
                     if(!TextUtils.isEmpty(encryptMnemonic)){
-                        List<String> words = BtcCreateAddressHelper.readMnemonicToList(encryptMnemonic, mPassword);
-                        return words;
+                        return BtcCreateAddressHelper.readMnemonicToList(encryptMnemonic, mPassword);
                     }
                 }
             }

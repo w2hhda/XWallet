@@ -107,7 +107,16 @@ public class XWalletProvider extends ContentProvider {
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        int count = db.update(TABLE_ACCOUNT, values, selection, selectionArgs);
+        int match = URI_MATCHER.match(uri);
+        int count = 0;
+        switch (match){
+            case URI_ACCOUNT:
+                count = db.update(TABLE_ACCOUNT, values, selection, selectionArgs);
+                break;
+            case URI_ACCOUNT_ID:
+                count = db.update(TABLE_ACCOUNT, values, DbUtils.DbColumns._ID + "=" + uri.getLastPathSegment(), null);
+                break;
+        }
         Log.i(AppUtils.APP_TAG, "XWalletProvider update count =" + count);
         if(count > 0){
             getContext().getContentResolver().notifyChange(uri, null);

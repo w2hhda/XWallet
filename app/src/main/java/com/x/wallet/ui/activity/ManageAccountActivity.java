@@ -16,10 +16,12 @@ import android.widget.Toast;
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.db.XWalletProvider;
+import com.x.wallet.transaction.ChangePasswordAsycTask;
 import com.x.wallet.transaction.DeleteAccountAsycTask;
 import com.x.wallet.transaction.key.DecryptKeyAsycTask;
 import com.x.wallet.transaction.keystore.DecryptKeyStoreAsycTask;
 import com.x.wallet.ui.data.AccountItem;
+import com.x.wallet.ui.dialog.ChangePasswordDialogHelper;
 import com.x.wallet.ui.dialog.ContentShowDialogHelper;
 import com.x.wallet.ui.dialog.PasswordCheckDialogHelper;
 
@@ -35,6 +37,8 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
     private View mMnemonicView;
     private View mKeyView;
     private View mKeyStoreView;
+
+    private View mChangePasswordView;
 
     private View mDeleteView;
     private Activity mActivity;
@@ -83,6 +87,14 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
             }
         });
 
+        mChangePasswordView = findViewById(R.id.change_password_tv);
+        mChangePasswordView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showChangePasswordDialog();
+            }
+        });
+
         mDeleteView = findViewById(R.id.delete_account_tv);
         mDeleteView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,7 +114,7 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
 
         mPasswordCheckDialogHelper.showPasswordDialog(this, new PasswordCheckDialogHelper.ConfirmBtnClickListener() {
             @Override
-            public boolean onConfirmBtnClick(String password, Context context) {
+            public void onConfirmBtnClick(String password, Context context) {
                 new DecryptKeyAsycTask(context, mAccountItem.getCoinType(), "", mAccountItem.getKeyStore(),
                         password, new DecryptKeyAsycTask.OnDecryptKeyFinishedListener() {
                     @Override
@@ -115,7 +127,6 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                         }
                     }
                 }).execute();
-                return true;
             }
         }, R.string.confirm_password);
     }
@@ -125,7 +136,7 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
 
         mPasswordCheckDialogHelper.showPasswordDialog(this, new PasswordCheckDialogHelper.ConfirmBtnClickListener() {
             @Override
-            public boolean onConfirmBtnClick(String password, Context context) {
+            public void onConfirmBtnClick(String password, Context context) {
                 new DecryptKeyStoreAsycTask(context, mAccountItem.getCoinType(), mAccountItem.getKeyStore(),
                         password, new DecryptKeyStoreAsycTask.OnDecryptKeyStoreFinishedListener() {
                     @Override
@@ -138,23 +149,22 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                         }
                     }
                 }).execute();
-                return true;
             }
         }, R.string.confirm_password);
     }
 
     private void showPasswordCheckDialogForDelete(){
-        final PasswordCheckDialogHelper mPasswordCheckDialogHelper = new PasswordCheckDialogHelper();
+        final PasswordCheckDialogHelper passwordCheckDialogHelper = new PasswordCheckDialogHelper();
 
-        mPasswordCheckDialogHelper.showPasswordDialog(this, new PasswordCheckDialogHelper.ConfirmBtnClickListener() {
+        passwordCheckDialogHelper.showPasswordDialog(this, new PasswordCheckDialogHelper.ConfirmBtnClickListener() {
             @Override
-            public boolean onConfirmBtnClick(String password, Context context) {
+            public void onConfirmBtnClick(String password, Context context) {
                 new DecryptKeyStoreAsycTask(context, mAccountItem.getCoinType(), mAccountItem.getKeyStore(),
                         password, new DecryptKeyStoreAsycTask.OnDecryptKeyStoreFinishedListener() {
                     @Override
                     public void onDecryptKeyStoreFinished(String keyStore) {
                         if(!TextUtils.isEmpty(keyStore)){
-                            mPasswordCheckDialogHelper.dismissDialog();
+                            passwordCheckDialogHelper.dismissDialog();
                             ContentShowDialogHelper.showConfirmDialog(mActivity, R.string.delete_account
                                     , mActivity.getResources().getString(R.string.confirm_delete_account, mAccountItem.getAccountName())
                                     , new DialogInterface.OnClickListener() {
@@ -175,12 +185,35 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                                 }
                             });
                         } else {
-                            mPasswordCheckDialogHelper.updatePasswordCheckError();
+                            passwordCheckDialogHelper.updatePasswordCheckError();
                         }
                     }
                 }).execute();
-                return true;
             }
         }, R.string.confirm_password);
+    }
+
+
+    private void showChangePasswordDialog(){
+        final ChangePasswordDialogHelper changePasswordDialogHelper = new ChangePasswordDialogHelper();
+
+        changePasswordDialogHelper.showPasswordDialog(this, new ChangePasswordDialogHelper.ConfirmBtnClickListener() {
+            @Override
+            public void onConfirmBtnClick(String oldPassword, String newPassword) {
+                new ChangePasswordAsycTask(mActivity, mAccountItem.getId(), oldPassword,
+                        newPassword, new ChangePasswordAsycTask.OnChangePasswordFinishedListener() {
+                    @Override
+                    public void onChangePasswordFinished(boolean result) {
+                        if(result){
+                            Toast.makeText(mActivity, R.string.change_password_success, Toast.LENGTH_LONG).show();
+                            changePasswordDialogHelper.dismissDialog();
+                        } else {
+                            Toast.makeText(mActivity, R.string.change_password_failed, Toast.LENGTH_LONG).show();
+                            changePasswordDialogHelper.updatePasswordCheckError();
+                        }
+                    }
+                }).execute();
+            }
+        }, R.string.change_password);
     }
 }
