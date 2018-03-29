@@ -3,21 +3,22 @@ package com.x.wallet.transaction.address;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.x.wallet.AppUtils;
-import com.x.wallet.MainActivity;
 import com.x.wallet.R;
-import com.x.wallet.lib.common.LibUtils;
+import com.x.wallet.XWalletApplication;
+import com.x.wallet.db.DbUtils;
+import com.x.wallet.db.XWalletProvider;
+import com.x.wallet.lib.common.AccountData;
 
 /**
  * Created by wuliang on 18-3-15.
  */
 
-public class ImportAddressAsycTask extends AsyncTask<Void, Void, Uri>{
+public class ImportAddressAsycTask extends AsyncTask<Void, Void, Integer>{
     private int mCoinType;
     private int mImportType;
     private String mPassword;
@@ -33,6 +34,8 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Uri>{
 
     private ProgressDialog mProgressDialog;
     private Context mContext;
+
+    private Uri mUri = null;
 
     public ImportAddressAsycTask(Context context, int importType, int coinType, String password, String accountName) {
         mContext = context;
@@ -50,37 +53,67 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Uri>{
     }
 
     @Override
-    protected Uri doInBackground(Void... voids) {
-        switch (mImportType){
-            case AppUtils.IMPORTTYPE.IMPORT_TYPE_MNEMONIC:
-                return AddressUtils.importAddressThroughMnemonic(mCoinType,
-                        mPassword,
-                        mAccountName,
-                        mMnemonicType,
-                        mMnemonic);
-            case AppUtils.IMPORTTYPE.IMPORT_TYPE_KEY:
-                return AddressUtils.importAddressThroughKey(mCoinType,
-                        mPassword,
-                        mAccountName,
-                        mKey);
-            case AppUtils.IMPORTTYPE.IMPORT_TYPE_KEYSTORE:
-                return AddressUtils.importAddressThroughKeyStore(mCoinType,
-                        mPassword,
-                        mAccountName, mKeyStore, mKeyStorePassword);
+    protected Integer doInBackground(Void... voids) {
+        int resultType = AppUtils.CREATE_ADDRESS_FAILED_OTHER;
+        boolean isAccountNameExist = DbUtils.isAccountNameExist(mAccountName);
+        if(isAccountNameExist){
+            resultType = AppUtils.CREATE_ADDRESS_FAILED_ACCOUNTNAME_SAME;
+        } else {
+            AccountData data = null;
+            switch (mImportType){
+                case AppUtils.IMPORTTYPE.IMPORT_TYPE_MNEMONIC:
+                    data = AddressUtils.importAddressThroughMnemonic(mCoinType,
+                            mPassword,
+                            mAccountName,
+                            mMnemonicType,
+                            mMnemonic);
+                    break;
+                case AppUtils.IMPORTTYPE.IMPORT_TYPE_KEY:
+                    data = AddressUtils.importAddressThroughKey(mCoinType,
+                            mPassword,
+                            mAccountName,
+                            mKey);
+                    break;
+                case AppUtils.IMPORTTYPE.IMPORT_TYPE_KEYSTORE:
+                    data = AddressUtils.importAddressThroughKeyStore(mCoinType,
+                            mPassword,
+                            mAccountName, mKeyStore, mKeyStorePassword);
+                    break;
+            }
+            if(data != null){
+                boolean isAddressExist = DbUtils.isAddressExist(data.getAddress());
+                if(isAddressExist){
+                    resultType = AppUtils.CREATE_ADDRESS_FAILED_ADDRESS_EXIST;
+                } else {
+                    mUri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(data));
+                    if(mUri != null){
+                        resultType = AppUtils.CREATE_ADDRESS_OK;
+                    }
+                }
+            }
         }
-        return null;
+         return resultType;
     }
 
     @Override
-    protected void onPostExecute(Uri uri) {
+    protected void onPostExecute(Integer resultType) {
         mProgressDialog.dismiss();
-        if(uri != null){
-            Toast.makeText(mContext, R.string.import_address_success, Toast.LENGTH_LONG).show();
-        }else {
-            Toast.makeText(mContext, R.string.import_address_failed, Toast.LENGTH_LONG).show();
-        }
-        if(mContext instanceof Activity){
-            ((Activity) mContext).finish();
+        switch (resultType){
+            case AppUtils.CREATE_ADDRESS_OK:
+                Toast.makeText(mContext, R.string.import_address_success, Toast.LENGTH_LONG).show();
+                if(mContext instanceof Activity){
+                    ((Activity) mContext).finish();
+                }
+                break;
+            case AppUtils.CREATE_ADDRESS_FAILED_OTHER:
+                Toast.makeText(mContext, R.string.import_address_failed, Toast.LENGTH_LONG).show();
+                break;
+            case AppUtils.CREATE_ADDRESS_FAILED_ACCOUNTNAME_SAME:
+                Toast.makeText(mContext, R.string.create_address_failed_accountname_same, Toast.LENGTH_LONG).show();
+                break;
+            case AppUtils.CREATE_ADDRESS_FAILED_ADDRESS_EXIST:
+                Toast.makeText(mContext, R.string.create_address_failed_address_exist, Toast.LENGTH_LONG).show();
+                break;
         }
     }
 

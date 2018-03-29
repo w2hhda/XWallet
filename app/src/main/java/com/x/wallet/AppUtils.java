@@ -38,4 +38,9 @@ public class AppUtils {
     public static final String TRANSACTION_ITEM = "transaction_item";
 
     public static final String APP_TAG = "XWallet";
+
+    public static final int CREATE_ADDRESS_FAILED_OTHER = -1;
+    public static final int CREATE_ADDRESS_OK = 0;
+    public static final int CREATE_ADDRESS_FAILED_ACCOUNTNAME_SAME = 1;
+    public static final int CREATE_ADDRESS_FAILED_ADDRESS_EXIST = 2;
 }

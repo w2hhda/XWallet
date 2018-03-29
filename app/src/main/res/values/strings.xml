@@ -18,6 +18,8 @@
     <string name="confirm_password_hint">重复密码</string>
     <string name="create_address_success">地址创建成功</string>
     <string name="create_address_failed">地址创建失败</string>
+    <string name="create_address_failed_accountname_same">钱包名称已经被使用</string>
+    <string name="create_address_failed_address_exist">账户已经存在</string>
     <string name="mnemonic">助记词</string>
     <string name="key">密钥</string>
     <string name="input_mnemonic_hint">请依序输入助记词并以空格分开各个单词</string>

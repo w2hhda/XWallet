@@ -1,8 +1,10 @@
 package com.x.wallet.db;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.text.TextUtils;
 
+import com.x.wallet.XWalletApplication;
 import com.x.wallet.lib.common.AccountData;
 
 /**
@@ -45,5 +47,32 @@ public class DbUtils {
             values.put(DbUtils.DbColumns.KEYSTORE, accountData.getKeyStore());
         }
         return values;
+    }
+
+    public static boolean isAccountNameExist(String accountName){
+        return isAlreadyExist(DbColumns.NAME + " = ?", new String[]{accountName});
+    }
+
+    public static boolean isAddressExist(String address){
+        return isAlreadyExist(DbColumns.ADDRESS + " = ?", new String[]{address});
+    }
+
+    private static boolean isAlreadyExist(String selection, String[] selectionArgs){
+        Cursor cursor = null;
+        try{
+            cursor = XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
+                    XWalletProvider.CONTENT_URI,
+                    new String[]{DbUtils.DbColumns._ID},
+                    selection,
+                    selectionArgs, null);
+            if(cursor != null && cursor.getCount() > 0){
+                return true;
+            }
+        } finally {
+            if(cursor != null){
+                cursor.close();
+            }
+        }
+        return false;
     }
 }
