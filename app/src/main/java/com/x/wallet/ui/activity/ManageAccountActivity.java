@@ -219,8 +219,10 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                 new ChangePasswordAsycTask(mActivity, mAccountItem.getId(), oldPassword,
                         newPassword, new ChangePasswordAsycTask.OnChangePasswordFinishedListener() {
                     @Override
-                    public void onChangePasswordFinished(boolean result) {
-                        if(result){
+                    public void onChangePasswordFinished(ChangePasswordAsycTask.ChangePasswordResult result) {
+                        if(result.isSuccess()){
+                            mAccountItem.setEncryMnemonic(result.getEncrptMnemonic());
+                            mAccountItem.setKeyStore(result.getKeyStore());
                             Toast.makeText(mActivity, R.string.change_password_success, Toast.LENGTH_LONG).show();
                             changePasswordDialogHelper.dismissDialog();
                         } else {

@@ -8,13 +8,14 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.lib.eth.api.EthAccountCreateHelper;
-
+import com.x.wallet.transaction.ChangePasswordAsycTask.ChangePasswordResult;
 import net.bither.bitherj.core.BtcCreateAddressHelper;
 
 
@@ -22,7 +23,7 @@ import net.bither.bitherj.core.BtcCreateAddressHelper;
  * Created by wuliang on 18-3-15.
  */
 
-public class ChangePasswordAsycTask extends AsyncTask<Void, Void, Boolean> {
+public class ChangePasswordAsycTask extends AsyncTask<Void, Void, ChangePasswordResult> {
     private Context mContext;
     private long mAccountId;
     private String mNewPassword;
@@ -47,7 +48,8 @@ public class ChangePasswordAsycTask extends AsyncTask<Void, Void, Boolean> {
     }
 
     @Override
-    protected Boolean doInBackground(Void... voids) {
+    protected ChangePasswordResult doInBackground(Void... voids) {
+        ChangePasswordResult result = new ChangePasswordResult(false);
         Uri uri = ContentUris.withAppendedId(XWalletProvider.CONTENT_URI, mAccountId);
         Cursor cursor = null;
         try {
@@ -62,6 +64,10 @@ public class ChangePasswordAsycTask extends AsyncTask<Void, Void, Boolean> {
                 String encryptMnemonic = cursor.getString(COLUMN_COIN_MNEMONIC);
                 String privKey = cursor.getString(COLUMN_RPIV_KEY);
                 String keystore = cursor.getString(COLUMN_KEYSTORE);
+                result.setEncrptMnemonic(encryptMnemonic);
+                result.setEncryptPrivKey(privKey);
+                result.setKeyStore(keystore);
+
                 if (coinType == LibUtils.COINTYPE.COIN_ETH) {
                     boolean isMnemonicDecryptOk = true;
                     if (!TextUtils.isEmpty(encryptMnemonic)) {
@@ -87,8 +93,8 @@ public class ChangePasswordAsycTask extends AsyncTask<Void, Void, Boolean> {
                         if (isPrivKeyDecryptOk) {
                             boolean isKeyStoreDecryptOk = true;
                             if (!TextUtils.isEmpty(keystore)) {
-                                String result = EthAccountCreateHelper.checkPasswordForKeyStore(keystore, mOldPassword);
-                                if (!TextUtils.isEmpty(result)) {
+                                String oldKeyStore = EthAccountCreateHelper.checkPasswordForKeyStore(keystore, mOldPassword);
+                                if (!TextUtils.isEmpty(oldKeyStore)) {
                                     newKeyStore = EthAccountCreateHelper.generateKeyStoreWithNewPassword(keystore, mOldPassword, mNewPassword);
                                 } else {
                                     isKeyStoreDecryptOk = false;
@@ -100,16 +106,20 @@ public class ChangePasswordAsycTask extends AsyncTask<Void, Void, Boolean> {
                                         || !TextUtils.isEmpty(keystore) && !TextUtils.isEmpty(newKeyStore)) {
                                     ContentValues values = new ContentValues();
                                     if (!TextUtils.isEmpty(newEncryptMnemonic)) {
+                                        result.setEncrptMnemonic(newEncryptMnemonic);
                                         values.put(DbUtils.DbColumns.ENCRYPT_MNEMONIC, newEncryptMnemonic);
                                     }
                                     if (!TextUtils.isEmpty(newPrivKey)) {
+                                        result.setEncryptPrivKey(newPrivKey);
                                         values.put(DbUtils.DbColumns.ENCRYPT_PRIV_KEY, newPrivKey);
                                     }
                                     if (!TextUtils.isEmpty(newKeyStore)) {
+                                        result.setKeyStore(newKeyStore);
                                         values.put(DbUtils.DbColumns.KEYSTORE, newKeyStore);
                                     }
                                     int count = XWalletApplication.getApplication().getApplicationContext().getContentResolver().update(uri, values, null, null);
-                                    return count > 0;
+                                    result.setSuccess(count > 0);
+                                    return result;
                                 }
                             }
                         }
@@ -121,11 +131,11 @@ public class ChangePasswordAsycTask extends AsyncTask<Void, Void, Boolean> {
                 cursor.close();
             }
         }
-        return false;
+        return result;
     }
 
     @Override
-    protected void onPostExecute(Boolean result) {
+    protected void onPostExecute(ChangePasswordResult result) {
         mProgressDialog.dismiss();
         if (mOnChangePasswordFinishedListener != null) {
             mOnChangePasswordFinishedListener.onChangePasswordFinished(result);
@@ -133,7 +143,7 @@ public class ChangePasswordAsycTask extends AsyncTask<Void, Void, Boolean> {
     }
 
     public interface OnChangePasswordFinishedListener {
-        void onChangePasswordFinished(boolean result);
+        void onChangePasswordFinished(ChangePasswordResult result);
     }
 
     private String[] PROJECTION = {
@@ -149,4 +159,47 @@ public class ChangePasswordAsycTask extends AsyncTask<Void, Void, Boolean> {
     static final int COLUMN_COIN_MNEMONIC = 2;
     static final int COLUMN_RPIV_KEY = 3;
     static final int COLUMN_KEYSTORE = 4;
+
+    public class ChangePasswordResult{
+        boolean isSuccess;
+        String mEncrptMnemonic;
+        String mEncryptPrivKey;
+        String mKeyStore;
+
+        public ChangePasswordResult(boolean isSuccess) {
+            this.isSuccess = isSuccess;
+        }
+
+        public boolean isSuccess() {
+            return isSuccess;
+        }
+
+        public void setSuccess(boolean success) {
+            isSuccess = success;
+        }
+
+        public void setEncrptMnemonic(String encrptMnemonic) {
+            mEncrptMnemonic = encrptMnemonic;
+        }
+
+        public void setEncryptPrivKey(String encryptPrivKey) {
+            mEncryptPrivKey = encryptPrivKey;
+        }
+
+        public void setKeyStore(String keyStore) {
+            mKeyStore = keyStore;
+        }
+
+        public String getEncrptMnemonic() {
+            return mEncrptMnemonic;
+        }
+
+        public String getEncryptPrivKey() {
+            return mEncryptPrivKey;
+        }
+
+        public String getKeyStore() {
+            return mKeyStore;
+        }
+    }
 }
