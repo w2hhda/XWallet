@@ -1,10 +1,13 @@
 package com.x.wallet.ui.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -19,7 +22,7 @@ import com.x.wallet.ui.data.AccountItem;
  * Created by wuliang on 18-3-16.
  */
 
-public class AccountListItem extends RelativeLayout{
+public class AccountListItem extends LinearLayout{
     private AccountItem mAccountItem;
     private TextView mAccountNameTv;
     private ImageView mImageView;
@@ -27,6 +30,7 @@ public class AccountListItem extends RelativeLayout{
     private TextView mCoinBalanceUnitTv;
     private TextView mBalanceTv;
     private TextView mBalanceConversionTv;
+    private View mAddTokenView;
 
     private BalanceConversionUtils.RateUpdateListener mRateUpdateListener;
 
@@ -51,6 +55,14 @@ public class AccountListItem extends RelativeLayout{
         mCoinBalanceUnitTv = findViewById(R.id.coin_balance_unit_tv);
         mBalanceTv = findViewById(R.id.coin_balance_tv);
         mBalanceConversionTv = findViewById(R.id.coin_balance_conversion_tv);
+
+        mAddTokenView = findViewById(R.id.add_token_container);
+        mAddTokenView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getContext().startActivity(new Intent("com.x.wallet.action.ADD_TOKEN_ACTION"));
+            }
+        });
     }
 
     public void bind(Cursor cursor) {
@@ -67,6 +79,9 @@ public class AccountListItem extends RelativeLayout{
             mBalanceTv.setText(EthUtils.getBalanceText(mAccountItem.getBalance()));
             mCoinBalanceUnitTv.setText(R.string.coin_unit_eth);
             updateBalanceConversionText();
+            mAddTokenView.setVisibility(VISIBLE);
+        } else {
+            mAddTokenView.setVisibility(GONE);
         }
 
         mRateUpdateListener = new BalanceConversionUtils.RateUpdateListener() {

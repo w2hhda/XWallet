@@ -109,4 +109,6 @@
     <string name="change_password_error_same">新密码与当前密码相同</string>
     <string name="change_password_success">修改密码成功</string>
     <string name="change_password_failed">修改密码失败</string>
+    <string name="add_token">添加代币</string>
+    <string name="add">添加</string>
 </resources>

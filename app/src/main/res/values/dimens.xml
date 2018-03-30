@@ -11,9 +11,9 @@
     <dimen name="all_balance_unit_marginTop">16dp</dimen>
     <dimen name="not_backup_warn_minWidth">192dp</dimen>
     <dimen name="not_backup_warn_minHeight">17dp</dimen>
-    <dimen name="account_list_item_paddingStart">21dp</dimen>
-    <dimen name="account_list_item_paddingEnd">10dp</dimen>
-    <dimen name="account_list_item_minHeight">67dp</dimen>
+    <dimen name="account_list_item_paddingStart">16dp</dimen>
+    <dimen name="account_list_item_paddingEnd">16dp</dimen>
+    <dimen name="account_list_item_minHeight">68dp</dimen>
     <dimen name="coin_name_tv_marginStart">15dp</dimen>
     <dimen name="into_iv_marginStart">9dp</dimen>
     <dimen name="coin_balance_conversion_tv_marginTop">8dp</dimen>
