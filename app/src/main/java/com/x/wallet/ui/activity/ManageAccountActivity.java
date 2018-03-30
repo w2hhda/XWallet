@@ -22,6 +22,7 @@ import com.x.wallet.transaction.DeleteAccountAsycTask;
 import com.x.wallet.transaction.key.DecryptKeyAsycTask;
 import com.x.wallet.transaction.keystore.DecryptKeyStoreAsycTask;
 import com.x.wallet.ui.data.AccountItem;
+import com.x.wallet.ui.data.SerializableAccountItem;
 import com.x.wallet.ui.dialog.ChangePasswordDialogHelper;
 import com.x.wallet.ui.dialog.ContentShowDialogHelper;
 import com.x.wallet.ui.dialog.PasswordCheckDialogHelper;
@@ -31,7 +32,7 @@ import com.x.wallet.ui.dialog.PasswordCheckDialogHelper;
  */
 
 public class ManageAccountActivity extends WithBackAppCompatActivity {
-    private AccountItem mAccountItem;
+    private SerializableAccountItem mAccountItem;
     private TextView mAccountNameTv;
     private TextView mAddressTv;
 
@@ -49,7 +50,7 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.manage_account_activity);
         mActivity = this;
-        mAccountItem = (AccountItem) getIntent().getSerializableExtra(AppUtils.ACCOUNT_DATA);
+        mAccountItem = (SerializableAccountItem) getIntent().getSerializableExtra(AppUtils.ACCOUNT_DATA);
 
         initViews();
     }

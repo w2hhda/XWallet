@@ -59,7 +59,7 @@ public class AccountListAdapter extends CursorRecyclerAdapter<AccountListAdapter
         public AccountViewHolder(final View itemView, final View.OnClickListener viewClickListener) {
             super(itemView);
             mView = itemView;
-            mView.setOnClickListener(viewClickListener);
+            mView.findViewById(R.id.raw_item).setOnClickListener(viewClickListener);
         }
     }
 

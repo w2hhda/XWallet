@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.x.wallet.ui.data.TokenItem;
+import com.x.wallet.ui.data.TokenItemBean;
 import com.x.wallet.ui.view.TokenListItem;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.List;
 public class RecyclerViewArrayAdapter extends RecyclerView.Adapter<RecyclerViewArrayAdapter.ViewHolder> {
 
     private int mListItemLayoutId;
-    private ArrayList<TokenItem> mTokenItemList;
+    private ArrayList<TokenItemBean> mTokenItemList;
     private int mCurrentCheckedItemPosition;
 
     public RecyclerViewArrayAdapter(int layoutId) {
@@ -59,7 +59,7 @@ public class RecyclerViewArrayAdapter extends RecyclerView.Adapter<RecyclerViewA
         listItem.bind(mTokenItemList.get(listPosition), mCurrentCheckedItemPosition == listPosition);
     }
 
-    public TokenItem getSelectedTokenItem() {
+    public TokenItemBean getSelectedTokenItem() {
         return mTokenItemList.get(mCurrentCheckedItemPosition);
     }
 

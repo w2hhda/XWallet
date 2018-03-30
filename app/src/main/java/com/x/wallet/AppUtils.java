@@ -36,6 +36,8 @@ public class AppUtils {
     public static final String ACCOUNT_DATA = "account_data";
     public static final String ADDRESS_URI = "address_uri";
     public static final String TRANSACTION_ITEM = "transaction_item";
+    public static final String ACCOUNT_ID ="account_id";
+    public static final String HAS_TOKEN_KEY ="has_token";
 
     public static final String APP_TAG = "XWallet";
 
@@ -43,4 +45,6 @@ public class AppUtils {
     public static final int CREATE_ADDRESS_OK = 0;
     public static final int CREATE_ADDRESS_FAILED_ACCOUNTNAME_SAME = 1;
     public static final int CREATE_ADDRESS_FAILED_ADDRESS_EXIST = 2;
+
+    public static final int HAS_TOKEN = 1;
 }

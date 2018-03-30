@@ -53,6 +53,16 @@ public class WalletDatabaseHelper extends SQLiteOpenHelper {
                 DbUtils.DbColumns.ENCRYPT_MNEMONIC + " TEXT," +
                 DbUtils.DbColumns.ENCRYPT_PRIV_KEY + " TEXT," +
                 DbUtils.DbColumns.KEYSTORE + " TEXT," +
-                DbUtils.DbColumns.BALANCE + " TEXT DEFAULT 0);");
+                DbUtils.DbColumns.BALANCE + " TEXT DEFAULT 0," +
+                DbUtils.DbColumns.HAS_TOKEN + " INTEGER DEFAULT 0);");
+
+        db.execSQL("CREATE TABLE " + XWalletProvider.TABLE_TOKEN + " (" +
+                DbUtils.TokenTableColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                DbUtils.TokenTableColumns.ACCOUNT_ID + " INTEGER," +
+                DbUtils.TokenTableColumns.ID_IN_ALL + " INTEGER," +
+                DbUtils.TokenTableColumns.ADDRESS + " TEXT," +
+                DbUtils.TokenTableColumns.SHORT_NAME + " TEXT," +
+                DbUtils.TokenTableColumns.WHOLE_NAME + " TEXT," +
+                DbUtils.TokenTableColumns.BALANCE + " TEXT DEFAULT 0);");
     }
 }

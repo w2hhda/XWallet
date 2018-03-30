@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package com.x.wallet.transaction.balance;
+package com.x.wallet.transaction.token;
 
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
+import android.util.Log;
 
+import com.x.wallet.transaction.balance.ItemLoadedCallback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,24 +34,41 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class BackgroundLoaderManager {
+/**
+ * Base class {@link BackgroundLoaderManager} used by {@link MessagingApplication} for loading
+ * items (images, thumbnails, pdus, etc.) in the background off of the UI thread.
+ * <p>
+ * Public methods should only be used from a single thread (typically the UI
+ * thread). Callbacks will be invoked on the thread where the ThumbnailManager
+ * was instantiated.
+ * <p>
+ * Uses a thread-pool ExecutorService instead of AsyncTasks since clients may
+ * request lots of images around the same time, and AsyncTask may reject tasks
+ * in that case and has no way of bounding the number of threads used by those
+ * tasks.
+ *
+ * Based on BooksImageManager by Virgil King.
+ */
+abstract class BackgroundLoaderManager {
+    private static final String TAG = "BackgroundLoaderManager";
+
     private static final int MAX_THREADS = 2;
 
     /**
      * URIs for which tasks are currently enqueued. Don't enqueue new tasks for
      * these, just add new callbacks.
      */
-    protected final Set<String> mPendingTaskUris;
+    protected final Set<Uri> mPendingTaskUris;
 
-    protected final HashMap<String, Set<ItemLoadedCallback>> mCallbacks;
+    protected final HashMap<Uri, Set<ItemLoadedCallback>> mCallbacks;
 
     protected final Executor mExecutor;
 
     protected final Handler mCallbackHandler;
 
-    public BackgroundLoaderManager(Context context) {
-        mPendingTaskUris = new HashSet<String>();
-        mCallbacks = new HashMap<String, Set<ItemLoadedCallback>>();
+    BackgroundLoaderManager(Context context) {
+        mPendingTaskUris = new HashSet<Uri>();
+        mCallbacks = new HashMap<Uri, Set<ItemLoadedCallback>>();
         final LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>();
         final int poolSize = MAX_THREADS;
         mExecutor = new ThreadPoolExecutor(
@@ -76,7 +95,7 @@ public abstract class BackgroundLoaderManager {
     /**
      * Attempts to add a callback for a resource.
      *
-     * @param address the {@link String} of the resource for which a callback is
+     * @param uri the {@link Uri} of the resource for which a callback is
      *            desired.
      * @param callback the callback to register.
      * @return {@code true} if the callback is guaranteed to be invoked with
@@ -87,25 +106,31 @@ public abstract class BackgroundLoaderManager {
      *         low-memory.
      * @throws NullPointerException if either argument is {@code null}
      */
-    public boolean addCallback(String address, ItemLoadedCallback callback) {
-        if (address == null) {
+    public boolean addCallback(Uri uri, ItemLoadedCallback callback) {
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "Adding image callback " + callback);
+        }
+        if (uri == null) {
             throw new NullPointerException("uri is null");
         }
         if (callback == null) {
             throw new NullPointerException("callback is null");
         }
-        Set<ItemLoadedCallback> callbacks = mCallbacks.get(address);
+        Set<ItemLoadedCallback> callbacks = mCallbacks.get(uri);
         if (callbacks == null) {
             callbacks = new HashSet<ItemLoadedCallback>(4);
-            mCallbacks.put(address, callbacks);
+            mCallbacks.put(uri, callbacks);
         }
         callbacks.add(callback);
         return true;
     }
 
     public void cancelCallback(ItemLoadedCallback callback) {
-        for (final String address : mCallbacks.keySet()) {
-            final Set<ItemLoadedCallback> callbacks = mCallbacks.get(address);
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "Cancelling image callback " + callback);
+        }
+        for (final Uri uri : mCallbacks.keySet()) {
+            final Set<ItemLoadedCallback> callbacks = mCallbacks.get(uri);
             callbacks.remove(callback);
         }
     }

@@ -23,6 +23,17 @@ public class DbUtils {
         String ENCRYPT_PRIV_KEY = "encrypt_priv_key";
         String KEYSTORE = "keystore";
         String BALANCE = "balance";
+        String HAS_TOKEN = "has_token";
+    }
+
+    public interface TokenTableColumns{
+        String _ID = "_id";
+        String ACCOUNT_ID = "account_id";
+        String ID_IN_ALL = "id_in_all";
+        String ADDRESS = "address";
+        String SHORT_NAME = "shore_name";
+        String WHOLE_NAME = "whole_name";
+        String BALANCE = "balance";
     }
 
     public static ContentValues createContentValues(AccountData accountData) {

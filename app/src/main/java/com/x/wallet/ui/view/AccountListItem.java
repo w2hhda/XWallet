@@ -23,7 +23,7 @@ import java.util.List;
  * Created by wuliang on 18-3-16.
  */
 
-public class AccountListItem extends LinearLayout{
+public class AccountListItem extends LinearLayout {
     private AccountItem mAccountItem;
     private TextView mAccountNameTv;
     private BaseRawAccountListItem mRawAccountListItem;
@@ -51,7 +51,10 @@ public class AccountListItem extends LinearLayout{
         mAddTokenView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                getContext().startActivity(new Intent("com.x.wallet.action.ADD_TOKEN_ACTION"));
+                Intent intent = new Intent("com.x.wallet.action.ADD_TOKEN_ACTION");
+                intent.putExtra(AppUtils.ACCOUNT_ID, mAccountItem.getId());
+                intent.putExtra(AppUtils.HAS_TOKEN_KEY, mAccountItem.isHasToken());
+                getContext().startActivity(intent);
             }
         });
 
@@ -65,7 +68,7 @@ public class AccountListItem extends LinearLayout{
         Log.i(AppUtils.APP_TAG, "AccountListItem bind mAccountItem = " + mAccountItem);
 
         mAccountNameTv.setText(mAccountItem.getAccountName());
-        if(mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_ETH){
+        if (mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_ETH) {
             mAddTokenView.setVisibility(VISIBLE);
         } else {
             mAddTokenView.setVisibility(GONE);
@@ -76,14 +79,33 @@ public class AccountListItem extends LinearLayout{
         bindTokenList();
     }
 
-    private void bindTokenList(){
+    private void bindTokenList() {
         mTokenContainer.removeAllViews();
+        if (mAccountItem.isHasToken()) {
+            List<TokenItem> list = mAccountItem.getTokenItemList();
+            if (list != null && list.size() > 0) {
+                bindToken();
+            } else {
+                mAccountItem.setTokenLoadedCallback(new AccountItem.TokenLoadedCallback() {
+                    @Override
+                    public void onTokenLoaded(AccountItem accountItem) {
+                        if (accountItem != null && mAccountItem != null &&
+                                accountItem.getId() == mAccountItem.getId()) {
+                            bindToken();
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    private void bindToken() {
         List<TokenItem> list = mAccountItem.getTokenItemList();
-        if(list != null && list.size() > 0){
-            for(TokenItem item : list){
+        if (list != null && list.size() > 0) {
+            for (TokenItem item : list) {
                 RawAccountListItem listItem = (RawAccountListItem) LayoutInflater.from(getContext()).inflate(
                         R.layout.raw_account_list_item, mTokenContainer, false);
-                RawAccountItem accountItem = new RawAccountItem(item.getShortname(), item.getId(), "0");
+                RawAccountItem accountItem = new RawAccountItem(item.getShortname(), item.getIdInAll(), item.getBalance());
                 listItem.bind(accountItem);
                 mTokenContainer.addView(LayoutInflater.from(getContext()).inflate(
                         R.layout.token_list_item_divider_view, mTokenContainer, false));

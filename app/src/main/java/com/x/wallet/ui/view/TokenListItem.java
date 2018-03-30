@@ -8,7 +8,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.x.wallet.R;
-import com.x.wallet.ui.data.TokenItem;
+import com.x.wallet.ui.data.TokenItemBean;
 
 /**
  * Created by wuliang on 18-3-30.
@@ -20,7 +20,7 @@ public class TokenListItem extends RelativeLayout{
     private TextView mWholeNameTv;
     private RadioButton mRadioButton;
 
-    private TokenItem mTokenItem;
+    private TokenItemBean mTokenItem;
 
     public TokenListItem(Context context) {
         super(context);
@@ -43,7 +43,7 @@ public class TokenListItem extends RelativeLayout{
         mRadioButton = findViewById(R.id.radioBtn);
     }
 
-    public void bind(TokenItem tokenItem, boolean isChecked){
+    public void bind(TokenItemBean tokenItem, boolean isChecked){
         mTokenItem = tokenItem;
         mShortNameTv.setText(tokenItem.getShortname());
         mWholeNameTv.setText(tokenItem.getWholename());
@@ -54,7 +54,7 @@ public class TokenListItem extends RelativeLayout{
         return mRadioButton.isChecked();
     }
 
-    public TokenItem getTokenItem() {
+    public TokenItemBean getTokenItem() {
         return mTokenItem;
     }
 }

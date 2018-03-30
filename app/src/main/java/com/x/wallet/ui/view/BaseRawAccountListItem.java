@@ -90,4 +90,8 @@ public class BaseRawAccountListItem extends RelativeLayout {
     public void initLayout() {
         LayoutInflater.from(getContext()).inflate(R.layout.base_raw_account_list_item, this, true);
     }
+
+    public AccountItem getAccountItem() {
+        return mAccountItem;
+    }
 }

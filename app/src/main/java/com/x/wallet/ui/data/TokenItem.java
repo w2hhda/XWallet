@@ -1,72 +1,58 @@
 package com.x.wallet.ui.data;
 
+import android.database.Cursor;
+
 /**
  * Created by wuliang on 18-3-30.
  */
 
 public class TokenItem {
-    private int id;
-    private String shortname;
-    private String wholename;
-    private String address;
-    private long order;
+    private int mIdInAll;
+    private String mShortname;
+    private String mWholename;
+    private String mAddress;
+    private String mBalance;
 
-    public TokenItem(int id, String shortname, String wholename, String address, long order) {
-        this.id = id;
-        this.shortname = shortname;
-        this.wholename = wholename;
-        this.address = address;
-        this.order = order;
+    public TokenItem(int idInAll, String shortname, String wholename, String address, String balance) {
+        mIdInAll = idInAll;
+        mShortname = shortname;
+        mWholename = wholename;
+        mAddress = address;
+        mBalance = balance;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public int getIdInAll() {
+        return mIdInAll;
     }
 
     public String getShortname() {
-        return shortname;
-    }
-
-    public void setShortname(String shortname) {
-        this.shortname = shortname;
+        return mShortname;
     }
 
     public String getWholename() {
-        return wholename;
-    }
-
-    public void setWholename(String wholename) {
-        this.wholename = wholename;
+        return mWholename;
     }
 
     public String getAddress() {
-        return address;
+        return mAddress;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public String getBalance() {
+        return mBalance;
     }
 
-    public long getOrder() {
-        return order;
-    }
+    public static final int TOKEN_COLUMN_ID_IN_ALL  = 2;
+    public static final int TOKEN_COLUMN_ADDRESS    = 3;
+    public static final int TOKEN_COLUMN_SHORT_NAME = 4;
+    public static final int TOKEN_COLUMN_WHOLE_NAME = 5;
+    public static final int TOKEN_COLUMN_BALANCE    = 6;
 
-    public void setOrder(long order) {
-        this.order = order;
-    }
-
-    @Override
-    public String toString() {
-        return "TokenItem{" +
-                "id=" + id +
-                ", shortname='" + shortname + '\'' +
-                ", wholename='" + wholename + '\'' +
-                ", address='" + address + '\'' +
-                ", order=" + order +
-                '}';
+    public static TokenItem createFromCursor(Cursor cursor) {
+        return new TokenItem(
+                cursor.getInt(TOKEN_COLUMN_ID_IN_ALL),
+                cursor.getString(TOKEN_COLUMN_SHORT_NAME),
+                cursor.getString(TOKEN_COLUMN_WHOLE_NAME),
+                cursor.getString(TOKEN_COLUMN_ADDRESS),
+                cursor.getString(TOKEN_COLUMN_BALANCE));
     }
 }

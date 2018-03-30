@@ -10,10 +10,13 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import com.x.wallet.AppUtils;
 import com.x.wallet.R;
+import com.x.wallet.transaction.token.InsertTokenAsycTask;
 import com.x.wallet.transaction.token.TokenListLoader;
 import com.x.wallet.ui.adapter.RecyclerViewArrayAdapter;
 import com.x.wallet.ui.data.TokenItem;
+import com.x.wallet.ui.data.TokenItemBean;
 
 import java.util.List;
 
@@ -38,11 +41,24 @@ public class AddTokenActivity extends WithBackAppCompatActivity {
 
         initLoaderManager();
 
+        final long accountId = getIntent().getLongExtra(AppUtils.ACCOUNT_ID, -1);
+        final boolean hasToken = getIntent().getBooleanExtra(AppUtils.HAS_TOKEN_KEY, false);
+
         mAddBtn = findViewById(R.id.finish_btn);
         mAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("test", "" + mAdapter.getSelectedTokenItem());
+                if(accountId >= 0){
+                    new InsertTokenAsycTask(AddTokenActivity.this, accountId, hasToken,
+                            mAdapter.getSelectedTokenItem(),
+                            new InsertTokenAsycTask.OnInsertTokenFinishedListener() {
+                                @Override
+                                public void onInsertFinished() {
+                                    AddTokenActivity.this.finish();
+                                }
+                            })
+                            .execute();
+                }
             }
         });
     }
@@ -75,21 +91,21 @@ public class AddTokenActivity extends WithBackAppCompatActivity {
         tokenListLoader.forceLoad();
     }
 
-    private final LoaderManager.LoaderCallbacks<List<TokenItem>> mLoaderCallbacks =
-            new LoaderManager.LoaderCallbacks<List<TokenItem>>() {
+    private final LoaderManager.LoaderCallbacks<List<TokenItemBean>> mLoaderCallbacks =
+            new LoaderManager.LoaderCallbacks<List<TokenItemBean>>() {
 
                 @Override
-                public Loader<List<TokenItem>> onCreateLoader(int id, Bundle args) {
+                public Loader<List<TokenItemBean>> onCreateLoader(int id, Bundle args) {
                     return new TokenListLoader(AddTokenActivity.this);
                 }
 
                 @Override
-                public void onLoadFinished(Loader<List<TokenItem>> loader, List<TokenItem> tokenItems) {
+                public void onLoadFinished(Loader<List<TokenItemBean>> loader, List<TokenItemBean> tokenItems) {
                     mAdapter.addAll(tokenItems);
                 }
 
                 @Override
-                public void onLoaderReset(Loader<List<TokenItem>> loader) {
+                public void onLoaderReset(Loader<List<TokenItemBean>> loader) {
 
                 }
             };

@@ -22,6 +22,7 @@ import com.x.wallet.lib.eth.data.TransactionsResultBean;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.ui.adapter.AccountDetailAdapter;
 import com.x.wallet.ui.data.AccountItem;
+import com.x.wallet.ui.data.SerializableAccountItem;
 import com.x.wallet.ui.data.TransactionItem;
 import com.x.wallet.ui.view.TransactionListItem;
 
@@ -41,7 +42,7 @@ import okhttp3.ResponseBody;
  */
 
 public class AccountDetailActivity extends WithBackAppCompatActivity {
-    private AccountItem mAccountItem;
+    private SerializableAccountItem mAccountItem;
 
     private TextView mBalanceTranslateTv;
     private TextView mBalanceTv;
@@ -62,7 +63,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_detail_activity);
 
-        mAccountItem = (AccountItem) getIntent().getSerializableExtra(AppUtils.ACCOUNT_DATA);
+        mAccountItem = (SerializableAccountItem) getIntent().getSerializableExtra(AppUtils.ACCOUNT_DATA);
         this.setTitle(mAccountItem.getAccountName());
 
         items = new  ArrayList<>();

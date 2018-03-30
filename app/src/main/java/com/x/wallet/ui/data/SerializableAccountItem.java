@@ -1,22 +1,15 @@
 package com.x.wallet.ui.data;
 
-import android.content.ContentUris;
 import android.database.Cursor;
 import android.text.TextUtils;
 
-import com.x.wallet.XWalletApplication;
-import com.x.wallet.db.XWalletProvider;
-import com.x.wallet.transaction.balance.ItemLoadedCallback;
-import com.x.wallet.transaction.balance.ItemLoadedFuture;
-import com.x.wallet.transaction.token.TokenLoaderManager;
-
-import java.util.List;
+import java.io.Serializable;
 
 /**
  * Created by wuliang on 18-3-16.
  */
 
-public class AccountItem{
+public class SerializableAccountItem implements Serializable {
     private long mId;
     private String mAddress;
     private String mAccountName;
@@ -26,14 +19,10 @@ public class AccountItem{
     private String mEncryMnemonic;
     private String mKeyStore;
     private String mBalance;
-    private int mHasToken;
-    private TokenLoadedCallback mTokenLoadedCallback;
-    private ItemLoadedFuture mItemLoadedFuture;
-    private List<TokenItem> mTokenItemList;
 
-    public AccountItem(long id, String address, String accountName, String coinName,
+    public SerializableAccountItem(long id, String address, String accountName, String coinName,
                        int coinType, String encrySeed, String encryMnemonic, String keyStore,
-                       String balance, int hasToken) {
+                       String balance) {
         mId = id;
         mAddress = address;
         mAccountName = accountName;
@@ -43,13 +32,6 @@ public class AccountItem{
         mEncryMnemonic = encryMnemonic;
         mKeyStore = keyStore;
         mBalance = balance;
-        mHasToken = hasToken;
-
-        if(isHasToken()){
-            mItemLoadedFuture = XWalletApplication.getApplication().getTokenLoaderManager()
-                    .getTokenList(ContentUris.withAppendedId(XWalletProvider.CONTENT_URI, mId),
-                            new TokenLoadedAccountItemCallback());
-        }
     }
 
     public long getId() {
@@ -120,14 +102,6 @@ public class AccountItem{
         mBalance = balance;
     }
 
-    public boolean isHasToken() {
-        return mHasToken == 1;
-    }
-
-    public List<TokenItem> getTokenItemList() {
-        return mTokenItemList;
-    }
-
     public boolean hasMnemonic(){
         return !TextUtils.isEmpty(mEncryMnemonic);
     }
@@ -140,37 +114,8 @@ public class AccountItem{
         return !TextUtils.isEmpty(mKeyStore);
     }
 
-    public void setTokenLoadedCallback(TokenLoadedCallback tokenLoadedCallback) {
-        mTokenLoadedCallback = tokenLoadedCallback;
-    }
-
-    public static SerializableAccountItem translateToSerializable(AccountItem accountItem) {
-        return new SerializableAccountItem(accountItem.getId(),
-                                        accountItem.getAddress(),
-                                        accountItem.getAccountName(),
-                                        accountItem.getCoinName(),
-                                        accountItem.getCoinType(),
-                                        accountItem.getEncrySeed(),
-                                        accountItem.getEncryMnemonic(),
-                                        accountItem.getKeyStore(),
-                                        accountItem.getBalance());
-    }
-
-    public interface TokenLoadedCallback {
-        void onTokenLoaded(AccountItem accountItem);
-    }
-
-    public class TokenLoadedAccountItemCallback implements ItemLoadedCallback {
-        public void onItemLoaded(Object result, Throwable exception) {
-            mTokenItemList = ((TokenLoaderManager.TokenLoaded)result).mTokenList;
-            if (mTokenLoadedCallback != null) {
-                mTokenLoadedCallback.onTokenLoaded(AccountItem.this);
-            }
-        }
-    }
-
-    public static AccountItem createFromCursor(Cursor cursor){
-        return new AccountItem(cursor.getLong(COLUMN_ID),
+    public static SerializableAccountItem createFromCursor(Cursor cursor){
+        return new SerializableAccountItem(cursor.getLong(COLUMN_ID),
                 cursor.getString(COLUMN_ACCOUNT_ADDRESS),
                 cursor.getString(COLUMN_ACCOUNT_NAME),
                 cursor.getString(COLUMN_COIN_NAME),
@@ -178,8 +123,7 @@ public class AccountItem{
                 cursor.getString(COLUMN_COIN_SEED),
                 cursor.getString(COLUMN_COIN_MNEMONIC),
                 cursor.getString(COLUMN_KEYSTORE),
-                cursor.getString(COLUMN_BALANCE),
-                cursor.getInt(COLUMN_HAS_TOKEN));
+                cursor.getString(COLUMN_BALANCE));
     }
 
     @Override
@@ -205,5 +149,4 @@ public class AccountItem{
     static final int COLUMN_RPIV_KEY                = 7;
     static final int COLUMN_KEYSTORE                = 8;
     static final int COLUMN_BALANCE                 = 9;
-    static final int COLUMN_HAS_TOKEN               = 10;
 }

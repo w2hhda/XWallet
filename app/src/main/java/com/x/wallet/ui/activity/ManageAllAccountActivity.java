@@ -53,7 +53,7 @@ public class ManageAllAccountActivity extends WithBackAppCompatActivity {
                 final ManageAllAccountListItem listItem = (ManageAllAccountListItem) view;
                 AccountItem accountItem = listItem.getAccountItem();
                 Intent intent = new Intent("com.x.wallet.action.MANAGE_ACCOUNT_ACTION");
-                intent.putExtra(AppUtils.ACCOUNT_DATA, accountItem);
+                intent.putExtra(AppUtils.ACCOUNT_DATA, AccountItem.translateToSerializable(accountItem));
                 startActivity(intent);
             }
         });

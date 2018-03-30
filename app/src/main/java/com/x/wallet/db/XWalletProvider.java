@@ -20,8 +20,10 @@ import com.x.wallet.AppUtils;
 public class XWalletProvider extends ContentProvider {
 
     static final String TABLE_ACCOUNT = "account";
+    static final String TABLE_TOKEN = "token";
     public static final String AUTHORITY = "com.x.wallet";
     public static final Uri CONTENT_URI = Uri.parse("content://com.x.wallet/account");
+    public static final Uri CONTENT_URI_TOKEN = Uri.parse("content://com.x.wallet/token");
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
     private SQLiteOpenHelper mOpenHelper;
@@ -57,6 +59,14 @@ public class XWalletProvider extends ContentProvider {
                         null, null,
                         sortOrder);
                 break;
+            case URI_TOKEN:
+                cursor = db.query(TABLE_TOKEN,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null, null,
+                        sortOrder);
+                break;
         }
         if (cursor != null) {
             cursor.setNotificationUri(getContext().getContentResolver(), CONTENT_URI);
@@ -73,12 +83,20 @@ public class XWalletProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         Log.i(AppUtils.APP_TAG, "XWalletProvider insert uri = " + uri);
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         Uri result = null;
-        if (URI_MATCHER.match(uri) == URI_ACCOUNT) {
-            SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-            long rowId = db.insert(TABLE_ACCOUNT, null, values);
-            Log.i(AppUtils.APP_TAG, "XWalletProvider insert rowId = " + rowId);
-            result = Uri.parse(uri + "/" + rowId);
+        int match = URI_MATCHER.match(uri);
+        switch (match){
+            case URI_ACCOUNT:
+                long rowId = db.insert(TABLE_ACCOUNT, null, values);
+                Log.i(AppUtils.APP_TAG, "XWalletProvider insert rowId = " + rowId);
+                result = Uri.parse(uri + "/" + rowId);
+                break;
+            case URI_TOKEN:
+                long rowId2 = db.insert(TABLE_TOKEN, null, values);
+                Log.i(AppUtils.APP_TAG, "XWalletProvider insert rowId = " + rowId2);
+                result = Uri.parse(uri + "/" + rowId2);
+            break;
         }
         if(result != null){
             getContext().getContentResolver().notifyChange(CONTENT_URI, null);
@@ -126,8 +144,10 @@ public class XWalletProvider extends ContentProvider {
 
     private static final int URI_ACCOUNT                     = 0;
     private static final int URI_ACCOUNT_ID                  = 1;
+    private static final int URI_TOKEN                       = 2;
     static {
         URI_MATCHER.addURI(AUTHORITY, "account", URI_ACCOUNT);
         URI_MATCHER.addURI(AUTHORITY, "account/#", URI_ACCOUNT_ID);
+        URI_MATCHER.addURI(AUTHORITY, "token", URI_TOKEN);
     }
 }

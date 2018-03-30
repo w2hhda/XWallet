@@ -31,6 +31,7 @@ import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.ui.adapter.AccountListAdapter;
 import com.x.wallet.ui.data.AccountItem;
 import com.x.wallet.ui.view.AccountListItem;
+import com.x.wallet.ui.view.BaseRawAccountListItem;
 
 /**
  * Created by wuliang on 18-3-13.
@@ -61,10 +62,10 @@ public class AccountListFragment extends Fragment {
         mAccountListAdapter = new AccountListAdapter(getActivity(), null, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final AccountListItem listItem = (AccountListItem) view;
+                final BaseRawAccountListItem listItem = (BaseRawAccountListItem) view;
                 AccountItem accountItem = listItem.getAccountItem();
                 Intent intent = new Intent("com.x.wallet.action.SEE_ACCOUNT_DETAIL_ACTION");
-                intent.putExtra(AppUtils.ACCOUNT_DATA, accountItem);
+                intent.putExtra(AppUtils.ACCOUNT_DATA, AccountItem.translateToSerializable(accountItem));
                 AccountListFragment.this.getActivity().startActivity(intent);
             }
         });
