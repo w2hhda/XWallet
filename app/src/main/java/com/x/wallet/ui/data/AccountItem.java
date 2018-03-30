@@ -1,6 +1,7 @@
 package com.x.wallet.ui.data;
 
 import android.database.Cursor;
+import android.text.TextUtils;
 
 import java.io.Serializable;
 
@@ -99,6 +100,18 @@ public class AccountItem implements Serializable {
 
     public void setBalance(String balance) {
         mBalance = balance;
+    }
+
+    public boolean hasMnemonic(){
+        return !TextUtils.isEmpty(mEncryMnemonic);
+    }
+
+    public boolean hasKey(){
+        return false;
+    }
+
+    public boolean hasKeyStore(){
+        return !TextUtils.isEmpty(mKeyStore);
     }
 
     public static AccountItem createFromCursor(Cursor cursor){

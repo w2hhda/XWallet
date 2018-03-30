@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.db.XWalletProvider;
+import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.ChangePasswordAsycTask;
 import com.x.wallet.transaction.DeleteAccountAsycTask;
 import com.x.wallet.transaction.key.DecryptKeyAsycTask;
@@ -71,6 +72,8 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                 startActivity(intent);
             }
         });
+        mMnemonicView.setVisibility(mAccountItem.hasMnemonic() ? View.VISIBLE : View.GONE);
+
         mKeyView = findViewById(R.id.key_tv);
         mKeyView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,6 +89,19 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                 showPasswordCheckDialogForKeyStore();
             }
         });
+
+        if(mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_ETH){
+            if(mAccountItem.hasKeyStore()){
+                mKeyView.setVisibility(View.VISIBLE);
+                mKeyStoreView.setVisibility(View.VISIBLE);
+            } else {
+                mKeyView.setVisibility(View.GONE);
+                mKeyStoreView.setVisibility(View.GONE);
+            }
+        } else {
+            mKeyView.setVisibility(mAccountItem.hasKey() ? View.VISIBLE : View.GONE);
+            mKeyStoreView.setVisibility(View.GONE);
+        }
 
         mChangePasswordView = findViewById(R.id.change_password_tv);
         mChangePasswordView.setOnClickListener(new View.OnClickListener() {

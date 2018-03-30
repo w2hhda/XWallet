@@ -93,7 +93,7 @@ public class EthAccountCreateHelper {
             if(walletFile != null){
                 String address = "0x" + walletFile.getAddress();
                 String keyStore = getKeyStoreFromWalletFile(walletFile);
-                return  new AccountData(address, null, null, privateKey, keyStore);
+                return  new AccountData(address, null, null, null, keyStore);
             }
         } catch (Exception e){
             Log.e(LibUtils.TAG_ETH, "EthAccountCreateHelper importFromPrivateKey exception", e);
