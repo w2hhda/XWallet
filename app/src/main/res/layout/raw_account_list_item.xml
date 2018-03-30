@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.x.wallet.ui.view.RawAccountListItem xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dip"
+    android:minHeight="@dimen/account_list_item_minHeight">
+    <include layout="@layout/base_raw_account_list_item"/>
+</com.x.wallet.ui.view.RawAccountListItem>

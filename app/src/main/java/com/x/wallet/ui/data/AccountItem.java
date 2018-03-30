@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.text.TextUtils;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by wuliang on 18-3-16.
@@ -19,6 +20,7 @@ public class AccountItem implements Serializable {
     private String mEncryMnemonic;
     private String mKeyStore;
     private String mBalance;
+    private List<TokenItem> mTokenItemList;
 
     public AccountItem(long id, String address, String accountName, String coinName,
                        int coinType, String encrySeed, String encryMnemonic, String keyStore,
@@ -100,6 +102,10 @@ public class AccountItem implements Serializable {
 
     public void setBalance(String balance) {
         mBalance = balance;
+    }
+
+    public List<TokenItem> getTokenItemList() {
+        return mTokenItemList;
     }
 
     public boolean hasMnemonic(){

@@ -5,18 +5,19 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.lib.common.LibUtils;
-import com.x.wallet.lib.eth.EthUtils;
-import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.ui.data.AccountItem;
+import com.x.wallet.ui.data.RawAccountItem;
+import com.x.wallet.ui.data.TokenItem;
+
+import java.util.List;
 
 /**
  * Created by wuliang on 18-3-16.
@@ -25,14 +26,9 @@ import com.x.wallet.ui.data.AccountItem;
 public class AccountListItem extends LinearLayout{
     private AccountItem mAccountItem;
     private TextView mAccountNameTv;
-    private ImageView mImageView;
-    private TextView mCoinNameTv;
-    private TextView mCoinBalanceUnitTv;
-    private TextView mBalanceTv;
-    private TextView mBalanceConversionTv;
+    private BaseRawAccountListItem mRawAccountListItem;
     private View mAddTokenView;
-
-    private BalanceConversionUtils.RateUpdateListener mRateUpdateListener;
+    private LinearLayout mTokenContainer;
 
     public AccountListItem(Context context) {
         super(context);
@@ -50,11 +46,6 @@ public class AccountListItem extends LinearLayout{
     protected void onFinishInflate() {
         super.onFinishInflate();
         mAccountNameTv = findViewById(R.id.account_name_tv);
-        mImageView = findViewById(R.id.coin_icon_iv);
-        mCoinNameTv = findViewById(R.id.coin_name_tv);
-        mCoinBalanceUnitTv = findViewById(R.id.coin_balance_unit_tv);
-        mBalanceTv = findViewById(R.id.coin_balance_tv);
-        mBalanceConversionTv = findViewById(R.id.coin_balance_conversion_tv);
 
         mAddTokenView = findViewById(R.id.add_token_container);
         mAddTokenView.setOnClickListener(new OnClickListener() {
@@ -63,44 +54,41 @@ public class AccountListItem extends LinearLayout{
                 getContext().startActivity(new Intent("com.x.wallet.action.ADD_TOKEN_ACTION"));
             }
         });
+
+        mRawAccountListItem = findViewById(R.id.raw_item);
+
+        mTokenContainer = findViewById(R.id.token_container);
     }
 
     public void bind(Cursor cursor) {
-        if(mRateUpdateListener != null){
-            BalanceConversionUtils.unRegisterListener(mRateUpdateListener);
-        }
         mAccountItem = AccountItem.createFromCursor(cursor);
-        mAccountNameTv.setText(mAccountItem.getAccountName());
-        mCoinNameTv.setText(mAccountItem.getCoinName());
-
         Log.i(AppUtils.APP_TAG, "AccountListItem bind mAccountItem = " + mAccountItem);
+
+        mAccountNameTv.setText(mAccountItem.getAccountName());
         if(mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_ETH){
-            mImageView.setImageResource(R.drawable.eth);
-            mBalanceTv.setText(EthUtils.getBalanceText(mAccountItem.getBalance()));
-            mCoinBalanceUnitTv.setText(R.string.coin_unit_eth);
-            updateBalanceConversionText();
             mAddTokenView.setVisibility(VISIBLE);
         } else {
             mAddTokenView.setVisibility(GONE);
         }
 
-        mRateUpdateListener = new BalanceConversionUtils.RateUpdateListener() {
-            @Override
-            public void onRateUpdate() {
-                mImageView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateBalanceConversionText();
-                    }
-                });
-            }
-        };
-        BalanceConversionUtils.registerListener(mRateUpdateListener);
+        mRawAccountListItem.bind(mAccountItem);
+
+        bindTokenList();
     }
 
-    public void updateBalanceConversionText(){
-        if(mAccountItem != null){
-            mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, BalanceConversionUtils.calculateBalanceText(mAccountItem.getBalance())));
+    private void bindTokenList(){
+        mTokenContainer.removeAllViews();
+        List<TokenItem> list = mAccountItem.getTokenItemList();
+        if(list != null && list.size() > 0){
+            for(TokenItem item : list){
+                RawAccountListItem listItem = (RawAccountListItem) LayoutInflater.from(getContext()).inflate(
+                        R.layout.raw_account_list_item, mTokenContainer, false);
+                RawAccountItem accountItem = new RawAccountItem(item.getShortname(), item.getId(), "0");
+                listItem.bind(accountItem);
+                mTokenContainer.addView(LayoutInflater.from(getContext()).inflate(
+                        R.layout.token_list_item_divider_view, mTokenContainer, false));
+                mTokenContainer.addView(listItem);
+            }
         }
     }
 

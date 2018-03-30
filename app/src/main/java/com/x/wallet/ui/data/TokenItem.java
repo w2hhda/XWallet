@@ -5,13 +5,13 @@ package com.x.wallet.ui.data;
  */
 
 public class TokenItem {
-    private long id;
+    private int id;
     private String shortname;
     private String wholename;
     private String address;
     private long order;
 
-    public TokenItem(long id, String shortname, String wholename, String address, long order) {
+    public TokenItem(int id, String shortname, String wholename, String address, long order) {
         this.id = id;
         this.shortname = shortname;
         this.wholename = wholename;
@@ -19,11 +19,11 @@ public class TokenItem {
         this.order = order;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
