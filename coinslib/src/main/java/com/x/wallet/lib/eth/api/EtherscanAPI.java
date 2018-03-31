@@ -71,7 +71,7 @@ public class EtherscanAPI {
                     .build()).protocol(Protocol.HTTP_1_0).body(ResponseBody.create(MediaType.parse("JSON"), CacheHelper.instance().get(CacheHelper.TYPE_TXS_NORMAL, address))).build());
             return;
         }
-        get("http://api.etherscan.io/api?module=account&action=txlist&address=" + address + "&startblock=0&endblock=99999999&sort=asc&apikey=" + token, b);
+        get("http://api.etherscan.io/api?module=account&action=txlist&address=" + address + "&startblock=0&endblock=99999999&sort=desc&apikey=" + token, b);
     }
 
 
@@ -181,7 +181,7 @@ public class EtherscanAPI {
     public void forwardTransaction(String raw, Callback b) throws IOException {
         get("http://api.etherscan.io/api?module=proxy&action=eth_sendRawTransaction&hex=" + raw + "&apikey=" + token, b);
     }
-
+    
 
     public void get(String url, Callback b) throws IOException {
         Request request = new Request.Builder()

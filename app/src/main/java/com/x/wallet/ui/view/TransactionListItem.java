@@ -69,7 +69,11 @@ public class TransactionListItem extends RelativeLayout{
             mTransactionType.setImageResource(R.drawable.transaction_out);
             mAmount.setText("-" + amount);
             mAmount.setTextColor(getResources().getColor(R.color.colorRed));
-            mTransactionName.setText("To: " + item.getToAddress());
+            if (item.getToken()){
+                mTransactionName.setText("Token Fee:" + item.getToAddress());
+            }else {
+                mTransactionName.setText("To: " + item.getToAddress());
+            }
         }
 
     }
