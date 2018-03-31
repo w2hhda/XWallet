@@ -13,14 +13,16 @@ public class TokenItem {
     private int mDecimals;
     private String mBalance;
     private double mRate;
+    private String mContractAddress;
 
-    public TokenItem(int idInAll, String name, String symbol, int decimals, String balance, double rate) {
+    public TokenItem(int idInAll, String name, String symbol, int decimals, String balance, double rate, String contractAddress) {
         mIdInAll = idInAll;
         mName = name;
         mSymbol = symbol;
         mDecimals = decimals;
         mBalance = balance;
         mRate = rate;
+        mContractAddress = contractAddress;
     }
 
     public int getIdInAll() {
@@ -47,10 +49,15 @@ public class TokenItem {
         return mRate;
     }
 
+    public String getContractAddress() {
+        return mContractAddress;
+    }
+
     public static final int TOKEN_COLUMN_ID_IN_ALL  = 3;
     public static final int TOKEN_COLUMN_NAME    = 4;
     public static final int TOKEN_COLUMN_SYMBOL = 5;
     public static final int TOKEN_COLUMN_DECIMALS = 6;
+    public static final int TOKEN_COLUMN_CONTRACT_ADDRESS = 7;
     public static final int TOKEN_COLUMN_BALANCE    = 8;
     public static final int TOKEN_COLUMN_RATE    = 9;
 
@@ -61,6 +68,8 @@ public class TokenItem {
                 cursor.getString(TOKEN_COLUMN_SYMBOL),
                 cursor.getInt(TOKEN_COLUMN_DECIMALS),
                 cursor.getString(TOKEN_COLUMN_BALANCE),
-                cursor.getDouble(TOKEN_COLUMN_RATE));
+                cursor.getDouble(TOKEN_COLUMN_RATE),
+                cursor.getString(TOKEN_COLUMN_CONTRACT_ADDRESS)
+        );
     }
 }

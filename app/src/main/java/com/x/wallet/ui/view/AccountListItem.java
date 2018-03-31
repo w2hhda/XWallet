@@ -1,6 +1,5 @@
 package com.x.wallet.ui.view;
 
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -114,10 +113,20 @@ public class AccountListItem extends LinearLayout {
             for (TokenItem item : list) {
                 RawAccountListItem listItem = (RawAccountListItem) LayoutInflater.from(getContext()).inflate(
                         R.layout.raw_account_list_item, mTokenContainer, false);
-                RawAccountItem accountItem = new RawAccountItem(item.getSymbol(), item.getIdInAll(), item.getBalance(), item.getDecimals(), item.getRate());
+                final RawAccountItem accountItem = new RawAccountItem(item.getSymbol(), item.getIdInAll(), item.getBalance(),
+                        item.getDecimals(), item.getRate(), item.getContractAddress());
                 listItem.bind(accountItem);
                 mTokenContainer.addView(LayoutInflater.from(getContext()).inflate(
                         R.layout.token_list_item_divider_view, mTokenContainer, false));
+                listItem.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent("com.x.wallet.action.SEE_ACCOUNT_DETAIL_ACTION");
+                        intent.putExtra(AppUtils.ACCOUNT_DATA, AccountItem.translateToSerializable(mAccountItem));
+                        intent.putExtra(AppUtils.TOKEN_DATA, accountItem);
+                        getContext().startActivity(intent);
+                    }
+                });
                 mTokenContainer.addView(listItem);
             }
         }

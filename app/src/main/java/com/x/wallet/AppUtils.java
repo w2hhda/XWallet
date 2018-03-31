@@ -39,6 +39,7 @@ public class AppUtils {
     public static final String ACCOUNT_ID ="account_id";
     public static final String ACCOUNT_ADDRESS = "account_address";
     public static final String HAS_TOKEN_KEY ="has_token";
+    public static final String TOKEN_DATA ="token_data";
 
     public static final String APP_TAG = "XWallet";
 
