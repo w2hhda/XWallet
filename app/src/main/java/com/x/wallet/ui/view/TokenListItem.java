@@ -3,7 +3,6 @@ package com.x.wallet.ui.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -18,7 +17,7 @@ public class TokenListItem extends RelativeLayout{
     private ImageView mImageView;
     private TextView mShortNameTv;
     private TextView mWholeNameTv;
-    private RadioButton mRadioButton;
+    private ImageView mCheckIv;
 
     private TokenItemBean mTokenItem;
 
@@ -40,19 +39,17 @@ public class TokenListItem extends RelativeLayout{
         mImageView = findViewById(R.id.iv);
         mShortNameTv = findViewById(R.id.shortname_tv);
         mWholeNameTv = findViewById(R.id.wholename_tv);
-        mRadioButton = findViewById(R.id.radioBtn);
+        mCheckIv = findViewById(R.id.check_iv);
     }
 
     public void bind(TokenItemBean tokenItem, boolean isChecked){
         mTokenItem = tokenItem;
         mShortNameTv.setText(tokenItem.getSymbol());
         mWholeNameTv.setText(tokenItem.getName());
-        mRadioButton.setChecked(isChecked);
+        mCheckIv.setImageResource(isChecked ? R.drawable.ic_radio_button_checked : R.drawable.ic_radio_button_unchecked);
     }
 
-    public boolean isSelected(){
-        return mRadioButton.isChecked();
-    }
+
 
     public TokenItemBean getTokenItem() {
         return mTokenItem;
