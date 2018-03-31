@@ -39,6 +39,8 @@ public class DbUtils {
         String RATE = "rate"; //usdprice             //9
     }
 
+    public static final String UPDATE_TOKEN_SELECTION = DbUtils.TokenTableColumns.ACCOUNT_ADDRESS + " = ? AND " + DbUtils.TokenTableColumns.SYMBOL + " = ?";
+
     public static ContentValues createContentValues(AccountData accountData) {
         ContentValues values = new ContentValues();
         values.put(DbUtils.DbColumns.ADDRESS, accountData.getAddress());

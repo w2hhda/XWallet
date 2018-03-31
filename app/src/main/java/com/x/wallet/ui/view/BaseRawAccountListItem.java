@@ -1,8 +1,8 @@
 package com.x.wallet.ui.view;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -16,6 +16,8 @@ import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.data.AccountItem;
 import com.x.wallet.ui.data.RawAccountItem;
+
+import java.math.BigDecimal;
 
 /**
  * Created by wuliang on 18-3-30.
@@ -89,10 +91,11 @@ public class BaseRawAccountListItem extends RelativeLayout {
         mImageView.setImageResource(R.drawable.coin_eos_icon);
         mCoinNameTv.setText(accountItem.getCoinName());
         mCoinBalanceUnitTv.setText(accountItem.getCoinName());
-        mBalanceTv.setText(TokenUtils.translateToken(accountItem.getBalance(), accountItem.getDecimals()).stripTrailingZeros().toPlainString());
-        mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, String.valueOf(TokenUtils.calculateTokenBalance(accountItem.getBalance(), accountItem.getDecimals(), accountItem.getRate()) * BalanceConversionUtils.mUsdToCny)));
+        BigDecimal translateBalance = TokenUtils.translateTokenInWholeUnit(accountItem.getBalance(), accountItem.getDecimals());
+        mBalanceTv.setText(TokenUtils.getStrFromBigDecimal(translateBalance));
+        mBalanceConversionTv.setText(TokenUtils.getTokenConversionText(getContext(), translateBalance, accountItem.getRate()));
+        Log.i(AppUtils.APP_TAG, "BaseRawAccountListItem bind balance = " + accountItem.getBalance() + ", rate = " + accountItem.getRate());
     }
-
 
     public void initLayout() {
         LayoutInflater.from(getContext()).inflate(R.layout.base_raw_account_list_item, this, true);

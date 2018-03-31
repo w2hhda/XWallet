@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class BalanceConversionUtils {
     public static BigDecimal mAllBalance = new BigDecimal(0);
-    public static double mAllTokenBalance = 0;
+    public static double mAllTokenBalance = 0; //USD
     public static final String ZERO = "0";
     public static double mEthToUsd = 0;
     public static double mUsdToCny = 0;

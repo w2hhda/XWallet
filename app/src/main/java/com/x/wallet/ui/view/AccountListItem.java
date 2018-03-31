@@ -1,5 +1,6 @@
 package com.x.wallet.ui.view;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -17,6 +18,7 @@ import com.x.wallet.XWalletApplication;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.balance.BalanceLoaderManager;
 import com.x.wallet.transaction.balance.ItemLoadedCallback;
+import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.data.AccountItem;
 import com.x.wallet.ui.data.RawAccountItem;
 import com.x.wallet.ui.data.TokenItem;
@@ -121,17 +123,17 @@ public class AccountListItem extends LinearLayout {
         }
     }
 
-    private void bindTokenBalance(ArrayList<String> balance, ArrayList<Double> rateList) {
+    private void bindTokenBalance(ArrayList<Double> balance, ArrayList<Double> rateList) {
         int count = mTokenContainer.getChildCount();
         Log.i(AppUtils.APP_TAG, "AccountListItem bindTokenBalance count = " + count);
+        int index = 0;
         for(int i = 0; i < count; i++){
             View view = mTokenContainer.getChildAt(i);
             Log.i(AppUtils.APP_TAG, "AccountListItem bindTokenBalance view = " + view);
             if(view != null && view instanceof  RawAccountListItem){
                 RawAccountListItem listItem = (RawAccountListItem) view;
-                Log.i(AppUtils.APP_TAG, "AccountListItem bindTokenBalance balance.get(i) = " + balance.get(0));
-                Log.i(AppUtils.APP_TAG, "AccountListItem bindTokenBalance rateList.get(i) = " + rateList.get(0));
-                listItem.bindBalance(balance.get(0), rateList.get(0));
+                listItem.bindBalance(balance.get(index), rateList.get(index));
+                index++;
             }
         }
     }
@@ -141,7 +143,7 @@ public class AccountListItem extends LinearLayout {
     }
 
     private void queryTokenBalance(){
-        XWalletApplication.getApplication().getBalanceLoaderManager().getBalance(Uri.parse("content://com.x.wallet/token/" + mAccountItem.getAddress()), new ItemLoadedCallback<BalanceLoaderManager.BalanceLoaded>() {
+        XWalletApplication.getApplication().getBalanceLoaderManager().getBalance(Uri.withAppendedPath(TokenUtils.QUERY_TOKEN_BALANCE_URI, mAccountItem.getAddress()), new ItemLoadedCallback<BalanceLoaderManager.BalanceLoaded>() {
             @Override
             public void onItemLoaded(BalanceLoaderManager.BalanceLoaded result, Throwable exception) {
                 Log.i(AppUtils.APP_TAG, "AccountListItem result.mAddress = " + result.mAddress + ", mAccountItem.getAddress() = " + mAccountItem.getAddress());
