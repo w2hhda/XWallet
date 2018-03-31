@@ -36,7 +36,7 @@ public class ImportMnemonicFragment extends BaseImportFragment {
                 }
 
                 if(mMnemonicEt.getText() == null || TextUtils.isEmpty(mMnemonicEt.getText().toString())){
-                    Toast.makeText(ImportMnemonicFragment.this.getActivity(), R.string.blank_key, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ImportMnemonicFragment.this.getActivity(), R.string.blank_mnemonic, Toast.LENGTH_LONG).show();
                     return;
                 }
                 ImportAddressAsycTask task = new ImportAddressAsycTask(ImportMnemonicFragment.this.getActivity(),
