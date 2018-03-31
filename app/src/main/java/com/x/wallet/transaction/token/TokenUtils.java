@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
+import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 
 import java.math.BigDecimal;
@@ -17,6 +18,8 @@ import java.text.DecimalFormat;
  */
 
 public class TokenUtils {
+    private static BalanceConversionUtils.RateUpdateListener mRateUpdateListener;
+
     public static final Uri QUERY_TOKEN_BALANCE_URI = Uri.parse("content://com.x.wallet/token/");
     public static final int DECIMAL_COUNT = 2;
 
@@ -63,5 +66,15 @@ public class TokenUtils {
     public static String calculateTokenBalance2(double translateBalance, double rate) {
         Log.i(AppUtils.APP_TAG, "TokenUtils BalanceConversionUtils.mUsdToCny = " + UsdToCnyHelper.mUsdToCny);
         return formatDouble(translateBalance * rate * UsdToCnyHelper.mUsdToCny);
+    }
+
+    public static void setRateUpdateListener(BalanceConversionUtils.RateUpdateListener rateUpdateListener) {
+        mRateUpdateListener = rateUpdateListener;
+    }
+
+    public static void responseToListener() {
+        if(mRateUpdateListener != null){
+            mRateUpdateListener.onRateUpdate();
+        }
     }
 }

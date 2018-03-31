@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.lib.eth.EthUtils;
+import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 
 import java.math.BigDecimal;
@@ -55,7 +56,7 @@ public class BalanceConversionUtils {
         }
 
         BigDecimal result = EthUtils.translateWeiToEth(mAllBalance).multiply(new BigDecimal(mEthToUsd * UsdToCnyHelper.mUsdToCny)).setScale(2, BigDecimal.ROUND_UP);
-        return result.stripTrailingZeros().toString();
+        return TokenUtils.formatDouble(result.doubleValue() + mAllTokenBalance * UsdToCnyHelper.mUsdToCny);
     }
 
     public static String calculateBalanceText(String balance) {

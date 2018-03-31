@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.x.wallet.AppUtils;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
+import com.x.wallet.lib.eth.EthUtils;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.data.BalanceResultBean;
 import com.x.wallet.lib.eth.data.PriceResultBean;
@@ -344,6 +345,7 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                 tempAllTokenBalance = tempAllTokenBalance + TokenUtils.calculateTokenBalance(translateBalance, rate);
             }
             BalanceConversionUtils.mAllTokenBalance = tempAllTokenBalance;
+            TokenUtils.responseToListener();
             try{
                 mContext.getContentResolver().applyBatch(XWalletProvider.AUTHORITY, rawOperations);
             }catch (Exception e){

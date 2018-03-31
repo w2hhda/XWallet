@@ -28,6 +28,7 @@ import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
+import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.adapter.AccountListAdapter;
 import com.x.wallet.ui.data.AccountItem;
 import com.x.wallet.ui.view.AccountListItem;
@@ -70,7 +71,7 @@ public class AccountListFragment extends Fragment {
             }
         });
 
-        BalanceConversionUtils.setRateUpdateListener(new BalanceConversionUtils.RateUpdateListener() {
+        BalanceConversionUtils.RateUpdateListener listener = new BalanceConversionUtils.RateUpdateListener() {
             @Override
             public void onRateUpdate() {
                 AccountListFragment.this.getActivity().runOnUiThread(new Runnable() {
@@ -80,7 +81,11 @@ public class AccountListFragment extends Fragment {
                     }
                 });
             }
-        });
+        };
+
+        TokenUtils.setRateUpdateListener(listener);
+        BalanceConversionUtils.setRateUpdateListener(listener);
+
         XWalletApplication.getApplication().getBalanceLoaderManager().getBalance(null);
     }
 
@@ -125,6 +130,7 @@ public class AccountListFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         BalanceConversionUtils.clearListener();
+        TokenUtils.setRateUpdateListener(null);
         if (mLoaderManager != null) {
             mLoaderManager.destroyLoader(ACCOUNT_LIST_LOADER);
             mLoaderManager = null;
