@@ -89,7 +89,7 @@
             android:hint="0.0" />
 
         <TextView
-            android:id="@+id/eth_indicator"
+            android:id="@+id/unit_indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"

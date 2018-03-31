@@ -80,11 +80,11 @@ public class SendTransactionService extends IntentService {
 
         Credentials credentials = getCredential(fromAddress, password);
 
-        String token20Name = intent.getStringExtra(TOKEN20_TYPE_NAME);
 
-        if (token20Name != null){  //token transfer
+        if (intent.hasExtra(TOKEN20_TYPE_NAME) && intent.hasExtra(TOKEN20_ADDRESS_TAG) && intent.hasExtra(TOKEN20_DECIMALS_TAG)){  //token transfer
+            String token20Name = intent.getStringExtra(TOKEN20_TYPE_NAME);
             String token20Address  = intent.getStringExtra(TOKEN20_ADDRESS_TAG);
-            String token20Decimals = intent.getStringExtra(TOKEN20_DECIMALS_TAG);
+            int token20Decimals = intent.getIntExtra(TOKEN20_DECIMALS_TAG, 1);
             try {
                 sendTokenTransaction(fromAddress, toAddress, token20Address, credentials, gasPrice, defaultTokenGasLimit, amount, token20Decimals);
             } catch (CipherException e){
@@ -173,7 +173,7 @@ public class SendTransactionService extends IntentService {
     }
 
     private void sendTokenTransaction(final String address, final String toAddress, final String contractAddress,
-                                      final Credentials credentials, final String gasPrice, final BigInteger gasLimit, final String amount, final String decimals) throws CipherException{
+                                      final Credentials credentials, final String gasPrice, final BigInteger gasLimit, final String amount, final int decimals) throws CipherException{
         try {
             EtherscanAPI.getInstance().getNonceForAddress(address, new Callback() {
                 @Override
@@ -239,7 +239,7 @@ public class SendTransactionService extends IntentService {
     }
 
     //package data for send token transaction
-    private String packageTokenData(final String toAddress, final String amount, final String decimals){
+    private String packageTokenData(final String toAddress, final String amount, final int decimals){
 
         String methodName = "transfer";
         List<Type> inputParameters = new ArrayList<>();
@@ -247,7 +247,7 @@ public class SendTransactionService extends IntentService {
 
         Address sendToAddress = new Address(toAddress);
 
-        BigInteger tokenBaseUnit = BigInteger.TEN.pow(Integer.parseInt(decimals));
+        BigInteger tokenBaseUnit = BigInteger.TEN.pow(decimals);
         BigInteger out = new BigDecimal(amount).multiply(new BigDecimal(tokenBaseUnit)).toBigInteger();
         Uint256 value = new Uint256(out);
         inputParameters.add(sendToAddress);

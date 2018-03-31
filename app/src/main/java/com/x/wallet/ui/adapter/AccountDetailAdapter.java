@@ -46,16 +46,18 @@ public class AccountDetailAdapter extends RecyclerView.Adapter<AccountDetailAdap
     }
 
     @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
     public int getItemCount() {
         if (items == null) return 0;
         return items.size();
     }
 
     public void addItems(List<TransactionItem> items){
-        Log.i("@@@@", "add item:" + items.size());
-        this.items = new ArrayList<>();
-
-        this.items.addAll(items);
+        this.items = new ArrayList<>(items);
         notifyDataSetChanged();
     }
 

@@ -1,8 +1,12 @@
 package com.x.wallet.ui.data;
 
+import android.util.Log;
+
+import com.x.wallet.lib.eth.EthUtils;
 import com.x.wallet.lib.eth.data.TransactionsResultBean;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -22,6 +26,7 @@ public class TransactionItem implements Serializable {
     private String timeStamp;
     private String transactionFax;
     private String nonce;
+    private Boolean isToken = false;
 
     public TransactionItem() {
     }
@@ -38,12 +43,11 @@ public class TransactionItem implements Serializable {
         this.nonce = nonce;
     }
 
-    public static TransactionItem createFromReceipt(TransactionsResultBean.ReceiptBean receipts, Boolean isReceive){
+    public static TransactionItem createFromReceipt(TransactionsResultBean.ReceiptBean receipts, Boolean isReceive, Boolean isToken){
         TransactionItem item = new TransactionItem();
         item.setToAddress(receipts.getTo());
         item.setFromAddress(receipts.getFrom());
         item.setReceiptHash(receipts.getHash());
-        item.setAmount(receipts.getValue());
         item.setTimeStamp(receipts.getTimeStamp());
         BigInteger gasUsed = new BigInteger(receipts.getGasUsed());
         BigInteger gasPrice = new BigInteger(receipts.getGasPrice());
@@ -53,6 +57,14 @@ public class TransactionItem implements Serializable {
             item.setTransactionType(TRANSACTION_TYPE_RECEIVE);
         }else {
             item.setTransactionType(TRANSACTION_TYPE_TRANSFER_OUT);
+        }
+
+        if (isToken){
+            item.setAmount(gasPrice.multiply(gasUsed).toString());
+            item.setToken(true);
+        }else {
+            item.setAmount(receipts.getValue());
+            item.setToken(false);
         }
 
         return item;
@@ -131,6 +143,14 @@ public class TransactionItem implements Serializable {
         this.nonce = nonce;
     }
 
+    public Boolean getToken() {
+        return isToken;
+    }
+
+    public void setToken(Boolean token) {
+        isToken = token;
+    }
+
     @Override
     public String toString() {
         return "TransactionItem{" +
@@ -143,6 +163,7 @@ public class TransactionItem implements Serializable {
                 ", timeStamp='" + timeStamp + '\'' +
                 ", transactionFax='" + transactionFax + '\'' +
                 ", nonce='" + nonce + '\'' +
+                ", isToken='" + isToken + '\'' +
                 '}';
     }
 }

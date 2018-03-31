@@ -21,6 +21,7 @@ import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.util.ExchangeCalUtil;
 import com.x.wallet.service.SendTransactionService;
 import com.x.wallet.transaction.address.ConfirmPasswordAsyncTask;
+import com.x.wallet.ui.data.RawAccountItem;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,11 +39,14 @@ import okhttp3.Response;
  */
 
 public class TransferActivity extends WithBackAppCompatActivity {
-    private final BigInteger defaultGasLimit = new BigInteger("21000");
+    private BigInteger defaultGasLimit;
     private EditText toAddress;
     private TextView priceTv;
     private EditText transferAmount;
     private BigDecimal defaultPrice = new BigDecimal(0);
+    private RawAccountItem mTokenItem;
+    private TextView unitIndicator;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +55,12 @@ public class TransferActivity extends WithBackAppCompatActivity {
         Intent intent = getIntent();
         if (intent != null){
             address = intent.getStringExtra(AccountDetailActivity.SHARE_ADDRESS_EXTRA);
+            if (intent.hasExtra(AccountDetailActivity.TOKEN_EXTRA)){
+                mTokenItem = (RawAccountItem) intent.getSerializableExtra(AccountDetailActivity.TOKEN_EXTRA);
+                defaultGasLimit = new BigInteger("91000");
+            }else {
+                defaultGasLimit = new BigInteger("21000");
+            }
         }
         if (address != "") {
             initView(address);
@@ -65,8 +75,13 @@ public class TransferActivity extends WithBackAppCompatActivity {
         toAddress = findViewById(R.id.transfer_to_address);
         priceTv = findViewById(R.id.gas_price_tv);
         transferAmount = findViewById(R.id.transfer_to_amount);
+        unitIndicator = findViewById(R.id.unit_indicator);
         ImageButton scanBtn = findViewById(R.id.wallet_scan);
         Button sendBtn = findViewById(R.id.send_transfer);
+
+        if (mTokenItem != null){
+            unitIndicator.setText(mTokenItem.getCoinName());
+        }
         getGasPrice();
 
         scanBtn.setOnClickListener(new View.OnClickListener() {
@@ -106,6 +121,16 @@ public class TransferActivity extends WithBackAppCompatActivity {
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (toAddress.getText() == null || toAddress.getText().length() < 40){
+                    Toast.makeText(TransferActivity.this, "please input correct address", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (transferAmount.getText() == null || new BigDecimal(transferAmount.getText().toString()).equals(BigDecimal.ZERO)){
+                    Toast.makeText(TransferActivity.this, "please input correct amount", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 final AlertDialog dialog = new AlertDialog.Builder(TransferActivity.this).create();
                 final View dialogView = TransferActivity.this.getLayoutInflater().inflate(R.layout.password_confirm_dialog, null);
                 dialog.setView(dialogView);
@@ -164,6 +189,11 @@ public class TransferActivity extends WithBackAppCompatActivity {
         intent.putExtra(SendTransactionService.GAS_LIMIT_TAG, defaultGasLimit);
         intent.putExtra(SendTransactionService.AMOUNT_TAG, transferAmount.getText().toString());
         intent.putExtra(SendTransactionService.EXTRA_DATA_TAG, "");
+        if (mTokenItem != null){
+            intent.putExtra(SendTransactionService.TOKEN20_TYPE_NAME, mTokenItem.getCoinName());
+            intent.putExtra(SendTransactionService.TOKEN20_ADDRESS_TAG, mTokenItem.getContractAddress());
+            intent.putExtra(SendTransactionService.TOKEN20_DECIMALS_TAG, mTokenItem.getDecimals());
+        }
         Log.i("@@@@","price = " + getNowPrice());
 
         return intent;
