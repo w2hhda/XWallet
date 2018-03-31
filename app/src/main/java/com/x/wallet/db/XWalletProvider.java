@@ -134,6 +134,9 @@ public class XWalletProvider extends ContentProvider {
             case URI_ACCOUNT_ID:
                 count = db.update(TABLE_ACCOUNT, values, DbUtils.DbColumns._ID + "=" + uri.getLastPathSegment(), null);
                 break;
+            case URI_TOKEN:
+                count = db.update(TABLE_TOKEN, values, selection, selectionArgs);
+                break;
         }
         Log.i(AppUtils.APP_TAG, "XWalletProvider update count =" + count);
         if(count > 0){

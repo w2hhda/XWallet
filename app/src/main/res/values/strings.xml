@@ -89,7 +89,7 @@
     <string name="transfer_from_address">转出地址</string>
     <string name="transfer_hash">转账串号</string>
     <string name="blank_all_balance">"≈  0.00"</string>
-    <string name="blank_balance">≈  ¥0.00</string>
+    <string name="blank_balance">≈  ¥0</string>
     <string name="input_keystore_password_hint">输入Keystore密码</string>
     <string name="please_backup">请备份</string>
     <string name="backup_mnemonic">备份助记词</string>

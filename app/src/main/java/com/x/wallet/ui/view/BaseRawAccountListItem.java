@@ -1,16 +1,19 @@
 package com.x.wallet.ui.view;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.lib.eth.EthUtils;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
+import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.data.AccountItem;
 import com.x.wallet.ui.data.RawAccountItem;
 
@@ -24,8 +27,8 @@ public class BaseRawAccountListItem extends RelativeLayout {
     private ImageView mImageView;
     private TextView mCoinNameTv;
     private TextView mCoinBalanceUnitTv;
-    private TextView mBalanceTv;
-    private TextView mBalanceConversionTv;
+    protected TextView mBalanceTv;
+    protected TextView mBalanceConversionTv;
 
     private BalanceConversionUtils.RateUpdateListener mRateUpdateListener;
 
@@ -83,7 +86,11 @@ public class BaseRawAccountListItem extends RelativeLayout {
     }
 
     public void bind(RawAccountItem accountItem) {
+        mImageView.setImageResource(R.drawable.coin_eos_icon);
         mCoinNameTv.setText(accountItem.getCoinName());
+        mCoinBalanceUnitTv.setText(accountItem.getCoinName());
+        mBalanceTv.setText(TokenUtils.translateToken(accountItem.getBalance(), accountItem.getDecimals()).stripTrailingZeros().toPlainString());
+        mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, String.valueOf(TokenUtils.calculateTokenBalance(accountItem.getBalance(), accountItem.getDecimals(), accountItem.getRate()) * BalanceConversionUtils.mUsdToCny)));
     }
 
 

@@ -45,8 +45,8 @@ public class TokenListItem extends RelativeLayout{
 
     public void bind(TokenItemBean tokenItem, boolean isChecked){
         mTokenItem = tokenItem;
-        mShortNameTv.setText(tokenItem.getShortname());
-        mWholeNameTv.setText(tokenItem.getWholename());
+        mShortNameTv.setText(tokenItem.getSymbol());
+        mWholeNameTv.setText(tokenItem.getName());
         mRadioButton.setChecked(isChecked);
     }
 

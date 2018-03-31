@@ -8,51 +8,59 @@ import android.database.Cursor;
 
 public class TokenItem {
     private int mIdInAll;
-    private String mShortname;
-    private String mWholename;
-    private String mAddress;
+    private String mName;
+    private String mSymbol;
+    private int mDecimals;
     private String mBalance;
+    private double mRate;
 
-    public TokenItem(int idInAll, String shortname, String wholename, String address, String balance) {
+    public TokenItem(int idInAll, String name, String symbol, int decimals, String balance, double rate) {
         mIdInAll = idInAll;
-        mShortname = shortname;
-        mWholename = wholename;
-        mAddress = address;
+        mName = name;
+        mSymbol = symbol;
+        mDecimals = decimals;
         mBalance = balance;
+        mRate = rate;
     }
 
     public int getIdInAll() {
         return mIdInAll;
     }
 
-    public String getShortname() {
-        return mShortname;
+    public String getName() {
+        return mName;
     }
 
-    public String getWholename() {
-        return mWholename;
+    public String getSymbol() {
+        return mSymbol;
     }
 
-    public String getAddress() {
-        return mAddress;
+    public int getDecimals() {
+        return mDecimals;
     }
 
     public String getBalance() {
         return mBalance;
     }
 
-    public static final int TOKEN_COLUMN_ID_IN_ALL  = 2;
-    public static final int TOKEN_COLUMN_ADDRESS    = 3;
-    public static final int TOKEN_COLUMN_SHORT_NAME = 4;
-    public static final int TOKEN_COLUMN_WHOLE_NAME = 5;
-    public static final int TOKEN_COLUMN_BALANCE    = 6;
+    public double getRate() {
+        return mRate;
+    }
+
+    public static final int TOKEN_COLUMN_ID_IN_ALL  = 3;
+    public static final int TOKEN_COLUMN_NAME    = 4;
+    public static final int TOKEN_COLUMN_SYMBOL = 5;
+    public static final int TOKEN_COLUMN_DECIMALS = 6;
+    public static final int TOKEN_COLUMN_BALANCE    = 8;
+    public static final int TOKEN_COLUMN_RATE    = 9;
 
     public static TokenItem createFromCursor(Cursor cursor) {
         return new TokenItem(
                 cursor.getInt(TOKEN_COLUMN_ID_IN_ALL),
-                cursor.getString(TOKEN_COLUMN_SHORT_NAME),
-                cursor.getString(TOKEN_COLUMN_WHOLE_NAME),
-                cursor.getString(TOKEN_COLUMN_ADDRESS),
-                cursor.getString(TOKEN_COLUMN_BALANCE));
+                cursor.getString(TOKEN_COLUMN_NAME),
+                cursor.getString(TOKEN_COLUMN_SYMBOL),
+                cursor.getInt(TOKEN_COLUMN_DECIMALS),
+                cursor.getString(TOKEN_COLUMN_BALANCE),
+                cursor.getDouble(TOKEN_COLUMN_RATE));
     }
 }

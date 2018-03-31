@@ -87,7 +87,7 @@ public class TokenLoaderManager extends BackgroundLoaderManager {
                         tokenList.add(TokenItem.createFromCursor(cursor));
                     }
                 }
-                Log.i(AppUtils.APP_TAG, "size = " + tokenList.size());
+                Log.i(AppUtils.APP_TAG, "TokenLoaderManager TokenListTask size = " + tokenList.size());
             } finally {
                 if (cursor != null) {
                     cursor.close();

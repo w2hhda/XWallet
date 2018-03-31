@@ -27,13 +27,16 @@ public class DbUtils {
     }
 
     public interface TokenTableColumns{
-        String _ID = "_id";
-        String ACCOUNT_ID = "account_id";
-        String ID_IN_ALL = "id_in_all";
-        String ADDRESS = "address";
-        String SHORT_NAME = "shore_name";
-        String WHOLE_NAME = "whole_name";
-        String BALANCE = "balance";
+        String _ID = "_id";                          //0
+        String ACCOUNT_ID = "account_id";            //1
+        String ACCOUNT_ADDRESS = "account_address";  //2
+        String ID_IN_ALL = "id_in_all";              //3
+        String NAME = "name";                        //4
+        String SYMBOL = "symbol";                    //5
+        String DECIMALS = "decimals";                //6
+        String CONTRACT_ADDRESS = "contract_address"; //7
+        String BALANCE = "balance";                  //8
+        String RATE = "rate"; //usdprice             //9
     }
 
     public static ContentValues createContentValues(AccountData accountData) {

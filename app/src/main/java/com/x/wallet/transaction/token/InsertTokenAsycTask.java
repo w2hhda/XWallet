@@ -19,14 +19,16 @@ import com.x.wallet.ui.data.TokenItemBean;
 
 public class InsertTokenAsycTask extends AsyncTask<Void, Void, Uri> {
     private long mAccountId;
+    private String mAccountAddress;
     private boolean mHasToken;
     private TokenItemBean mTokenItem;
     private ProgressDialog mProgressDialog;
     private OnInsertTokenFinishedListener mOnInsertTokenFinishedListener;
 
-    public InsertTokenAsycTask(Context context, long accountId, boolean hasToken,
+    public InsertTokenAsycTask(Context context, long accountId, String accountAddress, boolean hasToken,
                                TokenItemBean tokenItem, OnInsertTokenFinishedListener listener) {
         mAccountId = accountId;
+        mAccountAddress = accountAddress;
         mHasToken = hasToken;
         mTokenItem = tokenItem;
         mProgressDialog = new ProgressDialog(context);
@@ -43,11 +45,14 @@ public class InsertTokenAsycTask extends AsyncTask<Void, Void, Uri> {
     protected Uri doInBackground(Void... voids) {
         ContentValues values = new ContentValues();
         values.put(DbUtils.TokenTableColumns.ACCOUNT_ID, mAccountId);
-        values.put(DbUtils.TokenTableColumns.ID_IN_ALL, mTokenItem.getId());
-        values.put(DbUtils.TokenTableColumns.ADDRESS, mTokenItem.getAddress());
-        values.put(DbUtils.TokenTableColumns.SHORT_NAME, mTokenItem.getShortname());
-        values.put(DbUtils.TokenTableColumns.WHOLE_NAME, mTokenItem.getWholename());
-        values.put(DbUtils.TokenTableColumns.BALANCE, mTokenItem.getBalance());
+        values.put(DbUtils.TokenTableColumns.ACCOUNT_ADDRESS, mAccountAddress);
+        values.put(DbUtils.TokenTableColumns.ID_IN_ALL, mTokenItem.getIdInAll());
+        values.put(DbUtils.TokenTableColumns.NAME, mTokenItem.getName());
+        values.put(DbUtils.TokenTableColumns.SYMBOL, mTokenItem.getSymbol());
+        values.put(DbUtils.TokenTableColumns.DECIMALS, mTokenItem.getDecimals());
+        values.put(DbUtils.TokenTableColumns.CONTRACT_ADDRESS, mTokenItem.getContractAddress());
+        values.put(DbUtils.TokenTableColumns.BALANCE, "0");
+        values.put(DbUtils.TokenTableColumns.RATE, "0");
         Uri uri = XWalletApplication.getApplication().getApplicationContext().getContentResolver()
                 .insert(XWalletProvider.CONTENT_URI_TOKEN, values);
 

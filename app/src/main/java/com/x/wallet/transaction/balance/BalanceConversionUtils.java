@@ -1,5 +1,6 @@
 package com.x.wallet.transaction.balance;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.x.wallet.AppUtils;
@@ -15,6 +16,7 @@ import java.util.Set;
 
 public class BalanceConversionUtils {
     public static BigDecimal mAllBalance = new BigDecimal(0);
+    public static double mAllTokenBalance = 0;
     public static final String ZERO = "0";
     public static double mEthToUsd = 0;
     public static double mUsdToCny = 0;
@@ -68,6 +70,10 @@ public class BalanceConversionUtils {
         setRateUpdateListener(null);
         Log.i(AppUtils.APP_TAG, "BalanceConversionUtils clearListener mListenerSet.size = " + mListenerSet.size());
         mListenerSet.clear();
+    }
+
+    public static String getTokenBalanceText(String balance) {
+        return TextUtils.isEmpty(balance) ? ZERO  : balance;
     }
 
     public interface RateUpdateListener{

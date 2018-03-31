@@ -7,8 +7,9 @@
 
     <ImageView
         android:id="@+id/coin_icon_iv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:scaleType="fitCenter"
         android:layout_centerVertical="true"
         android:src="@drawable/eth" />
 
@@ -26,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toStartOf="@+id/into_Iv"
-        android:gravity="right"
+        android:gravity="end"
         android:orientation="vertical">
 
         <LinearLayout

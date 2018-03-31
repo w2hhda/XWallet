@@ -49,7 +49,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * Based on BooksImageManager by Virgil King.
  */
-abstract class BackgroundLoaderManager {
+public abstract class BackgroundLoaderManager {
     private static final String TAG = "BackgroundLoaderManager";
 
     private static final int MAX_THREADS = 2;
@@ -66,7 +66,7 @@ abstract class BackgroundLoaderManager {
 
     protected final Handler mCallbackHandler;
 
-    BackgroundLoaderManager(Context context) {
+    public BackgroundLoaderManager(Context context) {
         mPendingTaskUris = new HashSet<Uri>();
         mCallbacks = new HashMap<Uri, Set<ItemLoadedCallback>>();
         final LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>();

@@ -5,78 +5,43 @@ package com.x.wallet.ui.data;
  */
 
 public class TokenItemBean {
-    private int id;
-    private String shortname;
-    private String wholename;
-    private String address;
-    private long order;
-    private String balance;
+    private int idInAll;
+    private String name;
+    private String symbol;
+    private int decimals;
+    private String contractAddress;
+    private int orderInAll;
 
-    public TokenItemBean(int id, String shortname, String wholename, String address, long order, String balance) {
-        this.id = id;
-        this.shortname = shortname;
-        this.wholename = wholename;
-        this.address = address;
-        this.order = order;
-        this.balance = balance;
+    public TokenItemBean(int idInAll, String name, String symbol, int decimals, String contractAddress, int orderInAll) {
+        this.idInAll = idInAll;
+        this.name = name;
+        this.symbol = symbol;
+        this.decimals = decimals;
+        this.contractAddress = contractAddress;
+        this.orderInAll = orderInAll;
     }
 
-    public int getId() {
-        return id;
+    public int getIdInAll() {
+        return idInAll;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public String getName() {
+        return name;
     }
 
-    public String getShortname() {
-        return shortname;
+    public String getSymbol() {
+        return symbol;
     }
 
-    public void setShortname(String shortname) {
-        this.shortname = shortname;
+    public int getDecimals() {
+        return decimals;
     }
 
-    public String getWholename() {
-        return wholename;
+    public String getContractAddress() {
+        return contractAddress;
     }
 
-    public void setWholename(String wholename) {
-        this.wholename = wholename;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public long getOrder() {
-        return order;
-    }
-
-    public void setOrder(long order) {
-        this.order = order;
-    }
-
-    public String getBalance() {
-        return balance;
-    }
-
-    public void setBalance(String balance) {
-        this.balance = balance;
-    }
-
-    @Override
-    public String toString() {
-        return "TokenItem{" +
-                "id=" + id +
-                ", shortname='" + shortname + '\'' +
-                ", wholename='" + wholename + '\'' +
-                ", address='" + address + '\'' +
-                ", order=" + order +
-                '}';
+    public int getOrderInAll() {
+        return orderInAll;
     }
 }

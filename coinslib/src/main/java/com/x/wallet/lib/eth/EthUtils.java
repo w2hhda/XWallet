@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  */
 
 public class EthUtils {
-    public static String addPrefix(String address){
+    /*public static String addPrefix(String address){
         if(address.startsWith("0x")){
             return address;
         } else {
@@ -23,7 +23,7 @@ public class EthUtils {
         } else {
             return address;
         }
-    }
+    }*/
 
     public static String getBalanceText(String balance) {
         if (TextUtils.isEmpty(balance) || balance.equals("0")) return "0";
