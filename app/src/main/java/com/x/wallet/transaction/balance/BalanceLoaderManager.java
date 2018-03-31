@@ -17,6 +17,7 @@ import com.x.wallet.lib.eth.data.PriceResultBean;
 import com.x.wallet.lib.eth.data.UsdCnyBean;
 import com.x.wallet.transaction.token.BackgroundLoaderManager;
 import com.x.wallet.transaction.token.TokenUtils;
+import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -216,31 +217,35 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                                 BalanceConversionUtils.mEthToUsd = priceResultBean.getResult().getEthusd();
                                 Log.i(AppUtils.APP_TAG, "BalanceLoaderManager onResponse getEtherPrice EthToUsd = " + priceResultBean.getResult().getEthusd());
 
-                                EtherscanAPI.getInstance().getPriceConversionRates("CNY", new Callback() {
-                                    @Override
-                                    public void onFailure(Call call, IOException e) {
-                                        Log.e(AppUtils.APP_TAG, "BalanceLoaderManager onFailure for getPriceConversionRates" , e);
-                                    }
-
-                                    @Override
-                                    public void onResponse(Call call, Response response) throws IOException {
-                                        ResponseBody body2 = response.body();
-                                        if (body2 != null){
-                                            UsdCnyBean usdCnyBean = new Gson().fromJson(body2.string(), UsdCnyBean.class);
-                                            BalanceConversionUtils.mUsdToCny = usdCnyBean.getRates().getCNY();
-                                            BalanceConversionUtils.responseToListener();
-                                            BalanceConversionUtils.handleListener();
-                                            Log.i(AppUtils.APP_TAG, "BalanceLoaderManager onResponse UsdToCny = " + usdCnyBean.getRates().getCNY());
+                                if(UsdToCnyHelper.isNeedRequest()){
+                                    EtherscanAPI.getInstance().getPriceConversionRates("CNY", new Callback() {
+                                        @Override
+                                        public void onFailure(Call call, IOException e) {
+                                            Log.e(AppUtils.APP_TAG, "BalanceLoaderManager onFailure for getPriceConversionRates" , e);
                                         }
-                                    }
-                                });
+
+                                        @Override
+                                        public void onResponse(Call call, Response response) throws IOException {
+                                            ResponseBody body2 = response.body();
+                                            if (body2 != null){
+                                                UsdCnyBean usdCnyBean = new Gson().fromJson(body2.string(), UsdCnyBean.class);
+                                                UsdToCnyHelper.write(usdCnyBean.getRates().getCNY());
+                                                BalanceConversionUtils.responseToListener();
+                                                BalanceConversionUtils.handleListener();
+                                                Log.i(AppUtils.APP_TAG, "BalanceLoaderManager onResponse UsdToCny = " + usdCnyBean.getRates().getCNY());
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    BalanceConversionUtils.responseToListener();
+                                    BalanceConversionUtils.handleListener();
+                                }
                             }
                         } finally {
                             if(response != null){
                                 response.close();
                             }
                         }
-
                     }
                 });
             } catch (Exception e){

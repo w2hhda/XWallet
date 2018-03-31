@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.x.wallet.transaction.balance.BalanceLoaderManager;
 import com.x.wallet.transaction.token.TokenLoaderManager;
+import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 
 import net.bither.bitherj.crypto.mnemonic.MnemonicHelper;
 
@@ -31,6 +32,7 @@ public class XWalletApplication extends Application{
             @Override
             public void run() {
                 try {
+                    UsdToCnyHelper.init();
                     AppMnemonicHelper.init(MnemonicHelper.MNEMONICTYPE.MNEMONICTYPE_EN);
                 } catch (Exception e) {
                     Log.e("XWalletApplication", "initApp has a exception!", e);

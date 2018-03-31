@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
-import com.x.wallet.transaction.balance.BalanceConversionUtils;
+import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -57,11 +57,11 @@ public class TokenUtils {
     }
 
     public static String calculateTokenBalance(BigDecimal translateBalance, double rate) {
-        return formatDouble(translateBalance.doubleValue() * rate * BalanceConversionUtils.mUsdToCny);
+        return formatDouble(translateBalance.doubleValue() * rate * UsdToCnyHelper.mUsdToCny);
     }
 
     public static String calculateTokenBalance2(double translateBalance, double rate) {
-        Log.i(AppUtils.APP_TAG, "TokenUtils BalanceConversionUtils.mUsdToCny = " + BalanceConversionUtils.mUsdToCny);
-        return formatDouble(translateBalance * rate * BalanceConversionUtils.mUsdToCny);
+        Log.i(AppUtils.APP_TAG, "TokenUtils BalanceConversionUtils.mUsdToCny = " + UsdToCnyHelper.mUsdToCny);
+        return formatDouble(translateBalance * rate * UsdToCnyHelper.mUsdToCny);
     }
 }
