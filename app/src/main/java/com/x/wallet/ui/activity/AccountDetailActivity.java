@@ -24,6 +24,7 @@ import com.x.wallet.lib.eth.EthUtils;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.data.TransactionsResultBean;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
+import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.adapter.AccountDetailAdapter;
 import com.x.wallet.ui.data.RawAccountItem;
 import com.x.wallet.ui.data.SerializableAccountItem;
@@ -39,6 +40,8 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+
+import static com.x.wallet.transaction.token.TokenUtils.DECIMAL_COUNT;
 
 /**
  * Created by wuliang on 18-3-16.
@@ -165,11 +168,11 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     private void initViewForToken(){
         BigDecimal balance = new BigDecimal(mTokenItem.getBalance());
         int decimals = mTokenItem.getDecimals();
-        String balanceTv = balance.divide(BigDecimal.TEN.pow(decimals)).toString();
+        String balanceTv = balance.divide(BigDecimal.TEN.pow(decimals), DECIMAL_COUNT, BigDecimal.ROUND_UP).toString();
         mBalanceTv.setText(balanceTv + " " + mTokenItem.getCoinName());
-        mBalanceTranslateTv.setText(Double.parseDouble(balanceTv) * mTokenItem.getRate() + "");
+        mBalanceTranslateTv.setText(TokenUtils.getTokenConversionText(this, Double.parseDouble(balanceTv), mTokenItem.getRate()));
 
-
+        
         CONTRACT_ADDRESS = mTokenItem.getContractAddress();
         webView = findViewById(R.id.webView);
         if (new BigDecimal(mTokenItem.getBalance()).compareTo(BigDecimal.ZERO) > 0) {
@@ -177,9 +180,9 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             webView.setVisibility(View.VISIBLE);
         }
         WebSettings webSettings = webView.getSettings();
-        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
-        webSettings.setBuiltInZoomControls(true); // 显示放大缩小
-        webSettings.setSupportZoom(true);
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDomStorageEnabled(true);
         final String url = "https://etherscan.io/token/generic-tokentxns2?contractAddress=" + CONTRACT_ADDRESS + "&a=" + mAccountItem.getAddress();
