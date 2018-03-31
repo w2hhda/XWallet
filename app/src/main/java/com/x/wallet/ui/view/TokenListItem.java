@@ -49,8 +49,6 @@ public class TokenListItem extends RelativeLayout{
         mCheckIv.setImageResource(isChecked ? R.drawable.ic_radio_button_checked : R.drawable.ic_radio_button_unchecked);
     }
 
-
-
     public TokenItemBean getTokenItem() {
         return mTokenItem;
     }

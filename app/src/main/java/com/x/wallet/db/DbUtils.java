@@ -91,4 +91,23 @@ public class DbUtils {
         }
         return false;
     }
+
+    public static boolean isAlreadyExistToken(String selection, String[] selectionArgs){
+        Cursor cursor = null;
+        try{
+            cursor = XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
+                    XWalletProvider.CONTENT_URI_TOKEN,
+                    new String[]{DbUtils.TokenTableColumns._ID},
+                    selection,
+                    selectionArgs, null);
+            if(cursor != null && cursor.getCount() > 0){
+                return true;
+            }
+        } finally {
+            if(cursor != null){
+                cursor.close();
+            }
+        }
+        return false;
+    }
 }

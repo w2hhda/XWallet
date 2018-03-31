@@ -3,6 +3,7 @@ package com.x.wallet.transaction.token;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -43,6 +44,12 @@ public class InsertTokenAsycTask extends AsyncTask<Void, Void, Uri> {
 
     @Override
     protected Uri doInBackground(Void... voids) {
+        boolean isExist = DbUtils.isAlreadyExistToken(DbUtils.UPDATE_TOKEN_SELECTION, new String[]{mAccountAddress, mTokenItem.getSymbol()});
+        Log.i(AppUtils.APP_TAG, "doInBackground isExist = " + isExist);
+        if(isExist){
+            return null;
+        }
+
         ContentValues values = new ContentValues();
         values.put(DbUtils.TokenTableColumns.ACCOUNT_ID, mAccountId);
         values.put(DbUtils.TokenTableColumns.ACCOUNT_ADDRESS, mAccountAddress);
