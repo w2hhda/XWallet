@@ -110,4 +110,10 @@ public class DbUtils {
         }
         return false;
     }
+
+    public static int deleteTokenForAccount(long accountId){
+        String selection = DbUtils.TokenTableColumns.ACCOUNT_ID + " = ?";
+        return XWalletApplication.getApplication().getApplicationContext().getContentResolver()
+                .delete(XWalletProvider.CONTENT_URI_TOKEN, selection, new String[]{Long.toString(accountId)});
+    }
 }

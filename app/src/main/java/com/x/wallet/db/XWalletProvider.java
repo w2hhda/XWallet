@@ -115,6 +115,9 @@ public class XWalletProvider extends ContentProvider {
             case URI_ACCOUNT_ID:
                 count = db.delete(TABLE_ACCOUNT, DbUtils.DbColumns._ID + "=" + uri.getLastPathSegment(), null);
                 break;
+            case URI_TOKEN:
+                count = db.delete(TABLE_TOKEN, selection, selectionArgs);
+                break;
         }
         if(count > 0){
             getContext().getContentResolver().notifyChange(uri, null);

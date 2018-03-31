@@ -5,9 +5,12 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Log;
 
+import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.XWalletApplication;
+import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
 
 /**
@@ -36,6 +39,8 @@ public class DeleteAccountAsycTask extends AsyncTask<Void, Void, Integer>{
 
     @Override
     protected Integer doInBackground(Void... voids) {
+        int count = DbUtils.deleteTokenForAccount(mAccountId);
+        Log.i(AppUtils.APP_TAG, "DeleteAccountAsycTask doInBackground count = " + count);
         Uri uri = ContentUris.withAppendedId(XWalletProvider.CONTENT_URI, mAccountId);
         return XWalletApplication.getApplication().getApplicationContext().getContentResolver()
                 .delete(uri, null, null);
