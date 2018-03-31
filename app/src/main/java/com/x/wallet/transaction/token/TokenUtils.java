@@ -32,6 +32,9 @@ public class TokenUtils {
     }
 
     public static String getTokenConversionText(Context context, BigDecimal translateBalance, double rate) {
+        if(translateBalance.compareTo(BigDecimal.ZERO) == 0){
+            return context.getString(R.string.blank_balance);
+        }
         return context.getString(R.string.item_balance, calculateTokenBalance(translateBalance, rate));
     }
 
@@ -41,7 +44,7 @@ public class TokenUtils {
     }
 
     public static String formatDouble(double value) {
-        DecimalFormat df = new DecimalFormat("#.00");
+        DecimalFormat df = new DecimalFormat("#0.00");
         return df.format(value);
     }
 
