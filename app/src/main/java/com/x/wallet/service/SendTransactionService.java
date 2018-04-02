@@ -3,6 +3,8 @@ package com.x.wallet.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
@@ -14,6 +16,7 @@ import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.util.ExchangeCalUtil;
+import com.x.wallet.ui.data.RawAccountItem;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,9 +59,8 @@ public class SendTransactionService extends IntentService {
     public final static String AMOUNT_TAG           = "amount_tag";
     public final static String EXTRA_DATA_TAG       = "extra_data_tag";
     public final static String PASSWORD_TAG         = "password_tag";
-    public final static String TOKEN20_TYPE_NAME    = "token20_name";
-    public final static String TOKEN20_ADDRESS_TAG  = "token20_address";
-    public final static String TOKEN20_DECIMALS_TAG = "token20_decimals";
+
+    RawAccountItem mTokenItem = null;
 
     private final BigInteger defaultGasLimit = new BigInteger("91000");
 
@@ -80,10 +82,11 @@ public class SendTransactionService extends IntentService {
         Credentials credentials = getCredential(fromAddress, password);
 
 
-        if (intent.hasExtra(TOKEN20_TYPE_NAME) && intent.hasExtra(TOKEN20_ADDRESS_TAG) && intent.hasExtra(TOKEN20_DECIMALS_TAG)){  //token transfer
-            String token20Name = intent.getStringExtra(TOKEN20_TYPE_NAME);
-            String token20Address  = intent.getStringExtra(TOKEN20_ADDRESS_TAG);
-            int token20Decimals = intent.getIntExtra(TOKEN20_DECIMALS_TAG, 1);
+        if (intent.hasExtra(AppUtils.TOKEN_DATA)){  //token transfer
+            mTokenItem = (RawAccountItem) intent.getSerializableExtra(AppUtils.TOKEN_DATA);
+            String token20Name = mTokenItem.getCoinName();
+            String token20Address  = mTokenItem.getContractAddress();
+            int token20Decimals = mTokenItem.getDecimals();
             try {
                 sendTokenTransaction(fromAddress, toAddress, token20Address, credentials, gasPrice, defaultGasLimit, amount, token20Decimals);
             } catch (CipherException e){
@@ -137,7 +140,7 @@ public class SendTransactionService extends IntentService {
             EtherscanAPI.getInstance().getNonceForAddress(address, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    toastNetworkError();
+                    toastMsg("Network Error");
                 }
 
                 @Override
@@ -158,7 +161,7 @@ public class SendTransactionService extends IntentService {
 
                         byte[] signed = TransactionEncoder.signMessage(tx ,(byte) 1 ,credentials);
 
-                    pushTransaction(signed);
+                        pushTransaction(signed);
                     }catch (JSONException e){
                         Toast.makeText(SendTransactionService.this,"get nonce for transaction error", Toast.LENGTH_SHORT).show();
                     }
@@ -177,7 +180,7 @@ public class SendTransactionService extends IntentService {
             EtherscanAPI.getInstance().getNonceForAddress(address, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    toastNetworkError();
+                    toastMsg("Network Error");
                 }
 
                 @Override
@@ -188,10 +191,9 @@ public class SendTransactionService extends IntentService {
                         BigInteger nonce = new BigInteger(result, 16);
                         String extraData = packageTokenData(toAddress, amount, decimals);
                         //transfer amount is in the extra data, not in raw transaction.
-                        RawTransaction transaction = getRawTransaction(nonce, new BigInteger(gasPrice), gasLimit, contractAddress, BigInteger.ZERO, extraData);
+                        RawTransaction transaction = getRawTransaction(nonce, new BigInteger(gasPrice), defaultGasLimit, contractAddress, BigInteger.ZERO, extraData);
 
                         byte[] singedMessage = TransactionEncoder.signMessage(transaction, (byte) 1, credentials);
-
                         pushTransaction(singedMessage);
                     }catch (JSONException e){
                         Toast.makeText(SendTransactionService.this,"get nonce for transaction error", Toast.LENGTH_SHORT).show();
@@ -208,7 +210,7 @@ public class SendTransactionService extends IntentService {
             EtherscanAPI.getInstance().forwardTransaction("0x" + Hex.toHexString(singedMessage), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    toastNetworkError();
+                    toastMsg("Network Error");
                 }
 
                 @Override
@@ -218,13 +220,15 @@ public class SendTransactionService extends IntentService {
                         JSONObject object = new JSONObject(receive);
                         String result = object.getString("result");
                         if (result != null){
-                            toastSuccess(result);
+                            toastMsg("tx success!");
+                            Log.i(AppUtils.APP_TAG, "push tx success: " + result);
                         }else {
                             String errorMsg = object.getJSONObject("error").getString("message");
-                            toastFailError(errorMsg);
+                            toastMsg(errorMsg);
+                            Log.i(AppUtils.APP_TAG, "push tx Error: " + errorMsg);
                         }
                     }catch (JSONException e){
-                        toastFailError("unknown error! Please check transfer details later!");
+                        toastMsg("unknown error! Please check transfer details later!");
                     }
                 }
             });
@@ -261,15 +265,14 @@ public class SendTransactionService extends IntentService {
         return FunctionEncoder.encode(function);
     }
 
-    private void toastSuccess(String msg){
-        Toast.makeText(this, "send transfer success! receipt : " + msg, Toast.LENGTH_LONG).show();
+    private void toastMsg(final String msg){
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(SendTransactionService.this, msg, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
-    private void toastNetworkError(){
-        Toast.makeText(this, "connect to network error", Toast.LENGTH_LONG).show();
-    }
-
-    private void toastFailError(String msg){
-        Toast.makeText(this, "transfer fail for " + msg, Toast.LENGTH_LONG).show();
-    }
 }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -64,10 +65,10 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     private List<TransactionItem> items;
     private MyHandler handler;
     private WebView webView;
+    private SwipeRefreshLayout refreshLayout;
 
 
     public final static String SHARE_ADDRESS_EXTRA = "share_address_extra";
-    public final static String TOKEN_EXTRA = "token_extra";
     private BalanceConversionUtils.RateUpdateListener mRateUpdateListener;
     private String CONTRACT_ADDRESS ;
     private Boolean isTokenAccount = false;
@@ -77,7 +78,9 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_detail_activity);
 
-        mAccountItem = (SerializableAccountItem) getIntent().getSerializableExtra(AppUtils.ACCOUNT_DATA);
+        if (getIntent().hasExtra(AppUtils.ACCOUNT_DATA)) {
+            mAccountItem = (SerializableAccountItem) getIntent().getSerializableExtra(AppUtils.ACCOUNT_DATA);
+        }
         if (getIntent().hasExtra(AppUtils.TOKEN_DATA)) {
             mTokenItem = (RawAccountItem) getIntent().getSerializableExtra(AppUtils.TOKEN_DATA);
             isTokenAccount = true;
@@ -93,6 +96,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         mSendOutBtn = findViewById(R.id.send_btn);
         mReceiptBtn = findViewById(R.id.receipt_btn);
         mNoTransactionView = findViewById(R.id.no_transaction_view);
+        refreshLayout = findViewById(R.id.layout_swipe_refresh);
         this.setTitle(mAccountItem.getAccountName());
 
         mReceiptBtn.setOnClickListener(new View.OnClickListener() {
@@ -108,9 +112,12 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent("com.x.wallet.action_TRANSFER_TO_ADDRESS_ACTION");
-                intent.putExtra(SHARE_ADDRESS_EXTRA, mAccountItem.getAddress());
+                //intent.putExtra(SHARE_ADDRESS_EXTRA, mAccountItem.getAddress());
+
+                intent.putExtra(AppUtils.ACCOUNT_DATA, mAccountItem);
                 if (isTokenAccount){
-                    intent.putExtra(TOKEN_EXTRA, mTokenItem);
+                    //intent.putExtra(TOKEN_EXTRA, mTokenItem);
+                    intent.putExtra(AppUtils.TOKEN_DATA, mTokenItem);
                 }
                 startActivity(intent);
             }
@@ -120,8 +127,19 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             initViewForToken();
         }else {
             initViewForNormal();
-            mAddressTv.setText(mAccountItem.getAddress());
         }
+        mAddressTv.setText(mAccountItem.getAddress());
+
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (isTokenAccount){
+                    getTokenTransactions(true);
+                }else {
+                    getNormalTransactions(true);
+                }
+            }
+        });
 
     }
 
@@ -174,28 +192,10 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         mBalanceTv.setText(balanceTv + " " + mTokenItem.getCoinName());
         mBalanceTranslateTv.setText(TokenUtils.getTokenConversionText(this, Double.parseDouble(balanceTv), mTokenItem.getRate()));
 
-        
         CONTRACT_ADDRESS = mTokenItem.getContractAddress();
         webView = findViewById(R.id.webView);
-        if (new BigDecimal(mTokenItem.getBalance()).compareTo(BigDecimal.ZERO) > 0) {
-            mNoTransactionView.setVisibility(View.GONE);
-            webView.setVisibility(View.VISIBLE);
-        }
-        WebSettings webSettings = webView.getSettings();
-        webSettings.setUseWideViewPort(true);
-        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        getTokenTransactions(false);
 
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setDomStorageEnabled(true);
-        final String url = "https://etherscan.io/token/generic-tokentxns2?contractAddress=" + CONTRACT_ADDRESS + "&a=" + mAccountItem.getAddress();
-        webView.loadUrl(url);
-
-        webView.setWebViewClient(new WebViewClient(){
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                return false;
-            }
-        });
     }
 
     @Override
@@ -208,6 +208,16 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         }
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.i("@@@@","onNewIntent");
+        if (intent.hasExtra(AppUtils.TOKEN_DATA)){
+            isTokenAccount = true;
+        }
+        initViews();
+    }
+
     private class MyHandler extends Handler{
         public static final int  MSG_UPDATE = -1;
 
@@ -217,8 +227,8 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             switch (msg.what){
                 case -1:
                     mNoTransactionView.setVisibility(View.GONE);
-
                     adapter.addItems(items);
+                    refreshLayout.setRefreshing(false);
                     break;
                 default:
                         break;
@@ -254,7 +264,6 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
                         for(TransactionsResultBean.ReceiptBean receiptBean: receiptBeans){
                             Boolean isReceive = true;
                             Boolean isToken = false;
-
                             if (receiptBean.getFrom().equalsIgnoreCase(mAccountItem.getAddress())){
                                 isReceive = false;
                             }
@@ -276,5 +285,27 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         }catch (IOException e){
             Log.i("@@@@","exception in asyncTask");
         }
+    }
+
+    private void getTokenTransactions(Boolean force){
+        if (new BigDecimal(mTokenItem.getBalance()).compareTo(BigDecimal.ZERO) > 0) {
+            mNoTransactionView.setVisibility(View.GONE);
+            webView.setVisibility(View.VISIBLE);
+        }
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setDomStorageEnabled(true);
+        final String url = "https://etherscan.io/token/generic-tokentxns2?contractAddress=" + CONTRACT_ADDRESS + "&a=" + mAccountItem.getAddress();
+        webView.loadUrl(url);
+
+        webView.setWebViewClient(new WebViewClient(){
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                return false;
+            }
+        });
     }
 }

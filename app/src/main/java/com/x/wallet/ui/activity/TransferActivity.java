@@ -22,6 +22,7 @@ import com.x.wallet.lib.eth.util.ExchangeCalUtil;
 import com.x.wallet.service.SendTransactionService;
 import com.x.wallet.transaction.address.ConfirmPasswordAsyncTask;
 import com.x.wallet.ui.data.RawAccountItem;
+import com.x.wallet.ui.data.SerializableAccountItem;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,34 +40,31 @@ import okhttp3.Response;
  */
 
 public class TransferActivity extends WithBackAppCompatActivity {
-    private BigInteger defaultGasLimit;
+    private BigInteger defaultGasLimit = new BigInteger("91000");
     private EditText toAddress;
     private TextView priceTv;
     private EditText transferAmount;
     private BigDecimal defaultPrice = new BigDecimal(0);
     private RawAccountItem mTokenItem;
     private TextView unitIndicator;
+    private SerializableAccountItem mAccountItem;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.transfer_activity);
         String address = "";
-        Intent intent = getIntent();
-        if (intent != null){
-            address = intent.getStringExtra(AccountDetailActivity.SHARE_ADDRESS_EXTRA);
-            if (intent.hasExtra(AccountDetailActivity.TOKEN_EXTRA)){
-                mTokenItem = (RawAccountItem) intent.getSerializableExtra(AccountDetailActivity.TOKEN_EXTRA);
-                defaultGasLimit = new BigInteger("91000");
-            }else {
-                defaultGasLimit = new BigInteger("21000");
-            }
+
+        if (getIntent().hasExtra(AppUtils.ACCOUNT_DATA)){
+            mAccountItem = (SerializableAccountItem) getIntent().getSerializableExtra(AppUtils.ACCOUNT_DATA);
+            address = mAccountItem.getAddress();
         }
-        if (address != "") {
-            initView(address);
-        }else {
-            Toast.makeText(this, "error address!", Toast.LENGTH_SHORT);
+
+        if (getIntent().hasExtra(AppUtils.TOKEN_DATA)){
+            mTokenItem = (RawAccountItem) getIntent().getSerializableExtra(AppUtils.TOKEN_DATA);
         }
+
+        initView(address);
     }
 
     private void initView(final String address){
@@ -126,7 +124,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
                     return;
                 }
 
-                if (transferAmount.getText() == null || new BigDecimal(transferAmount.getText().toString()).equals(BigDecimal.ZERO)){
+                if (transferAmount.getText() == null || transferAmount.getText().length() == 0 || new BigDecimal(transferAmount.getText().toString()).equals(BigDecimal.ZERO)){
                     Toast.makeText(TransferActivity.this, "please input correct amount", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -189,12 +187,13 @@ public class TransferActivity extends WithBackAppCompatActivity {
         intent.putExtra(SendTransactionService.GAS_LIMIT_TAG, defaultGasLimit);
         intent.putExtra(SendTransactionService.AMOUNT_TAG, transferAmount.getText().toString());
         intent.putExtra(SendTransactionService.EXTRA_DATA_TAG, "");
-        if (mTokenItem != null){
-            intent.putExtra(SendTransactionService.TOKEN20_TYPE_NAME, mTokenItem.getCoinName());
-            intent.putExtra(SendTransactionService.TOKEN20_ADDRESS_TAG, mTokenItem.getContractAddress());
-            intent.putExtra(SendTransactionService.TOKEN20_DECIMALS_TAG, mTokenItem.getDecimals());
+        if (mAccountItem != null){
+            intent.putExtra(AppUtils.ACCOUNT_DATA, mAccountItem);
         }
-        Log.i("@@@@","price = " + getNowPrice());
+
+        if (mTokenItem != null){
+            intent.putExtra(AppUtils.TOKEN_DATA, mTokenItem);
+        }
 
         return intent;
     }
