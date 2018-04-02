@@ -4,7 +4,9 @@ import com.x.wallet.lib.eth.cache.MemoryCache;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CacheHelper {
 
@@ -16,7 +18,7 @@ public class CacheHelper {
     public static final String TYPE_EXCHANGE_RATE = "EXCHANGE_RATE_";
 
     private MemoryCache cache = MemoryCache.instance();
-    private List<String> keySet = new ArrayList<>();
+    private Set<String> keySet = new HashSet<>();
 
     private HashMap<String, String> map = new HashMap<String, String>();
     private static CacheHelper instance;
@@ -34,6 +36,10 @@ public class CacheHelper {
 
     public void put(String type, String address, String response) {
         String key = type + address;
+        if (keySet.contains(key)){
+            cache.remove(key);
+            keySet.remove(key);
+        }
         keySet.add(key);
         cache.put(key, response);
     }

@@ -2,7 +2,6 @@ package com.x.wallet.ui.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -22,7 +21,7 @@ import java.util.Date;
 public class TransactionListItem extends RelativeLayout{
     private TransactionItem mTransactionItem;
     private TextView mTransactionName;
-    private ImageView mTransactionType;
+    private ImageView mTransactionStatus;
     private TextView mTimeStamp;
     private TextView mAmount;
     private TextView mCoinType;
@@ -43,7 +42,7 @@ public class TransactionListItem extends RelativeLayout{
     protected void onFinishInflate() {
         super.onFinishInflate();
         mTransactionName = findViewById(R.id.transaction_name_tv);
-        mTransactionType = findViewById(R.id.transaction_type_coin);
+        mTransactionStatus = findViewById(R.id.transaction_status_coin);
         mTimeStamp = findViewById(R.id.time_stamp_tv);
         mAmount = findViewById(R.id.transaction_amount_tv);
         mCoinType = findViewById(R.id.coin_type_tv);
@@ -53,20 +52,26 @@ public class TransactionListItem extends RelativeLayout{
     public void bind(TransactionItem item) {
         mTransactionItem = item;
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date date = new Date(Long.parseLong(item.getTimeStamp()) * 1000L);
         String time = sdf.format(date);
 
         mTimeStamp.setText(time);
-        //mCoinType.setText(item.getmCoinType());
+
+        if (item.getError()){
+            mTransactionStatus.setImageResource(R.drawable.is_error);
+        }else {
+            if (item.getTxReceiptStatus() == 1){
+                mTransactionStatus.setImageResource(R.drawable.is_ok);
+            }
+        }
 
         String amount = ExchangeCalUtil.getInstance().weiToEther(new BigInteger(item.getAmount())).stripTrailingZeros().toPlainString();
         if (item.getTransactionType().equalsIgnoreCase(TransactionItem.TRANSACTION_TYPE_RECEIVE)){
-            mTransactionType.setImageResource(R.drawable.transaction_in);
-            mAmount.setText(amount);
+            mAmount.setText("+" + amount);
+            mAmount.setTextColor(getResources().getColor(R.color.manage_account_textColor));
             mTransactionName.setText("From: " + item.getFromAddress());
         }else {
-            mTransactionType.setImageResource(R.drawable.transaction_out);
             mAmount.setText("-" + amount);
             mAmount.setTextColor(getResources().getColor(R.color.colorRed));
             if (item.getToken()){

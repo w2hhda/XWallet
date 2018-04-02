@@ -27,6 +27,8 @@ public class TransactionItem implements Serializable {
     private String transactionFax;
     private String nonce;
     private Boolean isToken = false;
+    private Boolean isError = false;
+    private int txReceiptStatus;
 
     public TransactionItem() {
     }
@@ -53,6 +55,8 @@ public class TransactionItem implements Serializable {
         BigInteger gasPrice = new BigInteger(receipts.getGasPrice());
         item.setTransactionFax(gasUsed.multiply(gasPrice).toString());
         item.setNonce(receipts.getNonce());
+        item.setError(receipts.getIsError() == 1);
+        item.setTxReceiptStatus(receipts.getTxreceipt_status());
         if (isReceive){
             item.setTransactionType(TRANSACTION_TYPE_RECEIVE);
         }else {
@@ -149,6 +153,22 @@ public class TransactionItem implements Serializable {
 
     public void setToken(Boolean token) {
         isToken = token;
+    }
+
+    public Boolean getError() {
+        return isError;
+    }
+
+    public void setError(Boolean error) {
+        isError = error;
+    }
+
+    public int getTxReceiptStatus() {
+        return txReceiptStatus;
+    }
+
+    public void setTxReceiptStatus(int txReceiptStatus) {
+        this.txReceiptStatus = txReceiptStatus;
     }
 
     @Override
