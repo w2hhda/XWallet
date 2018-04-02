@@ -23,6 +23,7 @@ import com.x.wallet.R;
 import com.x.wallet.lib.eth.EthUtils;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.data.TransactionsResultBean;
+import com.x.wallet.lib.eth.util.CacheHelper;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.adapter.AccountDetailAdapter;
@@ -33,6 +34,7 @@ import com.x.wallet.ui.view.TransactionListItem;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -202,7 +204,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         if (isTokenAccount){
 
         }else {
-            getNormalTransactions();
+            getNormalTransactions(false);
         }
     }
 
@@ -230,7 +232,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         }
     }
 
-    private void getNormalTransactions(){
+    private void getNormalTransactions(Boolean force){
         try {
             //String address = "0xe2258d66b820fc4f0017017373c7b9f742596f27";
             EtherscanAPI.getInstance().getNormalTransactions(mAccountItem.getAddress(), new Callback() {
@@ -243,17 +245,20 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
                 public void onResponse(Call call, Response response) throws IOException {
                     ResponseBody body = response.body();
                     if(body != null){
-                        TransactionsResultBean bean = new Gson().fromJson(body.string(), TransactionsResultBean.class);
+                        String result = body.string();
+                        CacheHelper.instance().put(CacheHelper.TYPE_TXS_NORMAL, mAccountItem.getAddress(), result);
+                        TransactionsResultBean bean = new Gson().fromJson(result, TransactionsResultBean.class);
                         List<TransactionsResultBean.ReceiptBean> receiptBeans = bean.getResult();
 
                         items.clear();
                         for(TransactionsResultBean.ReceiptBean receiptBean: receiptBeans){
                             Boolean isReceive = true;
                             Boolean isToken = false;
+
                             if (receiptBean.getFrom().equalsIgnoreCase(mAccountItem.getAddress())){
                                 isReceive = false;
                             }
-                            if (receiptBean.getInput() != null && receiptBean.getInput().length() > 10){ //input contains token transaction info
+                            if (receiptBean.getInput() != null && receiptBean.getInput().length() > 10 && new BigInteger(receiptBean.getValue()).equals(BigInteger.ZERO)){ //input contains token transaction info
                                 isToken = true;
                             }
                             items.add(TransactionItem.createFromReceipt(receiptBean, isReceive, isToken));
@@ -266,7 +271,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
                         }
                     }
                 }
-            }, true);
+            }, force);
 
         }catch (IOException e){
             Log.i("@@@@","exception in asyncTask");

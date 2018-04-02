@@ -60,8 +60,7 @@ public class SendTransactionService extends IntentService {
     public final static String TOKEN20_ADDRESS_TAG  = "token20_address";
     public final static String TOKEN20_DECIMALS_TAG = "token20_decimals";
 
-    private final BigInteger defaultGasLimit = new BigInteger("21000");
-    private final BigInteger defaultTokenGasLimit = new BigInteger("91000");
+    private final BigInteger defaultGasLimit = new BigInteger("91000");
 
     public SendTransactionService(){
         super("SendTransactionService");
@@ -86,7 +85,7 @@ public class SendTransactionService extends IntentService {
             String token20Address  = intent.getStringExtra(TOKEN20_ADDRESS_TAG);
             int token20Decimals = intent.getIntExtra(TOKEN20_DECIMALS_TAG, 1);
             try {
-                sendTokenTransaction(fromAddress, toAddress, token20Address, credentials, gasPrice, defaultTokenGasLimit, amount, token20Decimals);
+                sendTokenTransaction(fromAddress, toAddress, token20Address, credentials, gasPrice, defaultGasLimit, amount, token20Decimals);
             } catch (CipherException e){
 
             }

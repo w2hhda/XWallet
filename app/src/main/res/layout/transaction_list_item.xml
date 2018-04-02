@@ -7,7 +7,7 @@
 
 
     <ImageView
-        android:id="@+id/transaction_type_coin"
+        android:id="@+id/transaction_status_coin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dip"
-        android:layout_toEndOf="@+id/transaction_type_coin"
+        android:layout_toEndOf="@+id/transaction_status_coin"
         android:minHeight="@dimen/account_list_item_minHeight">
 
         <TextView
