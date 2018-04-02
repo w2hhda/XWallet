@@ -27,11 +27,11 @@ import com.x.wallet.R;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.common.LibUtils;
+import com.x.wallet.transaction.balance.AllBalanceLoader;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.adapter.AccountListAdapter;
 import com.x.wallet.ui.data.AccountItem;
-import com.x.wallet.ui.view.AccountListItem;
 import com.x.wallet.ui.view.BaseRawAccountListItem;
 
 /**
@@ -55,6 +55,7 @@ public class AccountListFragment extends Fragment {
     private MenuItem mImportItem;
 
     private static final int ACCOUNT_LIST_LOADER = 1;
+    private static final int ALL_BALANCE_LOADER = 2;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -133,6 +134,7 @@ public class AccountListFragment extends Fragment {
         TokenUtils.setRateUpdateListener(null);
         if (mLoaderManager != null) {
             mLoaderManager.destroyLoader(ACCOUNT_LIST_LOADER);
+            mLoaderManager.destroyLoader(ALL_BALANCE_LOADER);
             mLoaderManager = null;
         }
     }
@@ -173,6 +175,7 @@ public class AccountListFragment extends Fragment {
         final Bundle args = new Bundle();
         mLoaderManager = loaderManager;
         mLoaderManager.initLoader(ACCOUNT_LIST_LOADER, args, new AccountListLoaderCallbacks());
+        mLoaderManager.initLoader(ALL_BALANCE_LOADER, args, new AllBalanceLoaderCallbacks()).forceLoad();
     }
 
     private void updateViewVisibility(int dataCount){
@@ -218,6 +221,25 @@ public class AccountListFragment extends Fragment {
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
+
+        }
+    }
+
+    private class AllBalanceLoaderCallbacks implements LoaderManager.LoaderCallbacks<String> {
+
+
+        @Override
+        public Loader<String> onCreateLoader(int id, Bundle args) {
+            return new AllBalanceLoader(AccountListFragment.this.getActivity());
+        }
+
+        @Override
+        public void onLoadFinished(Loader<String> loader, String allBalance) {
+            mAllBalanceTv.setText(AccountListFragment.this.getActivity().getString(R.string.all_balance, allBalance));
+        }
+
+        @Override
+        public void onLoaderReset(Loader<String> loader) {
 
         }
     }

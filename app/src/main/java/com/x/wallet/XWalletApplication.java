@@ -3,6 +3,7 @@ package com.x.wallet;
 import android.app.Application;
 import android.util.Log;
 
+import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.balance.BalanceLoaderManager;
 import com.x.wallet.transaction.token.TokenLoaderManager;
 import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
@@ -34,6 +35,7 @@ public class XWalletApplication extends Application{
                 try {
                     AppMnemonicHelper.init(MnemonicHelper.MNEMONICTYPE.MNEMONICTYPE_EN);
                     UsdToCnyHelper.init();
+                    BalanceConversionUtils.init();
                 } catch (Exception e) {
                     Log.e("XWalletApplication", "initApp has a exception!", e);
                 }

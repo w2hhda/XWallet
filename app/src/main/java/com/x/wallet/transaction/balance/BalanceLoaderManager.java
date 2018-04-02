@@ -215,7 +215,7 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                             if(body != null){
                                 //1.parse
                                 PriceResultBean priceResultBean = new Gson().fromJson(body.string(), PriceResultBean.class);
-                                BalanceConversionUtils.mEthToUsd = priceResultBean.getResult().getEthusd();
+                                BalanceConversionUtils.write(priceResultBean.getResult().getEthusd());
                                 Log.i(AppUtils.APP_TAG, "BalanceLoaderManager onResponse getEtherPrice EthToUsd = " + priceResultBean.getResult().getEthusd());
 
                                 if(UsdToCnyHelper.isNeedRequest()){

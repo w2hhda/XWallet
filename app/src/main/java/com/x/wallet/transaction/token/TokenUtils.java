@@ -77,4 +77,8 @@ public class TokenUtils {
             mRateUpdateListener.onRateUpdate();
         }
     }
+
+    public static String format(BigDecimal value) {
+        return getStrFromBigDecimal(value.setScale(2, BigDecimal.ROUND_UP));
+    }
 }
