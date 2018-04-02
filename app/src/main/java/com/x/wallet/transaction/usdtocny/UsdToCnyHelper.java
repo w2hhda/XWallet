@@ -19,7 +19,7 @@ public class UsdToCnyHelper {
 
     public static void init(){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(XWalletApplication.getApplication().getApplicationContext());
-        mUsdToCny = Long.parseLong(preferences.getString(USD_TO_CNY_VALUE_PREF_KEY, "0"));
+        mUsdToCny = Double.parseDouble(preferences.getString(USD_TO_CNY_VALUE_PREF_KEY, "0"));
         mDate = preferences.getLong(USD_TO_CNY_DATE_PREF_KEY, 0);
     }
 

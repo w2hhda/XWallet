@@ -32,8 +32,8 @@ public class XWalletApplication extends Application{
             @Override
             public void run() {
                 try {
-                    UsdToCnyHelper.init();
                     AppMnemonicHelper.init(MnemonicHelper.MNEMONICTYPE.MNEMONICTYPE_EN);
+                    UsdToCnyHelper.init();
                 } catch (Exception e) {
                     Log.e("XWalletApplication", "initApp has a exception!", e);
                 }
