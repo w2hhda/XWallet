@@ -75,13 +75,11 @@ public class AccountListFragment extends Fragment {
                 Intent intent = new Intent("com.x.wallet.action.SEE_ACCOUNT_DETAIL_ACTION");
                 intent.putExtra(AppUtils.ACCOUNT_DATA, AllAccountItem.translateToSerializable(accountItem));
                 if(accountItem.isToken()){
-                    AccountListFragment.this.getActivity().startActivity(intent);
-                } else {
                     final RawAccountItem rawAccountItem = new RawAccountItem(accountItem.getCoinName(), accountItem.getIdInAll(), accountItem.getBalance(),
                             accountItem.getDecimals(), accountItem.getRate(), accountItem.getContractAddress());
                     intent.putExtra(AppUtils.TOKEN_DATA, rawAccountItem);
-                    getContext().startActivity(intent);
                 }
+                getContext().startActivity(intent);
             }
         });
 
