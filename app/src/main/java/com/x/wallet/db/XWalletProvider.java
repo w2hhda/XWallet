@@ -22,6 +22,7 @@ public class XWalletProvider extends ContentProvider {
     static final String TABLE_ACCOUNT = "account";
     static final String TABLE_TOKEN = "token";
     public static final String AUTHORITY = "com.x.wallet";
+    public static final Uri RAW_CONTENT_URI = Uri.parse("content://com.x.wallet/");
     public static final Uri ALL_ACCOUNT_CONTENT_URI = Uri.parse("content://com.x.wallet/allaccount");
     public static final Uri CONTENT_URI = Uri.parse("content://com.x.wallet/account");
     public static final Uri CONTENT_URI_TOKEN = Uri.parse("content://com.x.wallet/token");
@@ -77,7 +78,7 @@ public class XWalletProvider extends ContentProvider {
                 break;
         }
         if (cursor != null) {
-            cursor.setNotificationUri(getContext().getContentResolver(), CONTENT_URI);
+            cursor.setNotificationUri(getContext().getContentResolver(), uri);
         }
         return cursor;
     }
@@ -107,7 +108,8 @@ public class XWalletProvider extends ContentProvider {
             break;
         }
         if(result != null){
-            getContext().getContentResolver().notifyChange(CONTENT_URI, null);
+            //getContext().getContentResolver().notifyChange(uri, null);
+            getContext().getContentResolver().notifyChange(RAW_CONTENT_URI, null);
         }
         return result;
     }
@@ -128,7 +130,8 @@ public class XWalletProvider extends ContentProvider {
                 break;
         }
         if(count > 0){
-            getContext().getContentResolver().notifyChange(uri, null);
+            //getContext().getContentResolver().notifyChange(uri, null);
+            getContext().getContentResolver().notifyChange(RAW_CONTENT_URI, null);
         }
         return count;
     }
@@ -151,7 +154,8 @@ public class XWalletProvider extends ContentProvider {
         }
         Log.i(AppUtils.APP_TAG, "XWalletProvider update count =" + count);
         if(count > 0){
-            getContext().getContentResolver().notifyChange(uri, null);
+            //getContext().getContentResolver().notifyChange(uri, null);
+            getContext().getContentResolver().notifyChange(RAW_CONTENT_URI, null);
         }
         return count;
     }
