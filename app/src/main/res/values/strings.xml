@@ -67,7 +67,8 @@
     <string name="transfer_fax">手续费</string>
     <string name="cancel">取消</string>
     <string name="app_declare">我已经仔细阅读并同意</string>
-    <string name="privacy_policy">服务及隐私条款</string>
+    <string name="privacy_policy">隐私条款</string>
+    <string name="service_policy">服务协议</string>
     <string name="backup_rightnow">立即备份</string>
     <string name="remind_backup_title">请立即备份您的钱包</string>
     <string name="remind_backup_content1">我们强烈建议您在纸上写下助记词（备份词语），并将其保存在安全的地方。</string>
@@ -112,4 +113,5 @@
     <string name="add_token">添加代币</string>
     <string name="add">添加</string>
     <string name="blank_mnemonic">密语为空</string>
+    <string name="and">及</string>
 </resources>
