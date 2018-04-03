@@ -69,6 +69,7 @@ public class MainActivity extends BaseAppCompatActivity {
         };
 
         mBottomNavigationView = findViewById(R.id.navigation);
+        mBottomNavigationView.setItemIconTintList(null);
         mBottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 

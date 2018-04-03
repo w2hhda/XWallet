@@ -63,7 +63,7 @@ public class RawAccountListItem extends RelativeLayout {
                 mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, BalanceConversionUtils.getEthConversionBalanceText(mAccountItem.getBalance())));
             }
         } else {
-            mImageView.setImageResource(R.drawable.coin_eos_icon);
+            mImageView.setImageResource(R.drawable.icon_coin_eos);
             mCoinBalanceUnitTv.setText(accountItem.getCoinName());
             BigDecimal translateBalance = TokenUtils.translateTokenInWholeUnit(accountItem.getBalance(), accountItem.getDecimals());
             mBalanceTv.setText(TokenUtils.getStrFromBigDecimal(translateBalance));

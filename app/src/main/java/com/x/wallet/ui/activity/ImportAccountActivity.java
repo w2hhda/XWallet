@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.lib.common.LibUtils;
+import com.x.wallet.ui.TabUtils;
 import com.x.wallet.ui.adapter.ViewPagerAdapter;
 import com.x.wallet.ui.fragment.ImportKeyFragment;
 import com.x.wallet.ui.fragment.ImportKeyStoreFragment;
@@ -29,7 +30,7 @@ public class ImportAccountActivity extends WithBackAppCompatActivity {
         initViews();
     }
 
-    private void initViews(){
+    private void initViews() {
         ViewPager pager = findViewById(R.id.viewpager);
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         Bundle bundle = new Bundle();
@@ -49,14 +50,21 @@ public class ImportAccountActivity extends WithBackAppCompatActivity {
 
         pager.setAdapter(adapter);
 
-        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        final TabLayout tabLayout = findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText(this.getResources().getText(R.string.mnemonic)));
         tabLayout.addTab(tabLayout.newTab().setText(this.getResources().getText(R.string.key)));
         tabLayout.addTab(tabLayout.newTab().setText(this.getResources().getText(R.string.keystore)));
         tabLayout.setupWithViewPager(pager);
+        final int margin = this.getResources().getDimensionPixelSize(R.dimen.tab_margin);
+        tabLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                TabUtils.updateTabMargin(tabLayout, margin, margin);
+            }
+        });
     }
 
-    private void initData(){
+    private void initData() {
         Intent intent = getIntent();
         mCoinType = intent.getIntExtra(AppUtils.COIN_TYPE, LibUtils.COINTYPE.COIN_BTC);
     }
