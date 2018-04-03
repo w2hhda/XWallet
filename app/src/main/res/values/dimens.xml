@@ -37,6 +37,8 @@
     <dimen name="create_account_item_marginTop">20dp</dimen>
     <dimen name="create_account_item_marginBottom">10dp</dimen>
     <dimen name="manage_account_name_textSize">20sp</dimen>
+    <dimen name="manage_account_coin_unit_textSize">18sp</dimen>
     <dimen name="manage_all_account_paddingSE">14dp</dimen>
     <dimen name="manage_all_account_paddingTB">20dp</dimen>
+    <dimen name="create_account_input_paddingStart">5dp</dimen>
 </resources>

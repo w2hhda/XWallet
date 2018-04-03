@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginStart="5dp"
+                android:layout_marginStart="23dp"
                 android:src="@drawable/into_icon" />
         </RelativeLayout>
 
@@ -99,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:textColor="@color/gray_b2"
-                android:textSize="@dimen/manage_account_name_textSize" />
+                android:textSize="@dimen/manage_account_coin_unit_textSize" />
         </LinearLayout>
     </LinearLayout>
 
