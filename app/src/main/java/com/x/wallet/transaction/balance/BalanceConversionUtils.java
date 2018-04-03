@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.XWalletApplication;
-import com.x.wallet.lib.eth.EthUtils;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 
@@ -20,8 +19,6 @@ import java.util.Set;
  */
 
 public class BalanceConversionUtils {
-    public static BigDecimal mAllBalance = new BigDecimal(0);
-    public static double mAllTokenBalance = 0; //USD
     public static final String ZERO = "0";
     public static final String ETH_TO_USD_VALUE_PREF_KEY = "eth_to_usd_value";
     public static double mEthToUsd = 0;
@@ -66,32 +63,27 @@ public class BalanceConversionUtils {
         }
     }
 
-    public static String calculateAllBalanceText() {
-        if(mEthToUsd == 0 || UsdToCnyHelper.mUsdToCny == 0 || mAllBalance.compareTo(BigDecimal.ZERO) == 0){
-            return ZERO;
-        }
-
-        BigDecimal result = EthUtils.translateWeiToEth(mAllBalance).multiply(new BigDecimal(mEthToUsd * UsdToCnyHelper.mUsdToCny)).setScale(2, BigDecimal.ROUND_UP);
-        return TokenUtils.formatDouble(result.doubleValue() + mAllTokenBalance * UsdToCnyHelper.mUsdToCny);
-    }
-
-    public static String calculateBalanceText(String balance) {
-        if(mEthToUsd == 0 || UsdToCnyHelper.mUsdToCny == 0 || ZERO.equals(balance)){
-            return ZERO;
-        }
-
-        BigDecimal result = EthUtils.translateWeiToEth(balance).multiply(new BigDecimal(mEthToUsd * UsdToCnyHelper.mUsdToCny)).setScale(2, BigDecimal.ROUND_UP);
-        return result.stripTrailingZeros().toString();
-    }
-
     public static void clearListener() {
         setRateUpdateListener(null);
         Log.i(AppUtils.APP_TAG, "BalanceConversionUtils clearListener mListenerSet.size = " + mListenerSet.size());
         mListenerSet.clear();
     }
 
-    public static String getTokenBalanceText(String balance) {
-        return TextUtils.isEmpty(balance) ? ZERO  : balance;
+    public static String getEthBalanceText(String rawBalance){
+        if (TextUtils.isEmpty(rawBalance) || rawBalance.equals(ZERO)) return ZERO;
+        BigDecimal balance = new BigDecimal(rawBalance);
+        return TokenUtils.format(balance.divide(BigDecimal.TEN.pow(18)));
+    }
+
+    public static String getEthConversionBalanceText(String rawBalance){
+        if (TextUtils.isEmpty(rawBalance) || rawBalance.equals(ZERO)) return ZERO;
+        if(mEthToUsd == 0 || UsdToCnyHelper.mUsdToCny == 0 ){
+            return ZERO;
+        }
+
+        BigDecimal balance = new BigDecimal(rawBalance);
+        BigDecimal ethBalance = balance.divide(BigDecimal.TEN.pow(18));
+        return TokenUtils.format(ethBalance.multiply(new BigDecimal(mEthToUsd)).multiply(new BigDecimal(UsdToCnyHelper.mUsdToCny)));
     }
 
     public interface RateUpdateListener{

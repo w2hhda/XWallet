@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.content.AsyncTaskLoader;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.DbUtils;
@@ -33,7 +32,7 @@ public class AllBalanceLoader extends AsyncTaskLoader<String> {
         //Log.i("allbalance", "AllBalanceLoader loadInBackground tokenBalance = " + tokenBalance);
         //Log.i("allbalance", "AllBalanceLoader loadInBackground BalanceConversionUtils.mEthToUsd = " + BalanceConversionUtils.mEthToUsd);
         //Log.i("allbalance", "AllBalanceLoader loadInBackground UsdToCnyHelper.mUsdToCny = " + UsdToCnyHelper.mUsdToCny);
-        if((ethBalance.compareTo(BigDecimal.ZERO) == 1 || tokenBalance.compareTo(BigDecimal.ZERO) == 1) && BalanceConversionUtils.mEthToUsd > 0
+        if((ethBalance.compareTo(BigDecimal.ZERO) == 1 || tokenBalance.compareTo(BigDecimal.ZERO) == 1)
                 && UsdToCnyHelper.mUsdToCny > 0){
             ethBalance = ethBalance.divide(TokenUtils.translateDecimalsIntoBigDecimal(18))
                     .multiply(new BigDecimal(BalanceConversionUtils.mEthToUsd))

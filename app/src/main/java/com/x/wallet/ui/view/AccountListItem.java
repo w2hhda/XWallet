@@ -3,38 +3,29 @@ package com.x.wallet.ui.view;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
-import com.x.wallet.XWalletApplication;
 import com.x.wallet.lib.common.LibUtils;
-import com.x.wallet.transaction.balance.BalanceLoaderManager;
-import com.x.wallet.transaction.balance.ItemLoadedCallback;
-import com.x.wallet.transaction.token.TokenUtils;
-import com.x.wallet.ui.data.AccountItem;
-import com.x.wallet.ui.data.RawAccountItem;
-import com.x.wallet.ui.data.TokenItem;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.x.wallet.ui.data.AllAccountItem;
 
 /**
  * Created by wuliang on 18-3-16.
  */
 
 public class AccountListItem extends LinearLayout {
-    private AccountItem mAccountItem;
+    private AllAccountItem mAccountItem;
+    private View mAccountNameViewContainer;
     private TextView mAccountNameTv;
-    private BaseRawAccountListItem mRawAccountListItem;
+    private RawAccountListItem mRawAccountListItem;
     private View mAddTokenView;
-    private LinearLayout mTokenContainer;
+    private View mDividerAboveHeader;
+    private View mDividerAboveItem;
 
     public AccountListItem(Context context) {
         super(context);
@@ -51,6 +42,7 @@ public class AccountListItem extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mAccountNameViewContainer = findViewById(R.id.account_name_container);
         mAccountNameTv = findViewById(R.id.account_name_tv);
 
         mAddTokenView = findViewById(R.id.add_token_container);
@@ -67,97 +59,29 @@ public class AccountListItem extends LinearLayout {
 
         mRawAccountListItem = findViewById(R.id.raw_item);
 
-        mTokenContainer = findViewById(R.id.token_container);
+        mDividerAboveHeader = findViewById(R.id.divider_above_header);
+        mDividerAboveItem = findViewById(R.id.divider_above_item);
     }
 
     public void bind(Cursor cursor) {
-        mAccountItem = AccountItem.createFromCursor(cursor);
+        mAccountItem = AllAccountItem.createFromCursor(cursor);
         Log.i(AppUtils.APP_TAG, "AccountListItem bind mAccountItem = " + mAccountItem);
 
-        mAccountNameTv.setText(mAccountItem.getAccountName());
-        if (mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_ETH) {
-            mAddTokenView.setVisibility(VISIBLE);
+        if (mAccountItem.isToken()) {
+            mDividerAboveHeader.setVisibility(GONE);
+            mAccountNameViewContainer.setVisibility(GONE);
+            mDividerAboveItem.setVisibility(VISIBLE);
         } else {
-            mAddTokenView.setVisibility(GONE);
-        }
-
-        mRawAccountListItem.bind(mAccountItem);
-
-        bindTokenList();
-    }
-
-    private void bindTokenList() {
-        mTokenContainer.removeAllViews();
-        if (mAccountItem.isHasToken()) {
-            List<TokenItem> list = mAccountItem.getTokenItemList();
-            if (list != null && list.size() > 0) {
-                bindToken();
+            mDividerAboveHeader.setVisibility(VISIBLE);
+            mAccountNameViewContainer.setVisibility(VISIBLE);
+            mAccountNameTv.setText(mAccountItem.getAccountName());
+            if (mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_ETH) {
+                mAddTokenView.setVisibility(VISIBLE);
             } else {
-                mAccountItem.setTokenLoadedCallback(new AccountItem.TokenLoadedCallback() {
-                    @Override
-                    public void onTokenLoaded(AccountItem accountItem) {
-                        if (accountItem != null && mAccountItem != null &&
-                                accountItem.getId() == mAccountItem.getId()) {
-                            bindToken();
-                            queryTokenBalance();
-                        }
-                    }
-                });
+                mAddTokenView.setVisibility(GONE);
             }
+            mDividerAboveItem.setVisibility(GONE);
         }
-    }
-
-    private void bindToken() {
-        List<TokenItem> list = mAccountItem.getTokenItemList();
-        if (list != null && list.size() > 0) {
-            for (TokenItem item : list) {
-                RawAccountListItem listItem = (RawAccountListItem) LayoutInflater.from(getContext()).inflate(
-                        R.layout.raw_account_list_item, mTokenContainer, false);
-                final RawAccountItem accountItem = new RawAccountItem(item.getSymbol(), item.getIdInAll(), item.getBalance(),
-                        item.getDecimals(), item.getRate(), item.getContractAddress());
-                listItem.bind(accountItem);
-                mTokenContainer.addView(LayoutInflater.from(getContext()).inflate(
-                        R.layout.token_list_item_divider_view, mTokenContainer, false));
-                listItem.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent("com.x.wallet.action.SEE_ACCOUNT_DETAIL_ACTION");
-                        intent.putExtra(AppUtils.ACCOUNT_DATA, AccountItem.translateToSerializable(mAccountItem));
-                        intent.putExtra(AppUtils.TOKEN_DATA, accountItem);
-                        getContext().startActivity(intent);
-                    }
-                });
-                mTokenContainer.addView(listItem);
-            }
-        }
-    }
-
-    private void bindTokenBalance(ArrayList<Double> balance, ArrayList<Double> rateList) {
-        int count = mTokenContainer.getChildCount();
-        Log.i(AppUtils.APP_TAG, "AccountListItem bindTokenBalance count = " + count);
-        int index = 0;
-        for(int i = 0; i < count; i++){
-            View view = mTokenContainer.getChildAt(i);
-            Log.i(AppUtils.APP_TAG, "AccountListItem bindTokenBalance view = " + view);
-            if(view != null && view instanceof  RawAccountListItem){
-                RawAccountListItem listItem = (RawAccountListItem) view;
-                listItem.bindBalance(balance.get(index), rateList.get(index));
-                index++;
-            }
-        }
-    }
-
-    public AccountItem getAccountItem() {
-        return mAccountItem;
-    }
-
-    private void queryTokenBalance(){
-        XWalletApplication.getApplication().getBalanceLoaderManager().getBalance(Uri.withAppendedPath(TokenUtils.QUERY_TOKEN_BALANCE_URI, mAccountItem.getAddress()), new ItemLoadedCallback<BalanceLoaderManager.BalanceLoaded>() {
-            @Override
-            public void onItemLoaded(BalanceLoaderManager.BalanceLoaded result, Throwable exception) {
-                Log.i(AppUtils.APP_TAG, "AccountListItem result.mAddress = " + result.mAddress + ", mAccountItem.getAddress() = " + mAccountItem.getAddress());
-                bindTokenBalance(result.mBalanceList, result.mRateList);
-            }
-        });
+        mRawAccountListItem.bind(mAccountItem);
     }
 }

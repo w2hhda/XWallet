@@ -1,19 +1,36 @@
 package com.x.wallet.ui.view;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
+import com.x.wallet.XWalletApplication;
+import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.token.TokenUtils;
+import com.x.wallet.ui.data.AllAccountItem;
+
+import java.math.BigDecimal;
 
 /**
  * Created by wuliang on 18-3-30.
  */
 
-public class RawAccountListItem extends BaseRawAccountListItem{
+public class RawAccountListItem extends RelativeLayout {
+    private AllAccountItem mAccountItem;
+
+    private ImageView mImageView;
+    private TextView mCoinNameTv;
+    private TextView mCoinBalanceUnitTv;
+    protected TextView mBalanceTv;
+    protected TextView mBalanceConversionTv;
 
     public RawAccountListItem(Context context) {
         super(context);
@@ -21,16 +38,45 @@ public class RawAccountListItem extends BaseRawAccountListItem{
 
     public RawAccountListItem(Context context, AttributeSet attrs) {
         super(context, attrs);
+        LayoutInflater.from(getContext()).inflate(R.layout.base_raw_account_list_item, this, true);
     }
 
     @Override
-    public void initLayout() {
-        //do nothing
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        mImageView = findViewById(R.id.coin_icon_iv);
+        mCoinNameTv = findViewById(R.id.coin_name_tv);
+        mCoinBalanceUnitTv = findViewById(R.id.coin_balance_unit_tv);
+        mBalanceTv = findViewById(R.id.coin_balance_tv);
+        mBalanceConversionTv = findViewById(R.id.coin_balance_conversion_tv);
     }
 
-    public void bindBalance(double translateBalance, double rate) {
-        Log.i(AppUtils.APP_TAG, "RawAccountListItem bindBalance balance = " + translateBalance + ", rate = " + rate);
-        mBalanceTv.setText(String.valueOf(translateBalance));
-        mBalanceConversionTv.setText(TokenUtils.getTokenConversionText(getContext(), translateBalance, rate));
+    public void bind(AllAccountItem accountItem) {
+        mAccountItem = accountItem;
+
+        mCoinNameTv.setText(mAccountItem.getCoinName());
+        if (mAccountItem.getAllCoinType() == AllAccountItem.COIN_TYPE_MAIN) {
+            if (mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_ETH) {
+                mImageView.setImageResource(R.drawable.eth);
+                mCoinBalanceUnitTv.setText(R.string.coin_unit_eth);
+                mBalanceTv.setText(BalanceConversionUtils.getEthBalanceText(mAccountItem.getBalance()));
+                mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, BalanceConversionUtils.getEthConversionBalanceText(mAccountItem.getBalance())));
+            }
+        } else {
+            mImageView.setImageResource(R.drawable.coin_eos_icon);
+            mCoinBalanceUnitTv.setText(accountItem.getCoinName());
+            BigDecimal translateBalance = TokenUtils.translateTokenInWholeUnit(accountItem.getBalance(), accountItem.getDecimals());
+            mBalanceTv.setText(TokenUtils.getStrFromBigDecimal(translateBalance));
+            mBalanceConversionTv.setText(TokenUtils.getTokenConversionText(getContext(), translateBalance, accountItem.getRate()));
+            Log.i(AppUtils.APP_TAG, "RawAccountListItem bind balance = " + accountItem.getBalance() + ", rate = " + accountItem.getRate());
+        }
+    }
+    public AllAccountItem getAccountItem() {
+        return mAccountItem;
+    }
+
+    private void queryTokenBalance() {
+        Uri uri = Uri.withAppendedPath(TokenUtils.QUERY_TOKEN_BALANCE_URI, mAccountItem.getAddress());
+        XWalletApplication.getApplication().getBalanceLoaderManager().getBalance(uri, null);
     }
 }

@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -31,8 +30,9 @@ import com.x.wallet.transaction.balance.AllBalanceLoader;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.adapter.AccountListAdapter;
-import com.x.wallet.ui.data.AccountItem;
-import com.x.wallet.ui.view.BaseRawAccountListItem;
+import com.x.wallet.ui.data.AllAccountItem;
+import com.x.wallet.ui.data.RawAccountItem;
+import com.x.wallet.ui.view.RawAccountListItem;
 
 /**
  * Created by wuliang on 18-3-13.
@@ -64,30 +64,23 @@ public class AccountListFragment extends Fragment {
         mAccountListAdapter = new AccountListAdapter(getActivity(), null, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final BaseRawAccountListItem listItem = (BaseRawAccountListItem) view;
-                AccountItem accountItem = listItem.getAccountItem();
+                final RawAccountListItem listItem = (RawAccountListItem) view;
+                AllAccountItem accountItem = listItem.getAccountItem();
                 Intent intent = new Intent("com.x.wallet.action.SEE_ACCOUNT_DETAIL_ACTION");
-                intent.putExtra(AppUtils.ACCOUNT_DATA, AccountItem.translateToSerializable(accountItem));
-                AccountListFragment.this.getActivity().startActivity(intent);
+                intent.putExtra(AppUtils.ACCOUNT_DATA, AllAccountItem.translateToSerializable(accountItem));
+                if(accountItem.isToken()){
+                    AccountListFragment.this.getActivity().startActivity(intent);
+                } else {
+                    final RawAccountItem rawAccountItem = new RawAccountItem(accountItem.getCoinName(), accountItem.getIdInAll(), accountItem.getBalance(),
+                            accountItem.getDecimals(), accountItem.getRate(), accountItem.getContractAddress());
+                    intent.putExtra(AppUtils.TOKEN_DATA, rawAccountItem);
+                    getContext().startActivity(intent);
+                }
             }
         });
 
-        BalanceConversionUtils.RateUpdateListener listener = new BalanceConversionUtils.RateUpdateListener() {
-            @Override
-            public void onRateUpdate() {
-                AccountListFragment.this.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAllBalanceTv.setText(AccountListFragment.this.getActivity().getString(R.string.all_balance, BalanceConversionUtils.calculateAllBalanceText()));
-                    }
-                });
-            }
-        };
-
-        TokenUtils.setRateUpdateListener(listener);
-        BalanceConversionUtils.setRateUpdateListener(listener);
-
         XWalletApplication.getApplication().getBalanceLoaderManager().getBalance(null);
+        XWalletApplication.getApplication().getBalanceLoaderManager().getAllTokenBalance(null);
     }
 
     @Nullable
@@ -145,7 +138,6 @@ public class AccountListFragment extends Fragment {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(mAccountListAdapter);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this.getActivity(),DividerItemDecoration.VERTICAL));
     }
 
     private void initViews(View rootView){
@@ -208,8 +200,8 @@ public class AccountListFragment extends Fragment {
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-            return new CursorLoader(AccountListFragment.this.getActivity(), XWalletProvider.CONTENT_URI,
-                    null, null, null, null);
+            return new CursorLoader(AccountListFragment.this.getActivity(), XWalletProvider.ALL_ACCOUNT_CONTENT_URI,
+                    AllAccountItem.PROJECTION, null, null, null);
         }
 
         @Override
