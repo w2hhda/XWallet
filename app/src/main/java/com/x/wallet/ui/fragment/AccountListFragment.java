@@ -57,6 +57,8 @@ public class AccountListFragment extends Fragment {
     private static final int ACCOUNT_LIST_LOADER = 1;
     private static final int ALL_BALANCE_LOADER = 2;
 
+    private AllBalanceLoader mAllBalanceLoader;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -167,7 +169,8 @@ public class AccountListFragment extends Fragment {
         final Bundle args = new Bundle();
         mLoaderManager = loaderManager;
         mLoaderManager.initLoader(ACCOUNT_LIST_LOADER, args, new AccountListLoaderCallbacks());
-        mLoaderManager.initLoader(ALL_BALANCE_LOADER, args, new AllBalanceLoaderCallbacks()).forceLoad();
+        mAllBalanceLoader = (AllBalanceLoader) mLoaderManager.initLoader(ALL_BALANCE_LOADER, args, new AllBalanceLoaderCallbacks());
+        mAllBalanceLoader.forceLoad();
     }
 
     private void updateViewVisibility(int dataCount){
@@ -209,6 +212,7 @@ public class AccountListFragment extends Fragment {
             Log.i(AppUtils.APP_TAG, "AccountListFragment onLoadFinished cursor.count = " + cursor.getCount());
             updateViewVisibility(cursor.getCount());
             mAccountListAdapter.swapCursor(cursor);
+            mAllBalanceLoader.forceLoad();
         }
 
         @Override
@@ -227,6 +231,7 @@ public class AccountListFragment extends Fragment {
 
         @Override
         public void onLoadFinished(Loader<String> loader, String allBalance) {
+            Log.i(AppUtils.APP_TAG, "AllBalanceLoader onLoadFinished allBalance= " + allBalance);
             mAllBalanceTv.setText(AccountListFragment.this.getActivity().getString(R.string.all_balance, allBalance));
         }
 
