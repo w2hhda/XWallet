@@ -10,6 +10,7 @@
         <item name="android:statusBarColor">@color/colorPrimary</item>
         <item name="android:actionOverflowButtonStyle">@style/CustomeOverflowBtnStyle</item>
         <item name="actionOverflowMenuStyle">@style/CustomeOverflowMenuStyle</item>
+        <item name="android:homeAsUpIndicator">@drawable/ic_back</item>
     </style>
 
     <style name="CustomeOverflowBtnStyle" parent="@style/Widget.AppCompat.Light.ActionButton.Overflow">
