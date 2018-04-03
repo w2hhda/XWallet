@@ -70,14 +70,14 @@ public class TransactionListItem extends RelativeLayout{
         if (item.getTransactionType().equalsIgnoreCase(TransactionItem.TRANSACTION_TYPE_RECEIVE)){
             mAmount.setText("+" + amount);
             mAmount.setTextColor(getResources().getColor(R.color.manage_account_textColor));
-            mTransactionName.setText("From: " + item.getFromAddress());
+            mTransactionName.setText(getResources().getString(R.string.receipt_transaction) + ":" + item.getFromAddress());
         }else {
             mAmount.setText("-" + amount);
             mAmount.setTextColor(getResources().getColor(R.color.colorRed));
             if (item.getToken()){
-                mTransactionName.setText("Token Fee:" + item.getToAddress());
+                mTransactionName.setText(getResources().getString(R.string.transfer_fax) + ":" + item.getToAddress());
             }else {
-                mTransactionName.setText("To: " + item.getToAddress());
+                mTransactionName.setText(getResources().getString(R.string.send_out_transaction) + ":" + item.getToAddress());
             }
         }
 

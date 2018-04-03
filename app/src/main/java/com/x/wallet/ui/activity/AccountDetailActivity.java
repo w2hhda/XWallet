@@ -1,6 +1,9 @@
 package com.x.wallet.ui.activity;
 
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +20,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.x.wallet.AppUtils;
@@ -127,7 +131,16 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         }else {
             initViewForNormal();
         }
-        mAddressTv.setText(mAccountItem.getAddress());
+        mAddressTv.setText(getResources().getString(R.string.address) + ":" + mAccountItem.getAddress());
+        mAddressTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("", mAccountItem.getAddress());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(AccountDetailActivity.this, R.string.has_copied_address, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -203,16 +216,6 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         }else {
             getNormalTransactions(false);
         }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        Log.i("@@@@","onNewIntent");
-        if (intent.hasExtra(AppUtils.TOKEN_DATA)){
-            isTokenAccount = true;
-        }
-        initViews();
     }
 
     private class MyHandler extends Handler{

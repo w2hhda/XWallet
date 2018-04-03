@@ -42,7 +42,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/gray_83"
+                android:drawableRight="@drawable/copy_address_icon"
+                android:drawablePadding="2dp"
+                android:singleLine="true"
+                android:ellipsize="middle"
                 android:textSize="13sp"/>
         </LinearLayout>
     </FrameLayout>
@@ -52,9 +56,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/account_detail_top"
-        android:paddingTop="27dp"
+        android:paddingBottom="30px"
+        android:paddingTop="48px"
         android:gravity="center_vertical"
-        android:background="@color/main_bg_color">
+        android:background="@color/gray_eb">
 
         <View
             android:layout_width="@dimen/transactions_icon_width"
@@ -66,8 +71,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:text="@string/transactions"
-            android:textColor="@android:color/black"
+            android:textColor="@color/black_49"
             android:textSize="@dimen/transactions_title_textSize" />
     </LinearLayout>
 
@@ -85,16 +91,18 @@
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="30dp"/>
+                android:paddingBottom="144px"/>
+
         </android.support.v4.widget.SwipeRefreshLayout>
+
 
         <WebView
             android:id="@+id/webView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingBottom="144px"
             android:visibility="gone">
         </WebView>
-
         <LinearLayout
             android:id="@+id/no_transaction_view"
             android:layout_width="wrap_content"
@@ -135,7 +143,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:background="@android:color/white"
-            android:minHeight="41dp">
+            android:minHeight="144px">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -163,7 +171,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@color/colorPrimary"
-            android:minHeight="41dp">
+            android:minHeight="144px">
 
             <LinearLayout
                 android:layout_width="wrap_content"

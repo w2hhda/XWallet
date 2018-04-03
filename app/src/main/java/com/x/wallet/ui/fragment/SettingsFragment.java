@@ -38,7 +38,7 @@ public class SettingsFragment extends Fragment{
         mServicePolicyItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent("com.x.wallet.action_SEE_SERVICE_POLICYL");
+                Intent intent = new Intent("com.x.wallet.action.SEE_SERVICE_POLICY_ACTION");
                 intent.putExtra(ServicePolicyActivity.TYPE_TAG, ServicePolicyActivity.TYPE_SERVICE);
                 getContext().startActivity(intent);
             }
@@ -48,7 +48,7 @@ public class SettingsFragment extends Fragment{
         mPrivacyPolicyItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent("com.x.wallet.action_SEE_SERVICE_POLICYL");
+                Intent intent = new Intent("com.x.wallet.action.SEE_SERVICE_POLICY_ACTION");
                 intent.putExtra(ServicePolicyActivity.TYPE_TAG, ServicePolicyActivity.TYPE_PRIVACY);
                 getContext().startActivity(intent);
             }
