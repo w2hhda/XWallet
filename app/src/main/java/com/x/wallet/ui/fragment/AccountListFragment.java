@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -28,6 +29,8 @@ import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.balance.AllBalanceLoader;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
+import com.x.wallet.transaction.balance.BalanceLoaderManager;
+import com.x.wallet.transaction.balance.ItemLoadedCallback;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.adapter.AccountListAdapter;
 import com.x.wallet.ui.data.AllAccountItem;
@@ -49,6 +52,7 @@ public class AccountListFragment extends Fragment {
     private View mAddAccountViewContainer;
     private View mAddAccountView;
 
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
 
     private MenuItem mAddItem;
@@ -91,6 +95,7 @@ public class AccountListFragment extends Fragment {
         View view = inflater.inflate(R.layout.account_fragment, container, false);
         initViews(view);
         initRecyclerView(view);
+        initSwipeRefreshLayout(view);
         return view;
     }
 
@@ -165,6 +170,18 @@ public class AccountListFragment extends Fragment {
         });
     }
 
+    private void initSwipeRefreshLayout(View rootView){
+        mSwipeRefreshLayout = rootView.findViewById(R.id.swiperefreshlayout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                XWalletApplication.getApplication().getBalanceLoaderManager().getBalance(createItemLoadedCallback());
+                XWalletApplication.getApplication().getBalanceLoaderManager().getAllTokenBalance(null);
+            }
+        });
+        mSwipeRefreshLayout.setEnabled(false);
+    }
+
     private void init(final LoaderManager loaderManager) {
         final Bundle args = new Bundle();
         mLoaderManager = loaderManager;
@@ -180,12 +197,14 @@ public class AccountListFragment extends Fragment {
             mRecyclerView.setVisibility(View.VISIBLE);
             mAllBalanceViewContainer.setVisibility(View.VISIBLE);
             updateMenuVisibility(true);
+            mSwipeRefreshLayout.setEnabled(true);
         } else {
             mAddAccountViewContainer.setVisibility(View.VISIBLE);
             mEmptyAccountViewContainer.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
             mAllBalanceViewContainer.setVisibility(View.GONE);
             updateMenuVisibility(false);
+            mSwipeRefreshLayout.setEnabled(false);
         }
     }
 
@@ -256,5 +275,16 @@ public class AccountListFragment extends Fragment {
             intent.putExtra(AppUtils.COIN_TYPE, LibUtils.COINTYPE.COIN_ETH);
             startActivity(intent);
         }
+    }
+
+    private ItemLoadedCallback createItemLoadedCallback(){
+        return new ItemLoadedCallback<BalanceLoaderManager.BalanceLoaded>() {
+            @Override
+            public void onItemLoaded(BalanceLoaderManager.BalanceLoaded result, Throwable exception) {
+                if (mSwipeRefreshLayout != null) {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
+            }
+        };
     }
 }
