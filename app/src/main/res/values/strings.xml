@@ -115,4 +115,5 @@
     <string name="blank_mnemonic">密语为空</string>
     <string name="and">及</string>
     <string name="address">地址</string>
+    <string name="scan_address_qr">扫描地址二维码</string>
 </resources>
