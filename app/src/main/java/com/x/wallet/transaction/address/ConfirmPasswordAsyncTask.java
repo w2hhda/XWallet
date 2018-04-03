@@ -10,10 +10,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.x.wallet.AppUtils;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
+import com.x.wallet.ui.activity.TransferActivity;
+import com.x.wallet.ui.data.RawAccountItem;
+import com.x.wallet.ui.data.SerializableAccountItem;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,39 +58,36 @@ public class ConfirmPasswordAsyncTask extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected Boolean doInBackground(Void... voids) {
         String keyStore;
+        String selection = DbUtils.DbColumns.ADDRESS + " = ?";
         Cursor cursor = XWalletApplication.getApplication().getContentResolver().query(XWalletProvider.CONTENT_URI,
-                new String[]{DbUtils.DbColumns.ADDRESS,DbUtils.DbColumns.KEYSTORE},null, null, null);
-        while (cursor.moveToNext()){
+                new String[]{DbUtils.DbColumns.KEYSTORE},selection, new String[]{address}, null);
 
-            if (cursor.getString(0).equalsIgnoreCase(address)){
-                keyStore = cursor.getString(1);
-                if (keyStore == null){
-                    return  null;
-                }
-
-                ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
-
-                try {
-                    WalletFile walletFile = mapper.readValue(keyStore, WalletFile.class);
-                    ECKeyPair keyPair = Wallet.decrypt(password, walletFile);
-                    if (keyPair != null){
-                        WalletFile file = Wallet.createStandard(password, keyPair);
-                        String newAddress = "0x" +file.getAddress();
-                        if (newAddress.equalsIgnoreCase(address)){
-                            Log.i("@@@@","true");
-
-                            return true;
-                        }
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }catch (CipherException e){
-
-                }
+        if (cursor != null && cursor.moveToFirst()){
+            keyStore = cursor.getString(0);
+            if (keyStore == null){
+                return  false;
             }
 
+            ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
+
+            try {
+                WalletFile walletFile = mapper.readValue(keyStore, WalletFile.class);
+                ECKeyPair keyPair = Wallet.decrypt(password, walletFile);
+                if (keyPair != null){
+                    WalletFile file = Wallet.createStandard(password, keyPair);
+                    String newAddress = "0x" +file.getAddress();
+                    if (newAddress.equalsIgnoreCase(address)){
+                        return true;
+                    }
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }catch (CipherException e){
+
+            }
         }
+
         return false;
     }
 
@@ -103,6 +104,16 @@ public class ConfirmPasswordAsyncTask extends AsyncTask<Void, Void, Boolean> {
         mProgressDialog.dismiss();
         if (s){
             mContext.startService(intent);
+            SerializableAccountItem accountItem = (SerializableAccountItem) intent.getSerializableExtra(AppUtils.ACCOUNT_DATA);
+            Intent newIntent = new Intent("com.x.wallet.action.SEE_ACCOUNT_DETAIL_ACTION");
+            newIntent.putExtra(AppUtils.ACCOUNT_DATA, accountItem);
+            if (intent.hasExtra(AppUtils.TOKEN_DATA)){
+                RawAccountItem mTokenItem = (RawAccountItem)intent.getSerializableExtra(AppUtils.TOKEN_DATA);
+                newIntent.putExtra(AppUtils.TOKEN_DATA, mTokenItem);
+            }
+            newIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            mContext.startActivity(newIntent);
+
         }else {
             Toast.makeText(mContext, "error password", Toast.LENGTH_SHORT).show();
         }

@@ -129,6 +129,13 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.activity.ServicePolicyActivity">
+            <intent-filter>
+                <action android:name="com.x.wallet.action_SEE_SERVICE_POLICYL"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

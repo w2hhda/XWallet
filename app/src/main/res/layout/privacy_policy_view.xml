@@ -8,10 +8,27 @@
         android:layout_height="wrap_content"
         android:text="@string/app_declare"/>
 
+    <TextView android:id="@+id/service_policy_tv"
+        style="@style/CreateAccountLinkTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/service_policy"
+        android:layout_marginStart="3dp"
+        android:autoLink="web"/>
+
+    <TextView
+        style="@style/CreateAccountInputTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/and"
+        android:layout_marginStart="3dp"
+        />
+
     <TextView android:id="@+id/privacy_policy_tv"
         style="@style/CreateAccountLinkTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/privacy_policy"
-        android:layout_marginStart="3dp"/>
+        android:layout_marginStart="3dp"
+        android:autoLink="web"/>
 </merge>
