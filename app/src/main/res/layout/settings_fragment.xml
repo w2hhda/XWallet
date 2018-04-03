@@ -44,6 +44,7 @@
     </RelativeLayout>
 
     <View
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="@dimen/settings_item_divider_height" />
 
@@ -52,6 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/item_bg_selector"
+        android:visibility="gone"
         android:minHeight="@dimen/settings_item_height">
 
         <ImageView
@@ -106,7 +108,7 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/settings_item_tv_marginStart"
             android:layout_toEndOf="@id/mark_iv"
-            android:text="@string/mark" />
+            android:text="@string/service_policy" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -143,7 +145,7 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/settings_item_tv_marginStart"
             android:layout_toEndOf="@id/about_us_iv"
-            android:text="@string/about" />
+            android:text="@string/privacy_policy" />
 
         <ImageView
             android:layout_width="wrap_content"
