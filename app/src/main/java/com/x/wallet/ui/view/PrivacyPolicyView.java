@@ -35,23 +35,19 @@ public class PrivacyPolicyView extends LinearLayout{
         mDeclareCheckBox = findViewById(R.id.checkbox);
         mServicePolicyTv = findViewById(R.id.service_policy_tv);
         mPrivacyPolicyTv = findViewById(R.id.privacy_policy_tv);
-        mServicePolicyTv.getPaint().setFlags(Paint. UNDERLINE_TEXT_FLAG);
-        mServicePolicyTv.getPaint().setAntiAlias(true);
-        mServicePolicyTv.setOnClickListener(new OnClickListener() {
+
+        init(mServicePolicyTv, ServicePolicyActivity.TYPE_SERVICE);
+        init(mPrivacyPolicyTv, ServicePolicyActivity.TYPE_PRIVACY);
+    }
+
+    private void init(TextView tv, final String type){
+        tv.getPaint().setFlags(Paint. UNDERLINE_TEXT_FLAG);
+        tv.getPaint().setAntiAlias(true);
+        tv.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent("com.x.wallet.action_SEE_SERVICE_POLICYL");
-                intent.putExtra(ServicePolicyActivity.TYPE_TAG, ServicePolicyActivity.TYPE_SERVICE);
-                getContext().startActivity(intent);
-            }
-        });
-        mPrivacyPolicyTv.getPaint().setFlags(Paint. UNDERLINE_TEXT_FLAG);
-        mPrivacyPolicyTv.getPaint().setAntiAlias(true);
-        mPrivacyPolicyTv.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent("com.x.wallet.action_SEE_SERVICE_POLICYL");
-                intent.putExtra(ServicePolicyActivity.TYPE_TAG, ServicePolicyActivity.TYPE_PRIVACY);
+                Intent intent = new Intent("com.x.wallet.action.SEE_SERVICE_POLICYL_ACTION");
+                intent.putExtra(ServicePolicyActivity.TYPE_TAG, type);
                 getContext().startActivity(intent);
             }
         });

@@ -65,7 +65,8 @@
         </activity>
         <activity
             android:name=".ui.activity.BackupMnemonicActivity"
-            android:label="@string/backup">
+            android:label="@string/backup"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.x.wallet.action.BACKUP_MNEMONIC_ACTION" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -98,44 +99,50 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <provider
-            android:name=".db.XWalletProvider"
-            android:authorities="com.x.wallet"
-            android:exported="false" />
-        <service android:name=".service.SendTransactionService" />
-
-        <activity android:name=".ui.activity.ReceiveQRActivity">
+        <activity android:name=".ui.activity.ReceiveQRActivity"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.x.wallet.action_SHARE_ADDRESS_QR_ACTION" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.TransferActivity">
+        <activity android:name=".ui.activity.TransferActivity"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.x.wallet.action_TRANSFER_TO_ADDRESS_ACTION" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.ScanAddressQRActivity">
+        <activity android:name=".ui.activity.ScanAddressQRActivity"
+            android:exported="false">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activity.TransactionDetailActivity">
+        <activity android:name=".ui.activity.TransactionDetailActivity"
+            android:exported="false">
             <intent-filter>
-                <action android:name="com.x.wallet.action_SEE_TRANSACTION_DETAIL"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.x.wallet.action_SEE_TRANSACTION_DETAIL" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activity.ServicePolicyActivity">
+        <activity android:name=".ui.activity.ServicePolicyActivity"
+            android:exported="false">
             <intent-filter>
-                <action android:name="com.x.wallet.action_SEE_SERVICE_POLICYL"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.x.wallet.action.SEE_SERVICE_POLICYL_ACTION" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
+        <provider
+            android:name=".db.XWalletProvider"
+            android:authorities="com.x.wallet"
+            android:exported="false" />
+
+        <service android:name=".service.SendTransactionService"
+            android:exported="false"/>
     </application>
 
 </manifest>
