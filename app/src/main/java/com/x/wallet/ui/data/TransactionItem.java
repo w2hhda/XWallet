@@ -1,12 +1,8 @@
 package com.x.wallet.ui.data;
 
-import android.util.Log;
-
-import com.x.wallet.lib.eth.EthUtils;
 import com.x.wallet.lib.eth.data.TransactionsResultBean;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**

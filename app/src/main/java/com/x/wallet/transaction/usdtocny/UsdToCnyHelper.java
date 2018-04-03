@@ -2,10 +2,21 @@ package com.x.wallet.transaction.usdtocny;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
+import com.google.gson.Gson;
+import com.x.wallet.AppUtils;
 import com.x.wallet.XWalletApplication;
+import com.x.wallet.lib.eth.api.EtherscanAPI;
+import com.x.wallet.lib.eth.data.UsdCnyBean;
 
+import java.io.IOException;
 import java.util.Calendar;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * Created by wuliang on 18-3-31.
@@ -21,6 +32,7 @@ public class UsdToCnyHelper {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(XWalletApplication.getApplication().getApplicationContext());
         mUsdToCny = Double.parseDouble(preferences.getString(USD_TO_CNY_VALUE_PREF_KEY, "0"));
         mDate = preferences.getLong(USD_TO_CNY_DATE_PREF_KEY, 0);
+        requestCnyToUsd();
     }
 
     public static void write(double value){
@@ -55,5 +67,30 @@ public class UsdToCnyHelper {
             return currentDAY != oldDAY;
         }
         return true;
+    }
+
+    public static void requestCnyToUsd(){
+            try{
+                if(isNeedRequest()){
+                    EtherscanAPI.getInstance().getPriceConversionRates("CNY", new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            Log.e(AppUtils.APP_TAG, "UsdToCnyHelper onFailure for requestCnyToUsd" , e);
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            ResponseBody body2 = response.body();
+                            if (body2 != null){
+                                UsdCnyBean usdCnyBean = new Gson().fromJson(body2.string(), UsdCnyBean.class);
+                                write(usdCnyBean.getRates().getCNY());
+                                Log.i(AppUtils.APP_TAG, "UsdToCnyHelper onResponse requestCnyToUsd UsdToCny = " + usdCnyBean.getRates().getCNY());
+                            }
+                        }
+                    });
+                }
+            } catch (Exception e){
+                Log.e(AppUtils.APP_TAG, "UsdToCnyHelper requestCnyToUsd exception" , e);
+            }
     }
 }

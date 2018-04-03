@@ -11,20 +11,15 @@ import com.google.gson.Gson;
 import com.x.wallet.AppUtils;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
-import com.x.wallet.lib.eth.EthUtils;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.data.BalanceResultBean;
 import com.x.wallet.lib.eth.data.PriceResultBean;
-import com.x.wallet.lib.eth.data.UsdCnyBean;
 import com.x.wallet.transaction.token.BackgroundLoaderManager;
 import com.x.wallet.transaction.token.TokenUtils;
-import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -37,6 +32,7 @@ import okhttp3.ResponseBody;
 
 public class BalanceLoaderManager extends BackgroundLoaderManager {
     public static final String ALL_ADDRESS_BALANCE = "all_address_balance";
+    public static final String ALL_TOKEN_BALANCE = "all_token_balance";
     private Context mContext;
 
     public BalanceLoaderManager(Context context) {
@@ -46,6 +42,10 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
 
     public ItemLoadedFuture getBalance(final ItemLoadedCallback<BalanceLoaded> callback) {
         return getBalance(Uri.parse(ALL_ADDRESS_BALANCE), callback);
+    }
+
+    public ItemLoadedFuture getAllTokenBalance(final ItemLoadedCallback<BalanceLoaded> callback){
+        return getBalance(Uri.parse(ALL_TOKEN_BALANCE), callback);
     }
 
     public ItemLoadedFuture getBalance(Uri uri, final ItemLoadedCallback<BalanceLoaded> callback) {
@@ -100,8 +100,9 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                     removeCallback();
                     return;
                 }
-
-                requestBalance(allEthAddress);
+                getEtherPrice(allEthAddress);
+            } else if(ALL_TOKEN_BALANCE.equals(mUri.toString())){
+                requestBalanceForToken();
             } else {
                 String address = mUri.getLastPathSegment();
                 if(mUri.toString().startsWith(TokenUtils.QUERY_TOKEN_BALANCE_URI.toString())){
@@ -133,6 +134,51 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
             return null;
         }
 
+        private void removeCallback(){
+            mCallbackHandler.post(new Runnable() {
+                public void run() {
+                    mCallbacks.remove(mUri);
+                    mPendingTaskUris.remove(mUri);
+                }
+            });
+        }
+
+        private void getEtherPrice(final String address){
+            try{
+                EtherscanAPI.getInstance().getEtherPrice(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.i(AppUtils.APP_TAG, "BalanceLoaderManager getEtherPrice onFailure exception", e);
+                        removeCallback();
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try{
+                            ResponseBody body = response.body();
+                            if(body != null){
+                                //1.parse
+                                PriceResultBean priceResultBean = new Gson().fromJson(body.string(), PriceResultBean.class);
+                                BalanceConversionUtils.write(priceResultBean.getResult().getEthusd());
+                                Log.i(AppUtils.APP_TAG, "BalanceLoaderManager getEtherPrice onResponse EthToUsd = " + priceResultBean.getResult().getEthusd());
+                                requestBalance(address);
+                            }
+                        } catch (Exception e){
+                            Log.i(AppUtils.APP_TAG, "BalanceLoaderManager getEtherPrice onResponse ", e);
+                            removeCallback();
+                        } finally {
+                            if(response != null){
+                                response.close();
+                            }
+                        }
+                    }
+                });
+            } catch (Exception e){
+                Log.e(AppUtils.APP_TAG, "BalanceLoaderManager getEtherPrice exception", e);
+                removeCallback();
+            }
+        }
+
         private void requestBalance(final String address){
             try{
                 EtherscanAPI.getInstance().getBalances(address, new Callback() {
@@ -153,7 +199,6 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                                 List<BalanceResultBean.ResultBean> userBeanList = balanceResultBean.getResult();
 
                                 //2.insert into db
-                                BigDecimal tempAllBalance = BigDecimal.ZERO;
                                 final ArrayList<ContentProviderOperation> rawOperations = new ArrayList<ContentProviderOperation>();
                                 for(BalanceResultBean.ResultBean resultBean : userBeanList){
                                     Log.i(AppUtils.APP_TAG, "BalanceLoaderManager requestBalance onResponse balance = " + resultBean.getBalance());
@@ -163,16 +208,11 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                                     updateBuilder.withSelection(DbUtils.DbColumns.ADDRESS + " = ?", new String[] {resultBean.getAccount()});
                                     updateBuilder.withValue(DbUtils.DbColumns.BALANCE, resultBean.getBalance());
                                     rawOperations.add(updateBuilder.build());
-                                    tempAllBalance = tempAllBalance.add(new BigDecimal(resultBean.getBalance()));
                                 }
-                                BalanceConversionUtils.mAllBalance = tempAllBalance;
                                 try{
                                     mContext.getContentResolver().applyBatch(XWalletProvider.AUTHORITY, rawOperations);
                                 }catch (Exception e){
                                     Log.e(AppUtils.APP_TAG, "BalanceLoaderManager requestBalance onResponse exception1", e);
-                                }
-                                if(tempAllBalance.compareTo(BigDecimal.ZERO) == 1){
-                                    getEtherPrice();
                                 }
                             }
                         } catch (Exception e){
@@ -186,71 +226,30 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                     }
                 });
             } catch (Exception e){
-                Log.e(AppUtils.APP_TAG, "BalanceLoaderManager BalanceTask exception", e);
+                Log.e(AppUtils.APP_TAG, "BalanceLoaderManager requestBalance onResponse exception3 address = " + address, e);
                 removeCallback();
             }
         }
 
-        private void removeCallback(){
-            mCallbackHandler.post(new Runnable() {
-                public void run() {
-                    mCallbacks.remove(mUri);
-                    mPendingTaskUris.remove(mUri);
-                }
-            });
-        }
-
-        private void getEtherPrice(){
+        private void requestBalanceForToken(){
+            Cursor cursor = null;
             try{
-                EtherscanAPI.getInstance().getEtherPrice(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        Log.i(AppUtils.APP_TAG, "BalanceLoaderManager getEtherPrice onFailure exception", e);
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        try{
-                            ResponseBody body = response.body();
-                            if(body != null){
-                                //1.parse
-                                PriceResultBean priceResultBean = new Gson().fromJson(body.string(), PriceResultBean.class);
-                                BalanceConversionUtils.write(priceResultBean.getResult().getEthusd());
-                                Log.i(AppUtils.APP_TAG, "BalanceLoaderManager onResponse getEtherPrice EthToUsd = " + priceResultBean.getResult().getEthusd());
-
-                                if(UsdToCnyHelper.isNeedRequest()){
-                                    EtherscanAPI.getInstance().getPriceConversionRates("CNY", new Callback() {
-                                        @Override
-                                        public void onFailure(Call call, IOException e) {
-                                            Log.e(AppUtils.APP_TAG, "BalanceLoaderManager onFailure for getPriceConversionRates" , e);
-                                        }
-
-                                        @Override
-                                        public void onResponse(Call call, Response response) throws IOException {
-                                            ResponseBody body2 = response.body();
-                                            if (body2 != null){
-                                                UsdCnyBean usdCnyBean = new Gson().fromJson(body2.string(), UsdCnyBean.class);
-                                                UsdToCnyHelper.write(usdCnyBean.getRates().getCNY());
-                                                BalanceConversionUtils.responseToListener();
-                                                BalanceConversionUtils.handleListener();
-                                                Log.i(AppUtils.APP_TAG, "BalanceLoaderManager onResponse UsdToCny = " + usdCnyBean.getRates().getCNY());
-                                            }
-                                        }
-                                    });
-                                } else {
-                                    BalanceConversionUtils.responseToListener();
-                                    BalanceConversionUtils.handleListener();
-                                }
-                            }
-                        } finally {
-                            if(response != null){
-                                response.close();
-                            }
+                //1.query from db
+                cursor = mContext.getContentResolver().query(
+                        XWalletProvider.CONTENT_URI_TOKEN, new String[]{DbUtils.TokenTableColumns.ACCOUNT_ADDRESS}, null, null, null);
+                if(cursor != null && cursor.getCount() > 0){
+                    while (cursor.moveToNext()){
+                        String accountAddress = cursor.getString(0);
+                        Log.i(AppUtils.APP_TAG, "BalanceLoaderManager requestBalanceForToken accountAddress = " + accountAddress);
+                        if(!TextUtils.isEmpty(accountAddress)){
+                            requestBalanceForToken(accountAddress);
                         }
                     }
-                });
-            } catch (Exception e){
-                Log.e(AppUtils.APP_TAG, "BalanceLoaderManager getEtherPrice exception", e);
+                }
+            } finally {
+                if(cursor != null){
+                    cursor.close();
+                }
             }
         }
 
@@ -280,23 +279,7 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                                 }
 
                                 //2.insert into db
-                                final ArrayList<Double> balanceList = new ArrayList<>();
-                                final ArrayList<Double> rateList = new ArrayList<>();
-                                updateTokenBalanceIntoDb(address, tokens, balanceList, rateList);
-
-                                mCallbackHandler.post(new Runnable() {
-                                    public void run() {
-                                        final Set<ItemLoadedCallback> callbacks = mCallbacks.get(mUri);
-                                        if (callbacks != null) {
-                                            // Make a copy so that the callback can unregister itself
-                                            for (final ItemLoadedCallback<BalanceLoaded> callback : asList(callbacks)) {
-                                                Log.i(AppUtils.APP_TAG, "BalanceLoaderManager requestBalanceForToken onResponse callback");
-                                                BalanceLoaded balanceLoaded = new BalanceLoaded(address, null, balanceList, rateList);
-                                                callback.onItemLoaded(balanceLoaded, null);
-                                            }
-                                        }
-                                    }
-                                });
+                                updateTokenBalanceIntoDb(address, tokens);
                             }
                         } catch (Exception e){
                             Log.e(AppUtils.APP_TAG, "BalanceLoaderManager requestBalanceForToken onResponse exception1 address = " + address, e);
@@ -319,11 +302,10 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
             return tokenListBean.getTokens();
         }
 
-        private void updateTokenBalanceIntoDb(String address, List<TokenListBean.TokenBean> tokens, ArrayList<Double> balanceList, ArrayList<Double> rateList){
-            double tempAllTokenBalance = 0;
+        private void updateTokenBalanceIntoDb(String address, List<TokenListBean.TokenBean> tokens){
             final ArrayList<ContentProviderOperation> rawOperations = new ArrayList<ContentProviderOperation>();
             for(TokenListBean.TokenBean tokenBean : tokens){
-                Log.i(AppUtils.APP_TAG, "BalanceLoaderManager updateTokenBalanceIntoDb balance = " + tokenBean.getBalance());
+                Log.i(AppUtils.APP_TAG, "BalanceLoaderManager updateTokenBalanceIntoDb address = " + address + ", balance = " + tokenBean.getBalance());
 
                 String symbol = tokenBean.getTokenInfo().getSymbol();
                 String rawBalance = tokenBean.getBalance();
@@ -337,15 +319,7 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                 updateBuilder.withValue(DbUtils.TokenTableColumns.RATE, rate);
                 updateBuilder.withValue(DbUtils.TokenTableColumns.DECIMALS, decimals);
                 rawOperations.add(updateBuilder.build());
-
-                double translateBalance = TokenUtils.translateTokenInWholeUnit(rawBalance, decimals).doubleValue();
-                balanceList.add(translateBalance);
-                rateList.add(rate);
-
-                tempAllTokenBalance = tempAllTokenBalance + TokenUtils.calculateTokenBalance(translateBalance, rate);
             }
-            BalanceConversionUtils.mAllTokenBalance = tempAllTokenBalance;
-            TokenUtils.responseToListener();
             try{
                 mContext.getContentResolver().applyBatch(XWalletProvider.AUTHORITY, rawOperations);
             }catch (Exception e){

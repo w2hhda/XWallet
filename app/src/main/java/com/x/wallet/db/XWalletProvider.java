@@ -22,6 +22,7 @@ public class XWalletProvider extends ContentProvider {
     static final String TABLE_ACCOUNT = "account";
     static final String TABLE_TOKEN = "token";
     public static final String AUTHORITY = "com.x.wallet";
+    public static final Uri ALL_ACCOUNT_CONTENT_URI = Uri.parse("content://com.x.wallet/allaccount");
     public static final Uri CONTENT_URI = Uri.parse("content://com.x.wallet/account");
     public static final Uri CONTENT_URI_TOKEN = Uri.parse("content://com.x.wallet/token");
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
@@ -66,6 +67,13 @@ public class XWalletProvider extends ContentProvider {
                         selectionArgs,
                         null, null,
                         sortOrder);
+                break;
+            case ALL_ACCOUNT:
+                String sql = "SELECT " + createMainAccountSql() + " FROM " + TABLE_ACCOUNT + " as t1"
+                        + " UNION "
+                        + "SELECT " + createTokenSql() + " FROM " + TABLE_TOKEN + " as t2"
+                        + " order by _id,all_coin_type";
+                cursor = db.rawQuery(sql, selectionArgs);
                 break;
         }
         if (cursor != null) {
@@ -148,12 +156,52 @@ public class XWalletProvider extends ContentProvider {
         return count;
     }
 
+    private static String createMainAccountSql(){
+        return "t1._id as _id" + ", " +
+                "t1._id as self_id" + ", " +
+                "t1.address as address" + ", " +
+                "t1.name as name " + ", " +
+                "t1.coin_name as coin_name " + ", " +
+                "t1.coin_type as coin_type" + ", " +
+                "t1." + DbUtils.DbColumns.ENCRYPT_SEED + " as encrypt_seed, " +
+                "t1." + DbUtils.DbColumns.ENCRYPT_MNEMONIC + " as " + DbUtils.DbColumns.ENCRYPT_MNEMONIC + ", " +
+                "t1." + DbUtils.DbColumns.KEYSTORE + " as " + DbUtils.DbColumns.KEYSTORE + ", " +
+                "t1." + DbUtils.DbColumns.BALANCE + " as " + DbUtils.DbColumns.BALANCE + ", " +
+                "t1." + DbUtils.DbColumns.HAS_TOKEN + " as " + DbUtils.DbColumns.HAS_TOKEN + ", " +
+                "0 as " + DbUtils.TokenTableColumns.DECIMALS + ", " +
+                "0 as " + DbUtils.TokenTableColumns.RATE + ", " +
+                "null as " + DbUtils.TokenTableColumns.CONTRACT_ADDRESS + ", " +
+                "-1 as " + DbUtils.TokenTableColumns.ID_IN_ALL + ", " +
+                "1 as all_coin_type";
+    }
+
+    private static String createTokenSql(){
+        return "t2." + DbUtils.TokenTableColumns.ACCOUNT_ID + " as _id, " +
+                "t2." + DbUtils.TokenTableColumns._ID + " as self_id, " +
+                "t2." + DbUtils.TokenTableColumns.ACCOUNT_ADDRESS + " as address, " +
+                "null as " + DbUtils.DbColumns.NAME + ", " +
+                "t2." + DbUtils.TokenTableColumns.SYMBOL + " as " + DbUtils.DbColumns.COIN_NAME + ", " +
+                "-1 as " + DbUtils.DbColumns.COIN_TYPE + ", " +
+                "null as " + DbUtils.DbColumns.ENCRYPT_SEED + ", " +
+                "null as " + DbUtils.DbColumns.ENCRYPT_MNEMONIC + ", " +
+                "null as " + DbUtils.DbColumns.KEYSTORE + ", " +
+                "t2." + DbUtils.TokenTableColumns.BALANCE + " as " + DbUtils.DbColumns.BALANCE + ", " +
+                "0 as " + DbUtils.DbColumns.HAS_TOKEN + ", " +
+                "t2." + DbUtils.TokenTableColumns.DECIMALS + " as " + DbUtils.TokenTableColumns.DECIMALS + ", " +
+                "t2." + DbUtils.TokenTableColumns.RATE + " as " + DbUtils.TokenTableColumns.RATE + ", " +
+                "t2." + DbUtils.TokenTableColumns.CONTRACT_ADDRESS + " as " + DbUtils.TokenTableColumns.CONTRACT_ADDRESS + ", " +
+                "t2." + DbUtils.TokenTableColumns.ID_IN_ALL + " as " + DbUtils.TokenTableColumns.ID_IN_ALL + ", " +
+                "2 as all_coin_type";
+    }
+
     private static final int URI_ACCOUNT                     = 0;
     private static final int URI_ACCOUNT_ID                  = 1;
     private static final int URI_TOKEN                       = 2;
+    private static final int ALL_ACCOUNT                     = 3;
     static {
         URI_MATCHER.addURI(AUTHORITY, "account", URI_ACCOUNT);
         URI_MATCHER.addURI(AUTHORITY, "account/#", URI_ACCOUNT_ID);
         URI_MATCHER.addURI(AUTHORITY, "token", URI_TOKEN);
+        URI_MATCHER.addURI(AUTHORITY, "allaccount", ALL_ACCOUNT);
     }
 }

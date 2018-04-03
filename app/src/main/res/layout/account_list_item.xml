@@ -2,16 +2,20 @@
 <com.x.wallet.ui.view.AccountListItem xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingEnd="@dimen/account_list_item_paddingEnd"
-    android:paddingStart="@dimen/account_list_item_paddingStart">
+    android:orientation="vertical">
 
-    <RelativeLayout
+    <View android:id="@+id/divider_above_header"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/divider_color"/>
+    <RelativeLayout android:id="@+id/account_name_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:paddingBottom="10dip"
-        android:paddingTop="10dip">
+        android:paddingTop="10dip"
+        android:paddingEnd="@dimen/account_list_item_paddingEnd"
+        android:paddingStart="@dimen/account_list_item_paddingStart">
 
         <TextView
             android:id="@+id/account_name_tv"
@@ -30,19 +34,20 @@
             android:text="@string/add_token"
             android:textColor="@android:color/black"
             android:textSize="12sp" />
-
     </RelativeLayout>
-    <com.x.wallet.ui.view.BaseRawAccountListItem
+    <View android:id="@+id/divider_above_item"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/divider_color"
+        android:layout_marginEnd="@dimen/account_list_item_paddingEnd"
+        android:layout_marginStart="@dimen/account_list_item_paddingStart"/>
+    <com.x.wallet.ui.view.RawAccountListItem
         android:id="@+id/raw_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dip"
         android:minHeight="@dimen/account_list_item_minHeight"
-        android:background="@drawable/item_bg_selector"/>
-    <LinearLayout android:id="@+id/token_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-    </LinearLayout>
+        android:background="@drawable/item_bg_selector"
+        android:paddingEnd="@dimen/account_list_item_paddingEnd"
+        android:paddingStart="@dimen/account_list_item_paddingStart"/>
 </com.x.wallet.ui.view.AccountListItem>

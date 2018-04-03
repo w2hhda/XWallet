@@ -21,7 +21,6 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
-import com.x.wallet.lib.eth.EthUtils;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.data.TransactionsResultBean;
 import com.x.wallet.lib.eth.util.CacheHelper;
@@ -165,9 +164,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         updateBalanceConversionText();
-        BigDecimal balance = new BigDecimal(mAccountItem.getBalance());
-        String balanceInEth = EthUtils.translateWeiToEth(balance).stripTrailingZeros().toPlainString();
-        mBalanceTv.setText(balanceInEth + " ETH");
+        mBalanceTv.setText(BalanceConversionUtils.getEthBalanceText(mAccountItem.getBalance()) + " ETH");
         if(mRateUpdateListener != null){
             BalanceConversionUtils.unRegisterListener(mRateUpdateListener);
         }
@@ -238,7 +235,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
 
     public void updateBalanceConversionText(){
         if(mAccountItem != null){
-            mBalanceTranslateTv.setText(getResources().getString(R.string.item_balance, BalanceConversionUtils.calculateBalanceText(mAccountItem.getBalance())));
+            mBalanceTranslateTv.setText(getResources().getString(R.string.item_balance, BalanceConversionUtils.getEthConversionBalanceText(mAccountItem.getBalance())));
         }
     }
 
