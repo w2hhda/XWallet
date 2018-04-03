@@ -20,6 +20,7 @@ import com.x.wallet.transaction.token.TokenUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -97,7 +98,7 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
             if(ALL_ADDRESS_BALANCE.equals(mUri.toString())){
                 String allEthAddress = queryAllEthAddress();
                 if(TextUtils.isEmpty(allEthAddress)){
-                    removeCallback();
+                    handleCallback();
                     return;
                 }
                 getEtherPrice(allEthAddress);
@@ -143,13 +144,30 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
             });
         }
 
+        private void handleCallback(){
+            mCallbackHandler.post(new Runnable() {
+                public void run() {
+                    final Set<ItemLoadedCallback> callbacks = mCallbacks.get(mUri);
+                    if (callbacks != null) {
+                        // Make a copy so that the callback can unregister itself
+                        for (final ItemLoadedCallback<BalanceLoaded> callback : asList(callbacks)) {
+                            callback.onItemLoaded(null, null);
+                        }
+                    }
+
+                    mCallbacks.remove(mUri);
+                    mPendingTaskUris.remove(mUri);
+                }
+            });
+        }
+
         private void getEtherPrice(final String address){
             try{
                 EtherscanAPI.getInstance().getEtherPrice(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Log.i(AppUtils.APP_TAG, "BalanceLoaderManager getEtherPrice onFailure exception", e);
-                        removeCallback();
+                        handleCallback();
                     }
 
                     @Override
@@ -162,10 +180,12 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                                 BalanceConversionUtils.write(priceResultBean.getResult().getEthusd());
                                 Log.i(AppUtils.APP_TAG, "BalanceLoaderManager getEtherPrice onResponse EthToUsd = " + priceResultBean.getResult().getEthusd());
                                 requestBalance(address);
+                            } else {
+                                handleCallback();
                             }
                         } catch (Exception e){
                             Log.i(AppUtils.APP_TAG, "BalanceLoaderManager getEtherPrice onResponse ", e);
-                            removeCallback();
+                            handleCallback();
                         } finally {
                             if(response != null){
                                 response.close();
@@ -175,7 +195,7 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                 });
             } catch (Exception e){
                 Log.e(AppUtils.APP_TAG, "BalanceLoaderManager getEtherPrice exception", e);
-                removeCallback();
+                handleCallback();
             }
         }
 
@@ -221,13 +241,13 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                             if(response != null){
                                 response.close();
                             }
-                            removeCallback();
+                            handleCallback();
                         }
                     }
                 });
             } catch (Exception e){
                 Log.e(AppUtils.APP_TAG, "BalanceLoaderManager requestBalance onResponse exception3 address = " + address, e);
-                removeCallback();
+                handleCallback();
             }
         }
 
@@ -243,8 +263,12 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                         Log.i(AppUtils.APP_TAG, "BalanceLoaderManager requestBalanceForToken accountAddress = " + accountAddress);
                         if(!TextUtils.isEmpty(accountAddress)){
                             requestBalanceForToken(accountAddress);
+                        } else {
+                            removeCallback();
                         }
                     }
+                } else {
+                    removeCallback();
                 }
             } finally {
                 if(cursor != null){

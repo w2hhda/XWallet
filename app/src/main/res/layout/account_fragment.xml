@@ -36,30 +36,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/all_balance_unit_marginTop"
                 android:text="@string/all_balance_unit" />
-
-            <!--<LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/not_backup_warn_marginTop"
-                android:background="@drawable/not_backup_warn_bg"
-                android:gravity="center"
-                android:minHeight="@dimen/not_backup_warn_minHeight"
-                android:minWidth="@dimen/not_backup_warn_minWidth">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/warn" />
-
-                <TextView
-                    android:id="@+id/not_backup_tv"
-                    style="@style/NotBackupWarnTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/not_backup_warn" />
-            </LinearLayout>-->
         </LinearLayout>
 
         <LinearLayout
@@ -114,10 +90,15 @@
                 android:text="@string/add_account" />
         </LinearLayout>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swiperefreshlayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/white" />
+            android:layout_height="wrap_content">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/white" />
+        </android.support.v4.widget.SwipeRefreshLayout>
     </FrameLayout>
 </LinearLayout>
