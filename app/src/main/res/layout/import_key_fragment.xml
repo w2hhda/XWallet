@@ -22,7 +22,7 @@
             android:gravity="start|top"
             android:hint="@string/input_key_hint"
             android:minHeight="115dip"
-            android:padding="5dp"
+            android:padding="@dimen/create_account_input_paddingStart"
             android:textColor="@color/gray_b2"
             android:textSize="14sp" />
 

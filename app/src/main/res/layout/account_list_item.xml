@@ -6,8 +6,8 @@
 
     <View android:id="@+id/divider_above_header"
         android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/divider_color"/>
+        android:layout_height="3dp"
+        android:background="@color/main_bg_color"/>
     <RelativeLayout android:id="@+id/account_name_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
     <View android:id="@+id/divider_above_item"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/divider_color"
+        android:background="@color/main_bg_color"
         android:layout_marginEnd="@dimen/account_list_item_paddingEnd"
         android:layout_marginStart="@dimen/account_list_item_paddingStart"/>
     <com.x.wallet.ui.view.RawAccountListItem

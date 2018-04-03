@@ -72,7 +72,11 @@ public class AccountListItem extends LinearLayout {
             mAccountNameViewContainer.setVisibility(GONE);
             mDividerAboveItem.setVisibility(VISIBLE);
         } else {
-            mDividerAboveHeader.setVisibility(VISIBLE);
+            if(cursor.getPosition() == 0){
+                mDividerAboveHeader.setVisibility(GONE);
+            } else {
+                mDividerAboveHeader.setVisibility(VISIBLE);
+            }
             mAccountNameViewContainer.setVisibility(VISIBLE);
             mAccountNameTv.setText(mAccountItem.getAccountName());
             if (mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_ETH) {

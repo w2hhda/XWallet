@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/account_custome_name_hint"
+        android:paddingStart="@dimen/create_account_input_paddingStart"
         style="@style/CreateAccountInputTextStyle"/>
 </merge>
 
