@@ -19,5 +19,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"
         android:background="@drawable/create_account_btn_bg_selector"
-        android:text="@string/add" />
+        android:text="@string/add"
+        android:enabled="false"/>
 </RelativeLayout>

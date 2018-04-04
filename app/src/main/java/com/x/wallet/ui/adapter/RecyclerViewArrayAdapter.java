@@ -19,6 +19,7 @@ public class RecyclerViewArrayAdapter extends RecyclerView.Adapter<RecyclerViewA
     private int mListItemLayoutId;
     private ArrayList<TokenItemBean> mTokenItemList;
     private int mCurrentCheckedItemPosition;
+    private ItemClickListener mItemClickListener;
 
     public RecyclerViewArrayAdapter(int layoutId) {
         mListItemLayoutId = layoutId;
@@ -53,6 +54,9 @@ public class RecyclerViewArrayAdapter extends RecyclerView.Adapter<RecyclerViewA
                     mCurrentCheckedItemPosition = listPosition;
                     notifyDataSetChanged();
                 }
+                if(mItemClickListener != null){
+                    mItemClickListener.onItemClick();
+                }
             }
         });
 
@@ -60,7 +64,11 @@ public class RecyclerViewArrayAdapter extends RecyclerView.Adapter<RecyclerViewA
     }
 
     public TokenItemBean getSelectedTokenItem() {
-        return mTokenItemList.get(mCurrentCheckedItemPosition);
+        return mCurrentCheckedItemPosition >= 0 ? mTokenItemList.get(mCurrentCheckedItemPosition) : null;
+    }
+
+    public void setItemClickListener(ItemClickListener itemClickListener) {
+        mItemClickListener = itemClickListener;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
@@ -70,5 +78,9 @@ public class RecyclerViewArrayAdapter extends RecyclerView.Adapter<RecyclerViewA
             super(itemView);
             mView = itemView;
         }
+    }
+
+    public interface ItemClickListener{
+        void onItemClick();
     }
 }
