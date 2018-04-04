@@ -38,7 +38,7 @@ public class RawAccountListItem extends RelativeLayout {
 
     public RawAccountListItem(Context context, AttributeSet attrs) {
         super(context, attrs);
-        LayoutInflater.from(getContext()).inflate(R.layout.base_raw_account_list_item, this, true);
+        LayoutInflater.from(getContext()).inflate(R.layout.raw_account_list_item, this, true);
     }
 
     @Override

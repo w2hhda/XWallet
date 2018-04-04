@@ -62,6 +62,7 @@ public class AccountListFragment extends Fragment {
     private static final int ALL_BALANCE_LOADER = 2;
 
     private AllBalanceLoader mAllBalanceLoader;
+    private int mDataCount = -1;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,8 +84,7 @@ public class AccountListFragment extends Fragment {
             }
         });
 
-        XWalletApplication.getApplication().getBalanceLoaderManager().getBalance(null);
-        XWalletApplication.getApplication().getBalanceLoaderManager().getAllTokenBalance(null);
+        requestBalance(null, null);
     }
 
     @Nullable
@@ -173,8 +173,7 @@ public class AccountListFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                XWalletApplication.getApplication().getBalanceLoaderManager().getBalance(createItemLoadedCallback());
-                XWalletApplication.getApplication().getBalanceLoaderManager().getAllTokenBalance(null);
+                requestBalance(createItemLoadedCallback(), null);
             }
         });
         mSwipeRefreshLayout.setEnabled(false);
@@ -189,20 +188,24 @@ public class AccountListFragment extends Fragment {
     }
 
     private void updateViewVisibility(int dataCount){
-        if(dataCount > 0){
-            mAddAccountViewContainer.setVisibility(View.GONE);
-            mEmptyAccountViewContainer.setVisibility(View.GONE);
-            mRecyclerView.setVisibility(View.VISIBLE);
-            mAllBalanceViewContainer.setVisibility(View.VISIBLE);
-            updateMenuVisibility(true);
-            mSwipeRefreshLayout.setEnabled(true);
-        } else {
-            mAddAccountViewContainer.setVisibility(View.VISIBLE);
-            mEmptyAccountViewContainer.setVisibility(View.VISIBLE);
-            mRecyclerView.setVisibility(View.GONE);
-            mAllBalanceViewContainer.setVisibility(View.GONE);
-            updateMenuVisibility(false);
-            mSwipeRefreshLayout.setEnabled(false);
+        if(mDataCount != dataCount){
+            mDataCount = dataCount;
+            if(dataCount > 0){
+                mAddAccountViewContainer.setVisibility(View.GONE);
+                mEmptyAccountViewContainer.setVisibility(View.GONE);
+                mRecyclerView.setVisibility(View.VISIBLE);
+                mAllBalanceViewContainer.setVisibility(View.VISIBLE);
+                updateMenuVisibility(true);
+                mSwipeRefreshLayout.setEnabled(true);
+                requestBalance(null, null);
+            } else {
+                mAddAccountViewContainer.setVisibility(View.VISIBLE);
+                mEmptyAccountViewContainer.setVisibility(View.VISIBLE);
+                mRecyclerView.setVisibility(View.GONE);
+                mAllBalanceViewContainer.setVisibility(View.GONE);
+                updateMenuVisibility(false);
+                mSwipeRefreshLayout.setEnabled(false);
+            }
         }
     }
 
@@ -249,7 +252,7 @@ public class AccountListFragment extends Fragment {
         @Override
         public void onLoadFinished(Loader<String> loader, String allBalance) {
             Log.i(AppUtils.APP_TAG, "AllBalanceLoader onLoadFinished allBalance= " + allBalance);
-            mAllBalanceTv.setText(AccountListFragment.this.getActivity().getString(R.string.all_balance, allBalance));
+            mAllBalanceTv.setText(AccountListFragment.this.getActivity().getString(R.string.all_balance_prefix, allBalance));
         }
 
         @Override
@@ -284,5 +287,11 @@ public class AccountListFragment extends Fragment {
                 }
             }
         };
+    }
+
+    private void requestBalance(ItemLoadedCallback<BalanceLoaderManager.BalanceLoaded> callback1,
+                                ItemLoadedCallback<BalanceLoaderManager.BalanceLoaded> callback2){
+        XWalletApplication.getApplication().getBalanceLoaderManager().getBalance(callback1);
+        XWalletApplication.getApplication().getBalanceLoaderManager().getAllTokenBalance(callback2);
     }
 }

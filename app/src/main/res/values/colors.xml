@@ -19,4 +19,5 @@
     <color name="error_warn_color">#ff5534</color>
     <color name="black_49">#494949</color>
     <color name="gray_83">#8383b8</color>
+    <color name="account_list_item_main_textcolor">#000</color>
 </resources>

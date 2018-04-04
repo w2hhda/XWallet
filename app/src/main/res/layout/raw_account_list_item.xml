@@ -9,8 +9,8 @@
         android:id="@+id/coin_icon_iv"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:scaleType="fitCenter"
         android:layout_centerVertical="true"
+        android:scaleType="fitCenter"
         android:src="@drawable/eth" />
 
     <TextView
@@ -37,6 +37,7 @@
 
             <TextView
                 android:id="@+id/coin_balance_tv"
+                style="@style/AccountListItemBalanceTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -50,7 +51,7 @@
 
         <TextView
             android:id="@+id/coin_balance_conversion_tv"
-            style="@style/AccountListItemBalanceTextStyle"
+            style="@style/AccountListItemBalanceConversionTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/coin_balance_conversion_tv_marginTop"

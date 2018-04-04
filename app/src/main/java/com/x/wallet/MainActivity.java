@@ -58,10 +58,10 @@ public class MainActivity extends BaseAppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.navigation_account:
-                        mViewPager.setCurrentItem(0);
+                        mViewPager.setCurrentItem(0, false);
                         break;
                     case R.id.navigation_setting:
-                        mViewPager.setCurrentItem(1);
+                        mViewPager.setCurrentItem(1, false);
                         break;
                 }
                 return true;
