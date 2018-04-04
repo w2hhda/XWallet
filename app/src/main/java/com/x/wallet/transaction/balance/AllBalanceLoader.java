@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.content.AsyncTaskLoader;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.DbUtils;
@@ -30,24 +29,17 @@ public class AllBalanceLoader extends AsyncTaskLoader<String> {
         BigDecimal ethBalance = calculateEth(XWalletProvider.CONTENT_URI, new String[]{DbUtils.DbColumns.BALANCE});
         BigDecimal tokenBalance = calculateToken(XWalletProvider.CONTENT_URI_TOKEN, new String[]{DbUtils.TokenTableColumns.BALANCE,
                 DbUtils.TokenTableColumns.DECIMALS, DbUtils.TokenTableColumns.RATE});
-
-        //Log.i("allbalance", "AllBalanceLoader loadInBackground ethBalance = " + ethBalance);
-        //Log.i("allbalance", "AllBalanceLoader loadInBackground tokenBalance = " + tokenBalance);
-        //Log.i("allbalance", "AllBalanceLoader loadInBackground BalanceConversionUtils.mEthToUsd = " + BalanceConversionUtils.mEthToUsd);
-        //Log.i("allbalance", "AllBalanceLoader loadInBackground UsdToCnyHelper.mUsdToCny = " + UsdToCnyHelper.mUsdToCny);
         if((ethBalance.compareTo(BigDecimal.ZERO) == 1 || tokenBalance.compareTo(BigDecimal.ZERO) == 1)
                 && UsdToCnyHelper.mUsdToCny > 0){
-            ethBalance = ethBalance.divide(TokenUtils.translateDecimalsIntoBigDecimal(18))
-                    .multiply(new BigDecimal(BalanceConversionUtils.mEthToUsd))
-                    .multiply(new BigDecimal(UsdToCnyHelper.mUsdToCny));
-            tokenBalance = tokenBalance.multiply(new BigDecimal(UsdToCnyHelper.mUsdToCny));
-            return TokenUtils.format(ethBalance.add(tokenBalance));
+            ethBalance = TokenUtils.calculate(ethBalance, TokenUtils.ETH_DECIMALS);
+
+            tokenBalance = TokenUtils.calculateTokenBalance(tokenBalance);
+            return TokenUtils.formatConversion(ethBalance.add(tokenBalance));
         }
         return "0";
     }
 
     private static BigDecimal calculateEth(Uri uri, String[] selection){
-        //Log.i("allbalance", "AllBalanceLoader calculate start uri = " + uri);
         BigDecimal result = BigDecimal.ZERO;
         Cursor cursor = null;
         try{
@@ -57,7 +49,6 @@ public class AllBalanceLoader extends AsyncTaskLoader<String> {
             if(cursor != null){
                 while (cursor.moveToNext()){
                     itemBalance = cursor.getString(0);
-                    //Log.i("allbalance", "AllBalanceLoader calculate itemBalance = " + itemBalance);
                     if(TextUtils.isEmpty(itemBalance) || itemBalance.equals("0")){
                         continue;
                     }
@@ -71,13 +62,10 @@ public class AllBalanceLoader extends AsyncTaskLoader<String> {
             }
         }
 
-        //Log.i("allbalance", "AllBalanceLoader calculate end uri = " + uri);
-        //Log.i("allbalance", "                          ");
         return result;
     }
 
     private static BigDecimal calculateToken(Uri uri, String[] selection){
-        //Log.i("allbalance", "AllBalanceLoader calculate start uri = " + uri);
         BigDecimal result = BigDecimal.ZERO;
         Cursor cursor = null;
         try{
@@ -87,14 +75,10 @@ public class AllBalanceLoader extends AsyncTaskLoader<String> {
             if(cursor != null){
                 while (cursor.moveToNext()){
                     itemBalance = cursor.getString(0);
-                    //Log.i("allbalance", "AllBalanceLoader calculateToken itemBalance = " + itemBalance);
                     if(TextUtils.isEmpty(itemBalance) || itemBalance.equals("0")){
                         continue;
                     }
-                    BigDecimal translateBalance = TokenUtils.translateTokenInWholeUnit(itemBalance, cursor.getInt(1));
-                    //Log.i("allbalance", "AllBalanceLoader calculateToken translateBalance = " + translateBalance);
-                    //Log.i("allbalance", "AllBalanceLoader calculateToken rate = " + cursor.getDouble(2));
-                    result = result.add(translateBalance.multiply(new BigDecimal(cursor.getDouble(2))));
+                    result = result.add(TokenUtils.calculateTokenBalance(itemBalance, cursor.getInt(1), cursor.getDouble(2)));
                     itemBalance = null;
                 }
             }
@@ -104,8 +88,6 @@ public class AllBalanceLoader extends AsyncTaskLoader<String> {
             }
         }
 
-        //Log.i("allbalance", "AllBalanceLoader calculateToken end uri = " + uri);
-        //Log.i("allbalance", "                          ");
         return result;
     }
 }

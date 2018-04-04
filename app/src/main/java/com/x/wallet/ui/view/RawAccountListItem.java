@@ -13,11 +13,8 @@ import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.lib.common.LibUtils;
-import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.data.AllAccountItem;
-
-import java.math.BigDecimal;
 
 /**
  * Created by wuliang on 18-3-30.
@@ -59,15 +56,14 @@ public class RawAccountListItem extends RelativeLayout {
             if (mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_ETH) {
                 mImageView.setImageResource(R.drawable.eth);
                 mCoinBalanceUnitTv.setText(R.string.coin_unit_eth);
-                mBalanceTv.setText(BalanceConversionUtils.getEthBalanceText(mAccountItem.getBalance()));
-                mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, BalanceConversionUtils.getEthConversionBalanceText(mAccountItem.getBalance())));
+                mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS));
+                mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, TokenUtils.getBalanceConversionText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS)));
             }
         } else {
             mImageView.setImageResource(R.drawable.icon_coin_eos);
             mCoinBalanceUnitTv.setText(accountItem.getCoinName());
-            BigDecimal translateBalance = TokenUtils.translateTokenInWholeUnit(accountItem.getBalance(), accountItem.getDecimals());
-            mBalanceTv.setText(TokenUtils.getStrFromBigDecimal(translateBalance));
-            mBalanceConversionTv.setText(TokenUtils.getTokenConversionText(getContext(), translateBalance, accountItem.getRate()));
+            mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), accountItem.getDecimals()));
+            mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, TokenUtils.getTokenConversionText(accountItem.getBalance(), accountItem.getDecimals(), accountItem.getRate())));
             Log.i(AppUtils.APP_TAG, "RawAccountListItem bind balance = " + accountItem.getBalance() + ", rate = " + accountItem.getRate());
         }
     }
