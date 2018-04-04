@@ -17,4 +17,6 @@
     <color name="manage_account_textColor">#131431</color>
     <color name="gray_66">#666666</color>
     <color name="error_warn_color">#ff5534</color>
+    <color name="black_49">#494949</color>
+    <color name="gray_83">#8383b8</color>
 </resources>

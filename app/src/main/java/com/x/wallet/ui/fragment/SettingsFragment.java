@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.x.wallet.R;
+import com.x.wallet.ui.activity.ServicePolicyActivity;
 
 /**
  * Created by wuliang on 18-3-13.
@@ -16,6 +17,8 @@ import com.x.wallet.R;
 
 public class SettingsFragment extends Fragment{
     private View mManageAccountItem;
+    private View mServicePolicyItem;
+    private View mPrivacyPolicyItem;
 
     @Nullable
     @Override
@@ -29,6 +32,28 @@ public class SettingsFragment extends Fragment{
                 startActivity(intent);
             }
         });
+
+        //TO-DO: need to change {@
+        mServicePolicyItem = view.findViewById(R.id.mark_rl);
+        mServicePolicyItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent("com.x.wallet.action.SEE_SERVICE_POLICY_ACTION");
+                intent.putExtra(ServicePolicyActivity.TYPE_TAG, ServicePolicyActivity.TYPE_SERVICE);
+                getContext().startActivity(intent);
+            }
+        });
+
+        mPrivacyPolicyItem = view.findViewById(R.id.about_us_rl);
+        mPrivacyPolicyItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent("com.x.wallet.action.SEE_SERVICE_POLICY_ACTION");
+                intent.putExtra(ServicePolicyActivity.TYPE_TAG, ServicePolicyActivity.TYPE_PRIVACY);
+                getContext().startActivity(intent);
+            }
+        });
+        //End TO-DO @}
         return view;
     }
 }

@@ -46,7 +46,7 @@ public class PrivacyPolicyView extends LinearLayout{
         tv.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent("com.x.wallet.action.SEE_SERVICE_POLICYL_ACTION");
+                Intent intent = new Intent("com.x.wallet.action.SEE_SERVICE_POLICY_ACTION");
                 intent.putExtra(ServicePolicyActivity.TYPE_TAG, type);
                 getContext().startActivity(intent);
             }
