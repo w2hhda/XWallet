@@ -60,7 +60,7 @@
     <string name="has_copied_address">地址已复制</string>
     <string name="coin_unit_eth">ETH</string>
     <string name="all_balance_prefix">"¥ <xliff:g id="value">%s</xliff:g>"</string>
-    <string name="item_balance">"≈  ¥<xliff:g id="value">%s</xliff:g>"</string>
+    <string name="item_balance">"≈ ¥ <xliff:g id="value">%s</xliff:g>"</string>
     <string name="transfer_to_address">转账至</string>
     <string name="transfer_to_hint">请输入地址或扫描二维码</string>
     <string name="transfer_amount">转账额度</string>
