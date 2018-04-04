@@ -2,15 +2,11 @@ package com.x.wallet.transaction.balance;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.XWalletApplication;
-import com.x.wallet.transaction.token.TokenUtils;
-import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 
-import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,7 +15,6 @@ import java.util.Set;
  */
 
 public class BalanceConversionUtils {
-    public static final String ZERO = "0";
     public static final String ETH_TO_USD_VALUE_PREF_KEY = "eth_to_usd_value";
     public static double mEthToUsd = 0;
 
@@ -67,23 +62,6 @@ public class BalanceConversionUtils {
         setRateUpdateListener(null);
         Log.i(AppUtils.APP_TAG, "BalanceConversionUtils clearListener mListenerSet.size = " + mListenerSet.size());
         mListenerSet.clear();
-    }
-
-    public static String getEthBalanceText(String rawBalance){
-        if (TextUtils.isEmpty(rawBalance) || rawBalance.equals(ZERO)) return ZERO;
-        BigDecimal balance = new BigDecimal(rawBalance);
-        return TokenUtils.format(balance.divide(BigDecimal.TEN.pow(18)));
-    }
-
-    public static String getEthConversionBalanceText(String rawBalance){
-        if (TextUtils.isEmpty(rawBalance) || rawBalance.equals(ZERO)) return ZERO;
-        if(mEthToUsd == 0 || UsdToCnyHelper.mUsdToCny == 0 ){
-            return ZERO;
-        }
-
-        BigDecimal balance = new BigDecimal(rawBalance);
-        BigDecimal ethBalance = balance.divide(BigDecimal.TEN.pow(18));
-        return TokenUtils.format(ethBalance.multiply(new BigDecimal(mEthToUsd)).multiply(new BigDecimal(UsdToCnyHelper.mUsdToCny)));
     }
 
     public interface RateUpdateListener{

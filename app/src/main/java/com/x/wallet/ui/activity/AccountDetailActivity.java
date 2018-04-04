@@ -177,7 +177,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         updateBalanceConversionText();
-        mBalanceTv.setText(BalanceConversionUtils.getEthBalanceText(mAccountItem.getBalance()) + " ETH");
+        mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS) + " ETH");
         if(mRateUpdateListener != null){
             BalanceConversionUtils.unRegisterListener(mRateUpdateListener);
         }
@@ -196,11 +196,8 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     }
 
     private void initViewForToken(){
-        BigDecimal balance = new BigDecimal(mTokenItem.getBalance());
-        int decimals = mTokenItem.getDecimals();
-        String balanceTv = balance.divide(BigDecimal.TEN.pow(decimals), DECIMAL_COUNT, BigDecimal.ROUND_UP).toString();
-        mBalanceTv.setText(balanceTv + " " + mTokenItem.getCoinName());
-        mBalanceTranslateTv.setText(TokenUtils.getTokenConversionText(this, Double.parseDouble(balanceTv), mTokenItem.getRate()));
+        mBalanceTv.setText(TokenUtils.getBalanceText(mTokenItem.getBalance(), mTokenItem.getDecimals()) + " " + mTokenItem.getCoinName());
+        mBalanceTranslateTv.setText(this.getString(R.string.item_balance, TokenUtils.getTokenConversionText(mTokenItem.getBalance(), mTokenItem.getDecimals(), mTokenItem.getRate())));
 
         CONTRACT_ADDRESS = mTokenItem.getContractAddress();
         webView = findViewById(R.id.webView);
@@ -238,7 +235,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
 
     public void updateBalanceConversionText(){
         if(mAccountItem != null){
-            mBalanceTranslateTv.setText(getResources().getString(R.string.item_balance, BalanceConversionUtils.getEthConversionBalanceText(mAccountItem.getBalance())));
+            mBalanceTranslateTv.setText(getResources().getString(R.string.item_balance, TokenUtils.getBalanceConversionText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS)));
         }
     }
 
