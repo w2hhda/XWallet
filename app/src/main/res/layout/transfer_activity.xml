@@ -61,8 +61,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="105dp"
-        android:layout_marginTop="@dimen/settings_item_marginTop"
+        android:layout_height="390px"
         android:background="@android:color/white"
         android:minHeight="@dimen/settings_item_height">
 
@@ -84,7 +83,8 @@
             android:layout_marginStart="16dp"
             android:layout_centerVertical="true"
             android:background="@null"
-            android:textSize="17dp"
+            android:textSize="17sp"
+            android:inputType="numberDecimal"
             android:hint="0.0" />
 
         <TextView
@@ -95,17 +95,40 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="16dp"
             android:text="ETH"
-            android:textColor="@color/address_title_textColor"
+            android:textColor="@color/gray_b2"
             android:textSize="34px" />
 
         <View
+            android:id="@+id/divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="30px"
+            android:layout_marginBottom="40px"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_below="@id/transfer_to_amount"
             android:background="@color/indicator_color"/>
+
+        <TextView
+            android:id="@+id/available_amount_label"
+            android:layout_marginStart="16dp"
+            android:layout_below="@id/divider"
+            android:text="@string/available_amount"
+            android:textSize="34px"
+            android:textColor="@color/address_title_textColor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/available_balance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/divider"
+            android:text="0.0"
+            android:textSize="34px"
+            android:textColor="@color/gray_b2"
+            android:layout_marginEnd="16dp"/>
 
     </RelativeLayout>
 

@@ -107,7 +107,7 @@
     <string name="current_password">当前密码</string>
     <string name="new_password">新密码</string>
     <string name="confirm_new_password">重复新密码</string>
-    <string name="change_password_error_same">新密码与当前密码相同</string>
+    <string name="change_password_error_same">新密码与当前密码相同</string>Price
     <string name="change_password_success">修改密码成功</string>
     <string name="change_password_failed">修改密码失败</string>
     <string name="add_token">添加代币</string>
@@ -116,4 +116,10 @@
     <string name="and">及</string>
     <string name="address">地址</string>
     <string name="scan_address_qr">扫描地址二维码</string>
+    <string name="available_amount">可用余额</string>
+    <string name="wait_to_get_gas_price">请等待加载Gas </string>
+    <string name="insufficient_balance">余额不足！</string>
+    <string name="check_address_error">地址错误！</string>
+    <string name="insufficient_token_fee">ETH不足以支付交易手续费！</string>
+    <string name="invalidate_balance">请输入正确余额</string>
 </resources>
