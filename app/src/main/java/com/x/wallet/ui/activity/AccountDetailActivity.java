@@ -131,7 +131,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         }else {
             initViewForNormal();
         }
-        mAddressTv.setText(getResources().getString(R.string.address) + ":" + mAccountItem.getAddress());
+        mAddressTv.setText(getResources().getString(R.string.address) + ": " + mAccountItem.getAddress());
         mAddressTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

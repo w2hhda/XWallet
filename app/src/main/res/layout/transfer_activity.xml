@@ -40,7 +40,7 @@
             android:layout_centerVertical="true"
             android:layout_toStartOf="@+id/wallet_scan"
             android:background="@null"
-            android:textSize="17dp"
+            android:textSize="34px"
             android:hint="@string/transfer_to_hint" />
 
         <View

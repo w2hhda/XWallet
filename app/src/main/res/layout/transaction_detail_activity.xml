@@ -24,7 +24,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_centerInParent="true"
-            android:paddingBottom="20dp"
+            android:paddingBottom="25dp"
             android:src="@drawable/transaction_confirmed_icon" />
 
     </RelativeLayout>

@@ -44,10 +44,12 @@
                 android:layout_marginTop="10dp"
                 android:textColor="@color/gray_83"
                 android:drawableRight="@drawable/copy_address_icon"
-                android:drawablePadding="2dp"
+                android:drawablePadding="4dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
                 android:singleLine="true"
                 android:ellipsize="middle"
-                android:textSize="13sp"/>
+                android:textSize="12sp"/>
         </LinearLayout>
     </FrameLayout>
 
@@ -57,13 +59,14 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/account_detail_top"
         android:paddingBottom="30px"
-        android:paddingTop="48px"
+        android:paddingTop="30px"
         android:gravity="center_vertical"
         android:background="@color/gray_eb">
 
         <View
             android:layout_width="@dimen/transactions_icon_width"
             android:layout_height="@dimen/transactions_icon_height"
+            android:layout_gravity="center_vertical"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:background="#222543" />
