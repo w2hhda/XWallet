@@ -107,7 +107,7 @@
     <string name="current_password">当前密码</string>
     <string name="new_password">新密码</string>
     <string name="confirm_new_password">重复新密码</string>
-    <string name="change_password_error_same">新密码与当前密码相同</string>Price
+    <string name="change_password_error_same">新密码与当前密码相同</string>
     <string name="change_password_success">修改密码成功</string>
     <string name="change_password_failed">修改密码失败</string>
     <string name="add_token">添加代币</string>
