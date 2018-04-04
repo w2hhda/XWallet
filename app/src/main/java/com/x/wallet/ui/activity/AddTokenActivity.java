@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.x.wallet.AppUtils;
@@ -15,7 +14,6 @@ import com.x.wallet.R;
 import com.x.wallet.transaction.token.InsertTokenAsycTask;
 import com.x.wallet.transaction.token.TokenListLoader;
 import com.x.wallet.ui.adapter.RecyclerViewArrayAdapter;
-import com.x.wallet.ui.data.TokenItem;
 import com.x.wallet.ui.data.TokenItemBean;
 
 import java.util.List;
@@ -45,23 +43,7 @@ public class AddTokenActivity extends WithBackAppCompatActivity {
         final String accountAddress = getIntent().getStringExtra(AppUtils.ACCOUNT_ADDRESS);
         final boolean hasToken = getIntent().getBooleanExtra(AppUtils.HAS_TOKEN_KEY, false);
 
-        mAddBtn = findViewById(R.id.finish_btn);
-        mAddBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(accountId >= 0){
-                    new InsertTokenAsycTask(AddTokenActivity.this, accountId, accountAddress, hasToken,
-                            mAdapter.getSelectedTokenItem(),
-                            new InsertTokenAsycTask.OnInsertTokenFinishedListener() {
-                                @Override
-                                public void onInsertFinished() {
-                                    AddTokenActivity.this.finish();
-                                }
-                            })
-                            .execute();
-                }
-            }
-        });
+        initAddBtn(accountId, accountAddress, hasToken);
     }
 
     @Override
@@ -90,6 +72,36 @@ public class AddTokenActivity extends WithBackAppCompatActivity {
                 null,
                 mLoaderCallbacks);
         tokenListLoader.forceLoad();
+    }
+
+    private void initAddBtn(final long accountId, final String accountAddress, final boolean hasToken){
+        mAddBtn = findViewById(R.id.finish_btn);
+        mAddBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(accountId >= 0){
+                    if(mAdapter.getSelectedTokenItem() != null){
+                        new InsertTokenAsycTask(AddTokenActivity.this, accountId, accountAddress, hasToken,
+                                mAdapter.getSelectedTokenItem(),
+                                new InsertTokenAsycTask.OnInsertTokenFinishedListener() {
+                                    @Override
+                                    public void onInsertFinished() {
+                                        AddTokenActivity.this.finish();
+                                    }
+                                })
+                                .execute();
+                    } else {
+                        AddTokenActivity.this.finish();
+                    }
+                }
+            }
+        });
+        mAdapter.setItemClickListener(new RecyclerViewArrayAdapter.ItemClickListener() {
+            @Override
+            public void onItemClick() {
+                mAddBtn.setEnabled(true);
+            }
+        });
     }
 
     private final LoaderManager.LoaderCallbacks<List<TokenItemBean>> mLoaderCallbacks =

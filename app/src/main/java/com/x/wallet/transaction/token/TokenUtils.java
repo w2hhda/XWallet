@@ -1,17 +1,12 @@
 package com.x.wallet.transaction.token;
 
-import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 
-import com.x.wallet.AppUtils;
-import com.x.wallet.R;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 
 /**
  * Created by wuliang on 18-3-31.
@@ -95,7 +90,7 @@ public class TokenUtils {
     }
 
     public static String formatConversion(BigDecimal value) {
-        return getStrFromBigDecimal(value.setScale(DECIMAL_COUNT, BigDecimal.ROUND_UP));
+        return value.setScale(DECIMAL_COUNT, BigDecimal.ROUND_UP).toPlainString();
     }
 
     public static String getStrFromBigDecimal(BigDecimal bigDecimal) {
