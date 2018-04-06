@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:src="@drawable/transaction_in" />
+        android:src="@drawable/is_ok" />
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,13 +21,14 @@
 
         <TextView
             android:id="@+id/transaction_name_tv"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:maxLength="20"
+            android:singleLine="true"
             android:paddingStart="10dp"
             android:text="From:"
             android:textSize="14sp"
+            android:ellipsize="end"
             android:paddingTop="10dip"/>
 
         <TextView

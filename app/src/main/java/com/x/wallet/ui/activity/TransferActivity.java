@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.util.ExchangeCalUtil;
 import com.x.wallet.service.SendTransactionService;
 import com.x.wallet.transaction.address.ConfirmPasswordAsyncTask;
+import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.data.RawAccountItem;
 import com.x.wallet.ui.data.SerializableAccountItem;
 
@@ -30,6 +32,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -48,6 +52,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
     private RawAccountItem mTokenItem;
     private TextView unitIndicator;
     private SerializableAccountItem mAccountItem;
+    private TextView availableBalance;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,10 +81,23 @@ public class TransferActivity extends WithBackAppCompatActivity {
         unitIndicator = findViewById(R.id.unit_indicator);
         ImageButton scanBtn = findViewById(R.id.wallet_scan);
         Button sendBtn = findViewById(R.id.send_transfer);
-
+        availableBalance = findViewById(R.id.available_balance);
         if (mTokenItem != null){
             unitIndicator.setText(mTokenItem.getCoinName());
         }
+        
+        StringBuilder indicator= new StringBuilder("Max: ");
+        if (mTokenItem != null){
+            indicator.append(TokenUtils.getBalanceText(mTokenItem.getBalance(), mTokenItem.getDecimals()) );
+            indicator.append(" ");
+            indicator.append(mTokenItem.getCoinName());
+        }else {
+            indicator.append(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS));
+            indicator.append(" ");
+            indicator.append(mAccountItem.getCoinName());
+        }
+        availableBalance.setText(indicator);
+
         getGasPrice();
 
         scanBtn.setOnClickListener(new View.OnClickListener() {
@@ -120,12 +138,38 @@ public class TransferActivity extends WithBackAppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (toAddress.getText() == null || toAddress.getText().length() < 40){
-                    Toast.makeText(TransferActivity.this, "please input correct address", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(TransferActivity.this, getResources().getString(R.string.check_address_error), Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (transferAmount.getText() == null || transferAmount.getText().length() == 0 || new BigDecimal(transferAmount.getText().toString()).equals(BigDecimal.ZERO)){
-                    Toast.makeText(TransferActivity.this, "please input correct amount", Toast.LENGTH_SHORT).show();
+                if (transferAmount.getText() == null || transferAmount.getText().length() == 0
+                        || !isValideNumber(transferAmount.getText().toString())
+                        || new BigDecimal(transferAmount.getText().toString()).equals(BigDecimal.ZERO)){
+                    Toast.makeText(TransferActivity.this, getResources().getString(R.string.invalidate_balance), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                BigDecimal amount;
+                BigDecimal tokenFee = new BigDecimal(priceTv.getText().toString());
+                if (mTokenItem == null){
+                    amount = new BigDecimal(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS));
+                    amount = amount.subtract(tokenFee);
+                }else {
+                    amount = new BigDecimal(TokenUtils.getBalanceText(mTokenItem.getBalance(), mTokenItem.getDecimals()));
+                    //one condition: have enough Token, but insufficient ETH to pay for transfer fee...
+                    if (new BigDecimal(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS)).compareTo(tokenFee) < 0){
+                        Toast.makeText(TransferActivity.this, getResources().getString(R.string.insufficient_token_fee), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+
+                if (new BigDecimal(transferAmount.getText().toString()).compareTo(amount) > 0){
+                    Toast.makeText(TransferActivity.this, getResources().getString(R.string.insufficient_balance), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                //need to get gas price first
+                if (new BigDecimal(priceTv.getText().toString()).equals(BigDecimal.ZERO)){
+                    Toast.makeText(TransferActivity.this,getResources().getString(R.string.wait_to_get_gas_price), Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -279,5 +323,14 @@ public class TransferActivity extends WithBackAppCompatActivity {
 
             }
         });
+    }
+
+    private Boolean isValideNumber(String str){
+        Pattern pattern = Pattern.compile("[0-9]+.?[0-9]+");
+        Matcher isNum = pattern.matcher(str);
+        if (!isNum.matches()) {
+            return false;
+        }
+        return true;
     }
 }
