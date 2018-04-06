@@ -32,6 +32,7 @@ import okhttp3.ResponseBody;
  */
 
 public class BalanceLoaderManager extends BackgroundLoaderManager {
+    public static final String ALL_BALANCE = "all_balance";
     public static final String ALL_ADDRESS_BALANCE = "all_address_balance";
     public static final String ALL_TOKEN_BALANCE = "all_token_balance";
     private Context mContext;
@@ -39,6 +40,10 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
     public BalanceLoaderManager(Context context) {
         super(context);
         mContext = context;
+    }
+
+    public ItemLoadedFuture getAllBalance(final ItemLoadedCallback<BalanceLoaded> callback) {
+        return getBalance(Uri.parse(ALL_BALANCE), callback);
     }
 
     public ItemLoadedFuture getBalance(final ItemLoadedCallback<BalanceLoaded> callback) {
@@ -61,7 +66,7 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
         if (callbackRequired) {
             addCallback(uri, callback);
         }
-
+        Log.i(AppUtils.APP_TAG, "BalanceLoaderManager taskExists = " + taskExists);
         if (!taskExists) {
             mPendingTaskUris.add(uri);
             Log.i(AppUtils.APP_TAG, "BalanceLoaderManager getBalance start task.");
@@ -95,7 +100,14 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
         /** {@inheritDoc} */
         public void run() {
             Log.i(AppUtils.APP_TAG, "BalanceLoaderManager run mUri = " + mUri);
-            if(ALL_ADDRESS_BALANCE.equals(mUri.toString())){
+            if(ALL_BALANCE.equals(mUri.toString())){
+                RetrofitClient.requestBalance(new RetrofitClient.OnRequestFinishedListener() {
+                    @Override
+                    public void onRequestFinished() {
+                        handleCallback();
+                    }
+                });
+            }else if(ALL_ADDRESS_BALANCE.equals(mUri.toString())){
                 String allEthAddress = queryAllEthAddress();
                 if(TextUtils.isEmpty(allEthAddress)){
                     handleCallback();

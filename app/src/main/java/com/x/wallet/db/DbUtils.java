@@ -116,4 +116,32 @@ public class DbUtils {
         return XWalletApplication.getApplication().getApplicationContext().getContentResolver()
                 .delete(XWalletProvider.CONTENT_URI_TOKEN, selection, new String[]{Long.toString(accountId)});
     }
+
+    public static String queryAllEthAddress(){
+        Cursor cursor = null;
+        try{
+            //1.query from db
+            cursor = XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
+                    XWalletProvider.CONTENT_URI, new String[]{DbUtils.DbColumns.ADDRESS}, null, null, null);
+            if(cursor != null && cursor.getCount() > 0){
+                StringBuilder builder = new StringBuilder("");
+                while (cursor.moveToNext()){
+                    builder.append(cursor.getString(0));
+                    builder.append(",");
+                }
+                String address = builder.toString();
+                return address.substring(0, address.length() -1);
+            }
+        } finally {
+            if(cursor != null){
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    public static Cursor queryAllTokenAddress(){
+        return XWalletApplication.getApplication().getContentResolver().query(
+                XWalletProvider.CONTENT_URI_TOKEN, new String[]{DbUtils.TokenTableColumns.ACCOUNT_ADDRESS}, null, null, null);
+    }
 }

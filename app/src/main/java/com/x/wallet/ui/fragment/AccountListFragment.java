@@ -83,8 +83,6 @@ public class AccountListFragment extends Fragment {
                 getContext().startActivity(intent);
             }
         });
-
-        requestBalance(null, null);
     }
 
     @Nullable
@@ -251,7 +249,7 @@ public class AccountListFragment extends Fragment {
 
         @Override
         public void onLoadFinished(Loader<String> loader, String allBalance) {
-            Log.i(AppUtils.APP_TAG, "AllBalanceLoader onLoadFinished allBalance= " + allBalance);
+            Log.i(AppUtils.APP_TAG, "AllBalanceLoader onLoadFinished allBalance = " + allBalance);
             mAllBalanceTv.setText(AccountListFragment.this.getActivity().getString(R.string.all_balance_prefix, allBalance));
         }
 
@@ -291,7 +289,8 @@ public class AccountListFragment extends Fragment {
 
     private void requestBalance(ItemLoadedCallback<BalanceLoaderManager.BalanceLoaded> callback1,
                                 ItemLoadedCallback<BalanceLoaderManager.BalanceLoaded> callback2){
-        XWalletApplication.getApplication().getBalanceLoaderManager().getBalance(callback1);
-        XWalletApplication.getApplication().getBalanceLoaderManager().getAllTokenBalance(callback2);
+        //XWalletApplication.getApplication().getBalanceLoaderManager().getBalance(callback1);
+        //XWalletApplication.getApplication().getBalanceLoaderManager().getAllTokenBalance(callback2);
+        XWalletApplication.getApplication().getBalanceLoaderManager().getAllBalance(callback1);
     }
 }

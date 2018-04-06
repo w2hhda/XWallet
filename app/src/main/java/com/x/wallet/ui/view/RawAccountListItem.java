@@ -1,7 +1,6 @@
 package com.x.wallet.ui.view;
 
 import android.content.Context;
-import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
-import com.x.wallet.XWalletApplication;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.data.AllAccountItem;
@@ -69,10 +67,5 @@ public class RawAccountListItem extends RelativeLayout {
     }
     public AllAccountItem getAccountItem() {
         return mAccountItem;
-    }
-
-    private void queryTokenBalance() {
-        Uri uri = Uri.withAppendedPath(TokenUtils.QUERY_TOKEN_BALANCE_URI, mAccountItem.getAddress());
-        XWalletApplication.getApplication().getBalanceLoaderManager().getBalance(uri, null);
     }
 }
