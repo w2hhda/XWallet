@@ -135,7 +135,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".ui.activity.CurrencyActivity"
+            android:exported="false"
+            android:label="@string/currency">
+            <intent-filter>
+                <action android:name="com.x.wallet.action.CHOOSE_CURRENCY_ACTION" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <provider
             android:name=".db.XWalletProvider"
             android:authorities="com.x.wallet"

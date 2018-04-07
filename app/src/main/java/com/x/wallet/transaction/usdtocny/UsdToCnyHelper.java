@@ -28,8 +28,12 @@ public class UsdToCnyHelper {
     public static final String USD_TO_CNY_VALUE_PREF_KEY = "usd_to_cny_value";
     public static final String USD_TO_CNY_DATE_PREF_KEY = "usd_to_cny_date";
 
+    public static final String CURRENT_CURRENCY_KEY = "current_currency";
+    public static String mCurrentCurrency;
+
     public static void init(){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(XWalletApplication.getApplication().getApplicationContext());
+        mCurrentCurrency = preferences.getString(CURRENT_CURRENCY_KEY, "CNY");
         mUsdToCny = Double.parseDouble(preferences.getString(USD_TO_CNY_VALUE_PREF_KEY, "0"));
         mDate = preferences.getLong(USD_TO_CNY_DATE_PREF_KEY, 0);
         requestCnyToUsd();
@@ -92,5 +96,19 @@ public class UsdToCnyHelper {
             } catch (Exception e){
                 Log.e(AppUtils.APP_TAG, "UsdToCnyHelper requestCnyToUsd exception" , e);
             }
+    }
+
+    public static String getChooseCurrency() {
+        return mCurrentCurrency;
+    }
+
+    public static void updateCurrentCheck(String currentCurrency) {
+        if(!mCurrentCurrency.equals(currentCurrency)){
+            mCurrentCurrency = currentCurrency;
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(XWalletApplication.getApplication().getApplicationContext());
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(CURRENT_CURRENCY_KEY, currentCurrency);
+            editor.apply();
+        }
     }
 }

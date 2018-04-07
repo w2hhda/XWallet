@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/manage_account_rl"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/settings_item_marginTop"
+    android:background="@drawable/item_bg_selector"
+    android:minHeight="@dimen/settings_item_height">
+
+    <ImageView
+        android:id="@+id/currency_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/settings_item_marginStart"
+        android:src="@drawable/manage_wallet_icon" />
+
+    <TextView
+        style="@style/SettingItemTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/settings_item_tv_marginStart"
+        android:layout_toEndOf="@id/currency_iv"
+        android:text="@string/currency" />
+
+    <TextView android:id="@+id/current_currency_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/into_iv"
+        android:layout_marginEnd="10dp"
+        android:layout_centerVertical="true"
+        android:textColor="@color/gray_b2"
+        android:textSize="13sp"/>
+
+    <ImageView android:id="@+id/into_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/settings_item_marginEnd"
+        android:src="@drawable/into_icon" />
+</RelativeLayout>

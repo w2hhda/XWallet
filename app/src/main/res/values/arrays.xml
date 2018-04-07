@@ -9,4 +9,22 @@
         <item>BTC</item>
         <item>ETH</item>
     </string-array>
+
+    <string-array name="support_currency_array">
+        <item>CHF</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>HKD</item>
+        <item>INR</item>
+        <item>JPY</item>
+        <item>KRW</item>
+        <item>NZD</item>
+        <item>PLN</item>
+        <item>RUB</item>
+        <item>SGD</item>
+        <item>THB</item>
+        <item>TWD</item>
+        <item>USD</item>
+    </string-array>
 </resources>

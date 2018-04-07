@@ -43,12 +43,16 @@ public class PrivacyPolicyView extends LinearLayout{
     private void init(TextView tv, final String type){
         tv.getPaint().setFlags(Paint. UNDERLINE_TEXT_FLAG);
         tv.getPaint().setAntiAlias(true);
-        tv.setOnClickListener(new OnClickListener() {
+        setOnClickListener(getContext(), tv, type);
+    }
+
+    public static void setOnClickListener(final Context context, View view, final String type){
+        view.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent("com.x.wallet.action.SEE_SERVICE_POLICY_ACTION");
                 intent.putExtra(ServicePolicyActivity.TYPE_TAG, type);
-                getContext().startActivity(intent);
+                context.startActivity(intent);
             }
         });
     }

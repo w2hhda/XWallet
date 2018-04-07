@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.x.wallet.ui.view.CurrencyListItem xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/item_bg_selector"
+    android:descendantFocusability="blocksDescendants"
+    android:paddingBottom="14dp"
+    android:paddingEnd="@dimen/account_list_item_paddingEnd"
+    android:paddingStart="@dimen/account_list_item_paddingEnd"
+    android:paddingTop="14dp">
+
+    <TextView
+        android:id="@+id/currency_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/check_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_radio_button_unchecked" />
+</com.x.wallet.ui.view.CurrencyListItem>

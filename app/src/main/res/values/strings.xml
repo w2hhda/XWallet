@@ -122,4 +122,5 @@
     <string name="check_address_error">地址错误！</string>
     <string name="insufficient_token_fee">ETH不足以支付交易手续费！</string>
     <string name="invalidate_balance">请输入正确余额</string>
+    <string name="currency">货币单位</string>
 </resources>

@@ -155,4 +155,8 @@
             android:layout_marginEnd="@dimen/settings_item_marginEnd"
             android:src="@drawable/into_icon" />
     </RelativeLayout>
+    <com.x.wallet.ui.view.ChangeCurrencyPrefView
+        android:id="@+id/change_currency_pref"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </LinearLayout>
