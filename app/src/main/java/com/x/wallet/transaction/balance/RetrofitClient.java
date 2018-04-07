@@ -35,7 +35,8 @@ public class RetrofitClient {
     private static final String TAG = "RetrofitClient";
     private static Retrofit retrofitEth = null;
     private static Retrofit retrofitToken = null;
-    public static Retrofit getEthClient(String baseUrl) {
+
+    private static Retrofit getEthClient(String baseUrl) {
         if (retrofitEth == null) {
             /*HttpLoggingInterceptor logInterceptor = new HttpLoggingInterceptor();
             logInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -43,13 +44,13 @@ public class RetrofitClient {
             retrofitEth = new Retrofit.Builder()
                     .baseUrl(baseUrl)
                     .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                   // .client(okHttpClient)
+                    // .client(okHttpClient)
                     .build();
         }
         return retrofitEth;
     }
 
-    public static Retrofit getTokenClient(String baseUrl) {
+    private static Retrofit getTokenClient(String baseUrl) {
         if (retrofitToken == null) {
             retrofitToken = new Retrofit.Builder()
                     .baseUrl(baseUrl)
@@ -60,14 +61,14 @@ public class RetrofitClient {
         return retrofitToken;
     }
 
-    public static final String BALANCE_BASE_URL = "http://api.etherscan.io/";
-    public static final String TOKEN_BASE_URL = "https://api.ethplorer.io/";
+    private static final String BALANCE_BASE_URL = "http://api.etherscan.io/";
+    private static final String TOKEN_BASE_URL = "https://api.ethplorer.io/";
 
-    public static RetrofitEthService getEthService() {
+    private static RetrofitEthService getEthService() {
         return RetrofitClient.getEthClient(BALANCE_BASE_URL).create(RetrofitEthService.class);
     }
 
-    public static RetrofitTokenService getTokenService() {
+    private static RetrofitTokenService getTokenService() {
         return RetrofitClient.getTokenClient(TOKEN_BASE_URL).create(RetrofitTokenService.class);
     }
 
@@ -102,12 +103,12 @@ public class RetrofitClient {
                 ArrayList<ContentProviderOperation> rawOperations = new ArrayList<ContentProviderOperation>();
                 handleObject1(args);
                 handleObject2(args, rawOperations);
-                if(args.length >= 3){
+                if (args.length >= 3) {
                     handleObject3(args, rawOperations);
                 }
                 Log.i(TAG, "RetrofitClient requestBalance rawOperations.size = " + rawOperations.size());
                 try {
-                    if(rawOperations.size() > 0){
+                    if (rawOperations.size() > 0) {
                         XWalletApplication.getApplication().getContentResolver().applyBatch(XWalletProvider.AUTHORITY, rawOperations);
                     }
                 } catch (Exception e) {
@@ -136,45 +137,45 @@ public class RetrofitClient {
         });
     }
 
-    private static void handleObject1(Object[] args){
-        try{
+    private static void handleObject1(Object[] args) {
+        try {
             Object object = args[0];
-            if(object instanceof ResponseBody){
+            if (object instanceof ResponseBody) {
                 ResponseBody responseBody = (ResponseBody) object;
                 PriceResultBean priceResultBean = new Gson().fromJson(responseBody.string(), PriceResultBean.class);
                 handlePriceResultBean(priceResultBean);
                 Log.i(TAG, "RetrofitClient handleObject1 EthToUsd = " + priceResultBean.getResult().getEthusd());
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.i(TAG, "RetrofitClient handleObject1 exception", e);
         }
     }
 
-    private static void handleObject2(Object[] args, ArrayList<ContentProviderOperation> rawOperations){
-        try{
+    private static void handleObject2(Object[] args, ArrayList<ContentProviderOperation> rawOperations) {
+        try {
             Object object = args[1];
-            if(object instanceof ResponseBody){
+            if (object instanceof ResponseBody) {
                 ResponseBody responseBody = (ResponseBody) object;
                 BalanceResultBean balanceResultBean = new Gson().fromJson(responseBody.string(), BalanceResultBean.class);
                 handleBalanceResultBean(rawOperations, balanceResultBean);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.i(TAG, "RetrofitClient handleObject2 exception", e);
         }
     }
 
-    private static void handleObject3(Object[] args, ArrayList<ContentProviderOperation> rawOperations){
-        try{
+    private static void handleObject3(Object[] args, ArrayList<ContentProviderOperation> rawOperations) {
+        try {
             int length = args.length;
-            for(int i = 2; i < length; i++){
+            for (int i = 2; i < length; i++) {
                 Object object = args[i];
-                if(object instanceof ResponseBody){
+                if (object instanceof ResponseBody) {
                     ResponseBody responseBody = (ResponseBody) object;
                     TokenListBean tokenListBean = new Gson().fromJson(responseBody.string(), TokenListBean.class);
                     handleTokenListBean(rawOperations, tokenListBean);
                 }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.i(TAG, "RetrofitClient handleObject3 exception", e);
         }
     }
@@ -209,15 +210,15 @@ public class RetrofitClient {
         return getTokenService().getTokenList(accountAddress, "freekey").subscribeOn(Schedulers.newThread());
     }
 
-    private static Observable<ResponseBody> createPriceResultBeanObservable(){
+    private static Observable<ResponseBody> createPriceResultBeanObservable() {
         return getEthService().getEthPrice("stats", "ethprice", EtherscanAPI.API_KEY).subscribeOn(Schedulers.newThread());
     }
 
-    private static Observable<ResponseBody> createBalanceResultBeanObservable(String addresses){
+    private static Observable<ResponseBody> createBalanceResultBeanObservable(String addresses) {
         return getEthService().getListBalance("account", "balancemulti", addresses, "latest", EtherscanAPI.API_KEY).subscribeOn(Schedulers.newThread());
     }
 
-    private static void handlePriceResultBean(PriceResultBean priceResultBean){
+    private static void handlePriceResultBean(PriceResultBean priceResultBean) {
         BalanceConversionUtils.write(priceResultBean.getResult().getEthusd());
     }
 
@@ -264,13 +265,13 @@ public class RetrofitClient {
         }
     }
 
-    private static void handleListener(OnRequestFinishedListener listener){
-        if(listener != null){
+    private static void handleListener(OnRequestFinishedListener listener) {
+        if (listener != null) {
             listener.onRequestFinished();
         }
     }
 
-    public interface OnRequestFinishedListener{
+    public interface OnRequestFinishedListener {
         void onRequestFinished();
     }
 }

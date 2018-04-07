@@ -59,8 +59,8 @@
     <string name="copy_address">复制地址</string>
     <string name="has_copied_address">地址已复制</string>
     <string name="coin_unit_eth">ETH</string>
-    <string name="all_balance_prefix">"¥ <xliff:g id="value">%s</xliff:g>"</string>
-    <string name="item_balance">"≈ ¥ <xliff:g id="value">%s</xliff:g>"</string>
+    <string name="all_balance_prefix">"<xliff:g id="unit">%s</xliff:g> <xliff:g id="value">%s</xliff:g>"</string>
+    <string name="item_balance">"≈ <xliff:g id="unit">%s</xliff:g> <xliff:g id="value">%s</xliff:g>"</string>
     <string name="transfer_to_address">转账至</string>
     <string name="transfer_to_hint">请输入地址或扫描二维码</string>
     <string name="transfer_amount">转账额度</string>
@@ -123,4 +123,6 @@
     <string name="insufficient_token_fee">ETH不足以支付交易手续费！</string>
     <string name="invalidate_balance">请输入正确余额</string>
     <string name="currency">货币单位</string>
+    <string name="change_currency_success">修改成功</string>
+    <string name="change_currency_failed">修改失败，请重试</string>
 </resources>

@@ -30,6 +30,7 @@ import com.x.wallet.lib.eth.data.TransactionsResultBean;
 import com.x.wallet.lib.eth.util.CacheHelper;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.token.TokenUtils;
+import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 import com.x.wallet.ui.adapter.AccountDetailAdapter;
 import com.x.wallet.ui.data.RawAccountItem;
 import com.x.wallet.ui.data.SerializableAccountItem;
@@ -197,7 +198,8 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
 
     private void initViewForToken(){
         mBalanceTv.setText(TokenUtils.getBalanceText(mTokenItem.getBalance(), mTokenItem.getDecimals()) + " " + mTokenItem.getCoinName());
-        mBalanceTranslateTv.setText(this.getString(R.string.item_balance, TokenUtils.getTokenConversionText(mTokenItem.getBalance(), mTokenItem.getDecimals(), mTokenItem.getRate())));
+        mBalanceTranslateTv.setText(this.getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
+                TokenUtils.getTokenConversionText(mTokenItem.getBalance(), mTokenItem.getDecimals(), mTokenItem.getRate())));
 
         CONTRACT_ADDRESS = mTokenItem.getContractAddress();
         webView = findViewById(R.id.webView);
@@ -235,7 +237,8 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
 
     public void updateBalanceConversionText(){
         if(mAccountItem != null){
-            mBalanceTranslateTv.setText(getResources().getString(R.string.item_balance, TokenUtils.getBalanceConversionText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS)));
+            mBalanceTranslateTv.setText(getResources().getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
+                    TokenUtils.getBalanceConversionText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS)));
         }
     }
 

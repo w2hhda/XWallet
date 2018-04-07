@@ -7,8 +7,11 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
 import com.x.wallet.R;
+import com.x.wallet.transaction.usdtocny.ChangeCurrencyAsycTask;
+import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 import com.x.wallet.ui.adapter.CurrencyArrayAdapter;
 
 /**
@@ -34,24 +37,32 @@ public class CurrencyActivity extends WithBackAppCompatActivity{
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(manager);
         mAdapter = new CurrencyArrayAdapter(R.layout.currency_list_item,
-                this.getResources().getStringArray(R.array.support_currency_array));
+                this.getResources().getStringArray(R.array.support_currency_array),
+                this.getResources().getStringArray(R.array.support_currency_unit_array));
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         mAdapter.setItemClickListener(new CurrencyArrayAdapter.ItemClickListener() {
             @Override
             public void onItemClick() {
-                Intent intent = new Intent();
-                intent.putExtra(CHOOSE_CURRENCY, mAdapter.getCurrentCurrency());
-                setResult(Activity.RESULT_OK, intent);
-                CurrencyActivity.this.finish();
+                if(!(mAdapter.getCurrentCurrency().equals(UsdToCnyHelper.getChooseCurrency()))){
+                    new ChangeCurrencyAsycTask(CurrencyActivity.this, mAdapter.getCurrentCurrency(), new ChangeCurrencyAsycTask.OnChangeFinishedListener() {
+                        @Override
+                        public void onChangeFinished(Double result) {
+                            if(result > 0){
+                                mAdapter.saveCurrencyChoose();
+                                Intent intent = new Intent();
+                                intent.putExtra(CHOOSE_CURRENCY, mAdapter.getCurrentCurrency());
+                                setResult(Activity.RESULT_OK, intent);
+                                CurrencyActivity.this.finish();
+                                Toast.makeText(CurrencyActivity.this, R.string.change_currency_success, Toast.LENGTH_LONG).show();
+                            }else {
+                                Toast.makeText(CurrencyActivity.this, R.string.change_currency_failed, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }).execute();
+                }
             }
         });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mAdapter.saveCurrencyChoose();
     }
 }

@@ -32,6 +32,7 @@ import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.balance.BalanceLoaderManager;
 import com.x.wallet.transaction.balance.ItemLoadedCallback;
 import com.x.wallet.transaction.token.TokenUtils;
+import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 import com.x.wallet.ui.adapter.AccountListAdapter;
 import com.x.wallet.ui.data.AllAccountItem;
 import com.x.wallet.ui.data.RawAccountItem;
@@ -250,7 +251,8 @@ public class AccountListFragment extends Fragment {
         @Override
         public void onLoadFinished(Loader<String> loader, String allBalance) {
             Log.i(AppUtils.APP_TAG, "AllBalanceLoader onLoadFinished allBalance = " + allBalance);
-            mAllBalanceTv.setText(AccountListFragment.this.getActivity().getString(R.string.all_balance_prefix, allBalance));
+            mAllBalanceTv.setText(AccountListFragment.this.getActivity().getString(R.string.all_balance_prefix, UsdToCnyHelper.getChooseCurrencyUnit(),
+                    allBalance));
         }
 
         @Override

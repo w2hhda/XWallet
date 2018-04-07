@@ -12,6 +12,7 @@ import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.token.TokenUtils;
+import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 import com.x.wallet.ui.data.AllAccountItem;
 
 /**
@@ -55,13 +56,15 @@ public class RawAccountListItem extends RelativeLayout {
                 mImageView.setImageResource(R.drawable.eth);
                 mCoinBalanceUnitTv.setText(R.string.coin_unit_eth);
                 mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS));
-                mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, TokenUtils.getBalanceConversionText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS)));
+                mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
+                        TokenUtils.getBalanceConversionText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS)));
             }
         } else {
             mImageView.setImageResource(R.drawable.icon_coin_eos);
             mCoinBalanceUnitTv.setText(accountItem.getCoinName());
             mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), accountItem.getDecimals()));
-            mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, TokenUtils.getTokenConversionText(accountItem.getBalance(), accountItem.getDecimals(), accountItem.getRate())));
+            mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
+                    TokenUtils.getTokenConversionText(accountItem.getBalance(), accountItem.getDecimals(), accountItem.getRate())));
             Log.i(AppUtils.APP_TAG, "RawAccountListItem bind balance = " + accountItem.getBalance() + ", rate = " + accountItem.getRate());
         }
     }

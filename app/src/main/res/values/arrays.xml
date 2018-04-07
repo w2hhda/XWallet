@@ -24,7 +24,25 @@
         <item>RUB</item>
         <item>SGD</item>
         <item>THB</item>
-        <item>TWD</item>
+        <!--<item>TWD</item>-->
         <item>USD</item>
+    </string-array>
+
+    <string-array name="support_currency_unit_array">
+        <item>CHF</item> <!--CHF-->
+        <item>¥</item> <!--CNY-->
+        <item>€</item> <!--EUR-->
+        <item>￡</item> <!--GBP-->
+        <item>HK＄</item> <!--HKD-->
+        <item>INR</item> <!--INR-->
+        <item>JPY</item> <!--JPY-->
+        <item>₩</item> <!--KRW-->
+        <item>NZ$</item> <!--NZD-->
+        <item>zł</item> <!--PLN-->
+        <item>RUB</item> <!--RUB-->
+        <item>S$</item> <!--SGD-->
+        <item>฿</item> <!--THB-->
+        <!--<item>NT$</item>--> <!--TWD-->
+        <item>US$</item> <!--USD-->
     </string-array>
 </resources>
