@@ -1,5 +1,5 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name">XWallet</string>
+    <string name="app_name">CoinPay</string>
     <string name="action_settings">Settings</string>
     <string name="title_account">资产</string>
     <string name="title_market_detail">详情</string>

@@ -20,7 +20,7 @@ public class EtherscanAPI {
     private String token;
 
     private static EtherscanAPI instance;
-    public static final String API_KEY = "9ZUSL64LS9POL3J2MVKR0ES1MBQHSFUOKK";
+    public static final String API_KEY = "2R454NXBUUDY673R2YA8S9Z25YDA3RNBXM";
 
     public static EtherscanAPI getInstance() {
         if (instance == null)
