@@ -6,7 +6,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="105dp"
-        android:layout_marginTop="@dimen/settings_item_marginTop"
         android:background="@android:color/white"
         android:minHeight="@dimen/settings_item_height">
 

@@ -86,7 +86,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
             unitIndicator.setText(mTokenItem.getCoinName());
         }
         
-        StringBuilder indicator= new StringBuilder("Max: ");
+        StringBuilder indicator= new StringBuilder();
         if (mTokenItem != null){
             indicator.append(TokenUtils.getBalanceText(mTokenItem.getBalance(), mTokenItem.getDecimals()) );
             indicator.append(" ");
