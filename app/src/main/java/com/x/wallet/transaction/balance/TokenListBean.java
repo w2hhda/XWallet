@@ -22,22 +22,6 @@ public class TokenListBean {
         this.address = address;
     }
 
-    public EthObject getETH() {
-        return ETH;
-    }
-
-    public void setETH(EthObject ETH) {
-        this.ETH = ETH;
-    }
-
-    public int getCountTxs() {
-        return countTxs;
-    }
-
-    public void setCountTxs(int countTxs) {
-        this.countTxs = countTxs;
-    }
-
     public List<TokenBean> getTokens() {
         return tokens;
     }
@@ -52,30 +36,41 @@ public class TokenListBean {
         double totalOut;
     }
 
-    class TokenBean{
+    public static class TokenBean{
         private TokenInfo tokenInfo;
         private String balance; //"balance": 251892006400000000000,
         private int totalIn;        //"totalIn": 0,
         private int  totalOut;      //"totalOut": 0
 
+        public TokenBean() {
+        }
+
+        public void setTokenInfo(TokenInfo tokenInfo) {
+            this.tokenInfo = tokenInfo;
+        }
+
         public TokenInfo getTokenInfo() {
             return tokenInfo;
+        }
+
+        public void setBalance(String balance) {
+            this.balance = balance;
         }
 
         public String getBalance() {
             return balance;
         }
 
-        public int getTotalIn() {
-            return totalIn;
-        }
-
-        public int getTotalOut() {
-            return totalOut;
+        @Override
+        public String toString() {
+            return "TokenBean{" +
+                    "tokenInfo=" + tokenInfo +
+                    ", balance='" + balance + '\'' +
+                    '}';
         }
     }
 
-    class TokenInfo{
+    public static class TokenInfo{
         private String address;
         private String name;            // "EOS",
         private int decimals;        //"decimals": 18,
@@ -90,28 +85,59 @@ public class TokenListBean {
         private String description;       //"description": "https://eos.io/",
         private Price price;
 
+        public void setAddress(String address) {
+            this.address = address;
+        }
+
         public String getAddress() {
             return address;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
 
         public String getName() {
             return name;
         }
 
+        public void setDecimals(int decimals) {
+            this.decimals = decimals;
+        }
+
         public int getDecimals() {
             return decimals;
+        }
+
+        public void setSymbol(String symbol) {
+            this.symbol = symbol;
         }
 
         public String getSymbol() {
             return symbol;
         }
 
+        public void setPrice(Price price) {
+            this.price = price;
+        }
+
         public Price getPrice() {
             return price;
         }
+
+        @Override
+        public String toString() {
+            return "TokenInfo{" +
+                    "address='" + address + '\'' +
+                    ", name='" + name + '\'' +
+                    ", decimals=" + decimals +
+                    ", symbol='" + symbol + '\'' +
+                    ", price=" + price +
+                    '}';
+        }
     }
 
-    class Price{
+    public static class Price{
         private double rate;   //"rate": "6.14596",
         private double diff;        //"diff": 2.58,
         private double diff7d;      //"diff7d": -11.89,
@@ -121,8 +147,22 @@ public class TokenListBean {
         private String volume24h;       //"volume24h": "417252000.0",
         private String currency;       //"currency": "USD"
 
+        public Price() {
+        }
+
+        public void setRate(double rate) {
+            this.rate = rate;
+        }
+
         public double getRate() {
             return rate;
+        }
+
+        @Override
+        public String toString() {
+            return "Price{" +
+                    "rate=" + rate +
+                    '}';
         }
     }
 }
