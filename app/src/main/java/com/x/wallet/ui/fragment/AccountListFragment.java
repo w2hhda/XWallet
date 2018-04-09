@@ -102,27 +102,27 @@ public class AccountListFragment extends Fragment {
         init(getLoaderManager());
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.add_acount_menu, menu);
-        super.onCreateOptionsMenu(menu,inflater);
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        inflater.inflate(R.menu.add_acount_menu, menu);
+//        super.onCreateOptionsMenu(menu,inflater);
+//
+//        mAddItem = menu.findItem(R.id.action_add_account);
+//        mImportItem = menu.findItem(R.id.action_import_account);
+//    }
 
-        mAddItem = menu.findItem(R.id.action_add_account);
-        mImportItem = menu.findItem(R.id.action_import_account);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.action_add_account:
-                handleAccountAction(AppUtils.ACCOUNT_ACTION_TYPE_NEW);
-                return true;
-            case R.id.action_import_account:
-                handleAccountAction(AppUtils.ACCOUNT_ACTION_TYPE_IMPORT);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()){
+//            case R.id.action_add_account:
+//                handleAccountAction(AppUtils.ACCOUNT_ACTION_TYPE_NEW);
+//                return true;
+//            case R.id.action_import_account:
+//                handleAccountAction(AppUtils.ACCOUNT_ACTION_TYPE_IMPORT);
+//                return true;
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @Override
     public void onDestroy() {

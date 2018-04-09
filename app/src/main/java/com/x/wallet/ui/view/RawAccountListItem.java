@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.lib.common.LibUtils;
@@ -60,7 +61,7 @@ public class RawAccountListItem extends RelativeLayout {
                         TokenUtils.getBalanceConversionText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS)));
             }
         } else {
-            mImageView.setImageResource(R.drawable.icon_coin_eos);
+            Picasso.get().load(TokenListItem.BASE_URL + mAccountItem.getContractAddress().toLowerCase() + ".png").into(mImageView);
             mCoinBalanceUnitTv.setText(accountItem.getCoinName());
             mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), accountItem.getDecimals()));
             mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),

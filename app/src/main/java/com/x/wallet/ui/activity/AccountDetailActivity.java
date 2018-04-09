@@ -143,18 +143,27 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             }
         });
 
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        refreshLayout.setOnRefreshListener(listener);
+        refreshLayout.post(new Runnable() {
             @Override
-            public void onRefresh() {
-                if (isTokenAccount){
-                    getTokenTransactions(true);
-                }else {
-                    getNormalTransactions(true);
-                }
+            public void run() {
+                refreshLayout.setRefreshing(true);
             }
         });
+        listener.onRefresh();
 
     }
+
+    private SwipeRefreshLayout.OnRefreshListener listener = new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            if (isTokenAccount){
+                getTokenTransactions(true);
+            }else {
+                getNormalTransactions(true);
+            }
+        }
+    };
 
     private void initViewForNormal(){
 

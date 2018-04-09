@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.x.wallet.R;
 import com.x.wallet.ui.data.TokenItemBean;
 
@@ -20,6 +21,8 @@ public class TokenListItem extends RelativeLayout{
     private ImageView mCheckIv;
 
     private TokenItemBean mTokenItem;
+
+    public static final String BASE_URL = "https://raw.githubusercontent.com/TrustWallet/tokens/master/images/";
 
     public TokenListItem(Context context) {
         super(context);
@@ -36,7 +39,7 @@ public class TokenListItem extends RelativeLayout{
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mImageView = findViewById(R.id.iv);
+        mImageView = findViewById(R.id.token_icon);
         mShortNameTv = findViewById(R.id.shortname_tv);
         mWholeNameTv = findViewById(R.id.wholename_tv);
         mCheckIv = findViewById(R.id.check_iv);
@@ -47,6 +50,7 @@ public class TokenListItem extends RelativeLayout{
         mShortNameTv.setText(tokenItem.getSymbol());
         mWholeNameTv.setText(tokenItem.getName());
         mCheckIv.setImageResource(isChecked ? R.drawable.ic_radio_button_checked : R.drawable.ic_radio_button_unchecked);
+        Picasso.get().load(BASE_URL + mTokenItem.getContractAddress().toLowerCase() + ".png").into(mImageView);
     }
 
     public TokenItemBean getTokenItem() {
