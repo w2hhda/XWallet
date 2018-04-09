@@ -50,6 +50,9 @@ public class TokenListItem extends RelativeLayout{
         mShortNameTv.setText(tokenItem.getSymbol());
         mWholeNameTv.setText(tokenItem.getName());
         mCheckIv.setImageResource(isChecked ? R.drawable.ic_radio_button_checked : R.drawable.ic_radio_button_unchecked);
+        if (isChecked){
+            this.setClickable(false);
+        }
         Picasso.get().load(BASE_URL + mTokenItem.getContractAddress().toLowerCase() + ".png").into(mImageView);
     }
 
