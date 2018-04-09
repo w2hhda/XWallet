@@ -6,12 +6,14 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.data.BalanceResultBean;
 import com.x.wallet.lib.eth.data.PriceResultBean;
+import com.x.wallet.transaction.token.TokenDeserializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -171,7 +173,11 @@ public class RetrofitClient {
                 Object object = args[i];
                 if (object instanceof ResponseBody) {
                     ResponseBody responseBody = (ResponseBody) object;
-                    TokenListBean tokenListBean = new Gson().fromJson(responseBody.string(), TokenListBean.class);
+
+                    GsonBuilder gsonBuilder = new GsonBuilder();
+                    gsonBuilder.registerTypeAdapter(TokenListBean.class, new TokenDeserializer());
+                    Gson gson = gsonBuilder.create();
+                    TokenListBean tokenListBean = gson.fromJson(responseBody.string(), TokenListBean.class);
                     handleTokenListBean(rawOperations, tokenListBean);
                 }
             }
@@ -250,11 +256,19 @@ public class RetrofitClient {
         for (TokenListBean.TokenBean tokenBean : tokens) {
             Log.i(TAG, "RetrofitClient handleTokenListBean address = " + address + ", balance = " + tokenBean.getBalance());
 
-            String symbol = tokenBean.getTokenInfo().getSymbol();
-            String rawBalance = tokenBean.getBalance();
-            double rate = tokenBean.getTokenInfo().getPrice().getRate();
-            int decimals = tokenBean.getTokenInfo().getDecimals();
+            TokenListBean.TokenInfo tokenInfo = tokenBean.getTokenInfo();
+            String symbol = null;
+            int decimals = 1;
+            double rate = 0;
+            if(tokenInfo != null){
+                symbol = tokenInfo.getSymbol();
+                decimals = tokenInfo.getDecimals();
+                if(tokenInfo.getPrice() != null){
+                    rate = tokenInfo.getPrice().getRate();
+                }
+            }
 
+            String rawBalance = tokenBean.getBalance();
             final ContentProviderOperation.Builder updateBuilder = ContentProviderOperation
                     .newUpdate(XWalletProvider.CONTENT_URI_TOKEN);
             updateBuilder.withSelection(DbUtils.UPDATE_TOKEN_SELECTION, new String[]{address, symbol});

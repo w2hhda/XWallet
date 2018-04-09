@@ -342,12 +342,19 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
             final ArrayList<ContentProviderOperation> rawOperations = new ArrayList<ContentProviderOperation>();
             for(TokenListBean.TokenBean tokenBean : tokens){
                 Log.i(AppUtils.APP_TAG, "BalanceLoaderManager updateTokenBalanceIntoDb address = " + address + ", balance = " + tokenBean.getBalance());
+                TokenListBean.TokenInfo tokenInfo = tokenBean.getTokenInfo();
+                String symbol = null;
+                int decimals = 1;
+                double rate = 0;
+                if(tokenInfo != null){
+                    symbol = tokenInfo.getSymbol();
+                    decimals = tokenInfo.getDecimals();
+                    if(tokenInfo.getPrice() != null){
+                        rate = tokenInfo.getPrice().getRate();
+                    }
+                }
 
-                String symbol = tokenBean.getTokenInfo().getSymbol();
                 String rawBalance = tokenBean.getBalance();
-                double rate = tokenBean.getTokenInfo().getPrice().getRate();
-                int decimals = tokenBean.getTokenInfo().getDecimals();
-
                 final ContentProviderOperation.Builder updateBuilder = ContentProviderOperation
                         .newUpdate(XWalletProvider.CONTENT_URI_TOKEN);
                 updateBuilder.withSelection(DbUtils.UPDATE_TOKEN_SELECTION, new String[] {address, symbol});
