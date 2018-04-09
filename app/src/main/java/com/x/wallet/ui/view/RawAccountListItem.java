@@ -61,11 +61,11 @@ public class RawAccountListItem extends RelativeLayout {
                         TokenUtils.getBalanceConversionText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS)));
             }
         } else {
-            Picasso.get().load(TokenListItem.BASE_URL + mAccountItem.getContractAddress() + ".png").into(mImageView);
             mCoinBalanceUnitTv.setText(accountItem.getCoinName());
             mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), accountItem.getDecimals()));
             mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
                     TokenUtils.getTokenConversionText(accountItem.getBalance(), accountItem.getDecimals(), accountItem.getRate())));
+            Picasso.get().load(TokenListItem.BASE_URL + mAccountItem.getContractAddress() + ".png").into(mImageView);
             Log.i(AppUtils.APP_TAG, "RawAccountListItem bind balance = " + accountItem.getBalance() + ", rate = " + accountItem.getRate());
         }
     }

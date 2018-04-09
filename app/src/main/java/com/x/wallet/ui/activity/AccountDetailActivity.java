@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -47,8 +48,6 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-
-import static com.x.wallet.transaction.token.TokenUtils.DECIMAL_COUNT;
 
 /**
  * Created by wuliang on 18-3-16.
@@ -101,7 +100,8 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         mReceiptBtn = findViewById(R.id.receipt_btn);
         mNoTransactionView = findViewById(R.id.no_transaction_view);
         refreshLayout = findViewById(R.id.layout_swipe_refresh);
-        this.setTitle(mAccountItem.getAccountName());
+        super.setTitle(mAccountItem.getAccountName());
+        handler = new MyHandler();
 
         mReceiptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,7 +178,6 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
                 startActivity(intent);
             }
         });
-        handler = new MyHandler();
 
         mRecyclerView = findViewById(R.id.recyclerView);
         final LinearLayoutManager manager = new LinearLayoutManager(this);
@@ -227,16 +226,28 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     }
 
     private class MyHandler extends Handler{
-        public static final int  MSG_UPDATE = -1;
+        public static final int MSG_UPDATE = -1;
+        public static final int MSG_LOAD_DONE = 0;
+        public static final int MSG_LOADING = 1;
 
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what){
-                case -1:
+                case MSG_UPDATE:
                     mNoTransactionView.setVisibility(View.GONE);
                     adapter.addItems(items);
                     refreshLayout.setRefreshing(false);
+                    break;
+                case MSG_LOAD_DONE:
+                    if (refreshLayout != null){
+                        refreshLayout.setRefreshing(false);
+                    }
+                    break;
+                case MSG_LOADING:
+                    if (refreshLayout != null){
+                        refreshLayout.setRefreshing(true);
+                    }
                     break;
                 default:
                         break;
@@ -302,8 +313,6 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             webView.setVisibility(View.VISIBLE);
         }
         WebSettings webSettings = webView.getSettings();
-        webSettings.setUseWideViewPort(true);
-        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
 
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDomStorageEnabled(true);
@@ -314,6 +323,19 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 return false;
+            }
+
+        });
+
+        webView.setWebChromeClient(new WebChromeClient(){
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                super.onProgressChanged(view, newProgress);
+                Message message = handler.obtainMessage();
+                if (newProgress == 100){
+                    message.what = MyHandler.MSG_LOAD_DONE;
+                }
+                handler.sendMessage(message);
             }
         });
     }

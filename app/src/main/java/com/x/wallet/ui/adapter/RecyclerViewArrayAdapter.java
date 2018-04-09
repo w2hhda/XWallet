@@ -13,6 +13,7 @@ import com.x.wallet.ui.data.TokenItemBean;
 import com.x.wallet.ui.view.TokenListItem;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -34,7 +35,15 @@ public class RecyclerViewArrayAdapter extends RecyclerView.Adapter<RecyclerViewA
     }
 
     public void addAll(List list){
+        String tokenNames = tokenToIgnore();
+        for (Iterator<TokenItemBean> bean = list.iterator(); bean.hasNext();){
+            String name = bean.next().getName();
+            if (tokenNames.contains(name)){
+                bean.remove();
+            }
+        }
         mTokenItemList.addAll(list);
+
         this.notifyDataSetChanged();
     }
 
@@ -65,24 +74,7 @@ public class RecyclerViewArrayAdapter extends RecyclerView.Adapter<RecyclerViewA
                 }
             }
         });
-        String selection = DbUtils.TokenTableColumns.ACCOUNT_ADDRESS + " = ?";
-        Cursor cursor = XWalletApplication.getApplication().getContentResolver().query(XWalletProvider.CONTENT_URI_TOKEN,
-                new String[]{DbUtils.TokenTableColumns.NAME,},selection, new String[]{address}, null);
-        StringBuilder tokens = new StringBuilder();
-        while (cursor.moveToNext()){
-            String tokenName = cursor.getString(0);
-            if (tokenName == null){
-                continue;
-            }
-            tokens.append(tokenName);
-            tokens.append(",");
-        }
-        String namePosition = mTokenItemList.get(listPosition).getName();
-        if (tokens.toString().contains(namePosition)){
-            listItem.bind(mTokenItemList.get(listPosition), true);
-        }else {
-            listItem.bind(mTokenItemList.get(listPosition), mCurrentCheckedItemPosition == listPosition);
-        }
+        listItem.bind(mTokenItemList.get(listPosition), mCurrentCheckedItemPosition == listPosition);
     }
 
     public TokenItemBean getSelectedTokenItem() {
@@ -104,5 +96,21 @@ public class RecyclerViewArrayAdapter extends RecyclerView.Adapter<RecyclerViewA
 
     public interface ItemClickListener{
         void onItemClick();
+    }
+
+    private String tokenToIgnore(){
+        String selection = DbUtils.TokenTableColumns.ACCOUNT_ADDRESS + " = ?";
+        Cursor cursor = XWalletApplication.getApplication().getContentResolver().query(XWalletProvider.CONTENT_URI_TOKEN,
+                new String[]{DbUtils.TokenTableColumns.NAME,},selection, new String[]{address}, null);
+        StringBuilder tokens = new StringBuilder();
+        while (cursor.moveToNext()){
+            String tokenName = cursor.getString(0);
+            if (tokenName == null){
+                continue;
+            }
+            tokens.append(tokenName);
+            tokens.append(",");
+        }
+        return tokens.toString();
     }
 }

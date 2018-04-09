@@ -51,6 +51,7 @@ public class TransactionListItem extends RelativeLayout{
 
     public void bind(TransactionItem item) {
         mTransactionItem = item;
+        if (item == null) return;
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date date = new Date(Long.parseLong(item.getTimeStamp()) * 1000L);
