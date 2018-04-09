@@ -22,7 +22,7 @@ public class TokenListItem extends RelativeLayout{
 
     private TokenItemBean mTokenItem;
 
-    public static final String BASE_URL = "https://raw.githubusercontent.com/TrustWallet/tokens/master/images/";
+    public static final String BASE_URL = "file:///android_asset/";
 
     public TokenListItem(Context context) {
         super(context);
@@ -53,7 +53,7 @@ public class TokenListItem extends RelativeLayout{
         if (isChecked){
             this.setClickable(false);
         }
-        Picasso.get().load(BASE_URL + mTokenItem.getContractAddress().toLowerCase() + ".png").into(mImageView);
+        Picasso.get().load(BASE_URL + mTokenItem.getContractAddress() + ".png").into(mImageView);
     }
 
     public TokenItemBean getTokenItem() {
