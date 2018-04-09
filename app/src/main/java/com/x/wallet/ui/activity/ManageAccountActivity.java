@@ -1,15 +1,24 @@
 package com.x.wallet.ui.activity;
 
 import android.app.Activity;
+import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,11 +30,19 @@ import com.x.wallet.transaction.ChangePasswordAsycTask;
 import com.x.wallet.transaction.DeleteAccountAsycTask;
 import com.x.wallet.transaction.key.DecryptKeyAsycTask;
 import com.x.wallet.transaction.keystore.DecryptKeyStoreAsycTask;
+import com.x.wallet.transaction.token.ManagerTokenListLoader;
+import com.x.wallet.transaction.token.TokenListLoader;
+import com.x.wallet.ui.adapter.ManagerTokenListAdapter;
+import com.x.wallet.ui.adapter.RecyclerViewArrayAdapter;
 import com.x.wallet.ui.data.AccountItem;
 import com.x.wallet.ui.data.SerializableAccountItem;
+import com.x.wallet.ui.data.TokenItem;
+import com.x.wallet.ui.data.TokenItemBean;
 import com.x.wallet.ui.dialog.ChangePasswordDialogHelper;
 import com.x.wallet.ui.dialog.ContentShowDialogHelper;
 import com.x.wallet.ui.dialog.PasswordCheckDialogHelper;
+
+import java.util.List;
 
 /**
  * Created by wuliang on 18-3-16.
@@ -44,6 +61,11 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
 
     private View mDeleteView;
     private Activity mActivity;
+    private View managerTokenLayout;
+    private RecyclerView recyclerView;
+    private ManagerTokenListAdapter mAdapter;
+    private LoaderManager mLoaderManager;
+    private static final int TOKEN_LIST_LOADER = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,10 +75,13 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
         mAccountItem = (SerializableAccountItem) getIntent().getSerializableExtra(AppUtils.ACCOUNT_DATA);
 
         initViews();
+        initRecyclerView();
+        initLoaderManager();
     }
 
     private void initViews(){
-
+        super.setTitle(getResources().getString(R.string.manage_account));
+        managerTokenLayout = findViewById(R.id.manage_token_layout);
         mAccountNameTv = findViewById(R.id.account_name_tv);
         mAccountNameTv.setText(mAccountItem.getAccountName());
 
@@ -119,6 +144,17 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                 showPasswordCheckDialogForDelete();
             }
         });
+    }
+
+    private void initRecyclerView(){
+        recyclerView = findViewById(R.id.recyclerView_manage_token);
+        final LinearLayoutManager manager = new LinearLayoutManager(this);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(manager);
+        MyHandler handler = new MyHandler();
+        mAdapter = new ManagerTokenListAdapter(R.layout.manager_token_list_item, mAccountItem.getAddress(), handler);
+        recyclerView.setAdapter(mAdapter);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }
 
     /**
@@ -235,4 +271,63 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
             }
         }, R.string.change_password);
     }
+    private class MyHandler extends Handler {
+        public static final int MSG_UPDATE = -1;
+
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case MSG_UPDATE:
+                    managerTokenLayout.invalidate();
+                    updateTokenLayoutVisibility(mAdapter.getItemCount());
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mLoaderManager != null){
+            mLoaderManager.destroyLoader(TOKEN_LIST_LOADER);
+            mLoaderManager = null;
+        }
+    }
+
+    private void initLoaderManager(){
+        mLoaderManager = getLoaderManager();
+        Loader tokenListLoader = getLoaderManager().initLoader(
+                TOKEN_LIST_LOADER,
+                null,
+                mLoaderCallbacks);
+        tokenListLoader.forceLoad();
+    }
+
+    private void updateTokenLayoutVisibility(int count){
+        managerTokenLayout.setVisibility(count == 0 ? View.GONE : View.VISIBLE);
+    }
+
+    private final LoaderManager.LoaderCallbacks<List<TokenItem>> mLoaderCallbacks =
+            new LoaderManager.LoaderCallbacks<List<TokenItem>>() {
+
+                @Override
+                public Loader<List<TokenItem>> onCreateLoader(int id, Bundle args) {
+                    return new ManagerTokenListLoader(ManageAccountActivity.this, mAccountItem.getAddress());
+                }
+
+                @Override
+                public void onLoadFinished(Loader<List<TokenItem>> loader, List<TokenItem> tokenItems) {
+                    mAdapter.addAll(tokenItems);
+                    updateTokenLayoutVisibility(mAdapter.getItemCount());
+                }
+
+                @Override
+                public void onLoaderReset(Loader<List<TokenItem>> loader) {
+
+                }
+            };
 }

@@ -128,6 +128,25 @@
 
         <include layout="@layout/create_account_high_divider_view" />
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/manage_token_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/erc20_token"
+                style="@style/ItemDetailStyle"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView_manage_token"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+            <include layout="@layout/create_account_high_divider_view" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/delete_account_tv"
             android:layout_width="match_parent"
