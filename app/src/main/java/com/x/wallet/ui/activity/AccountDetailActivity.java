@@ -1,10 +1,12 @@
 package com.x.wallet.ui.activity;
 
 
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -69,12 +71,13 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     private MyHandler handler;
     private WebView webView;
     private SwipeRefreshLayout refreshLayout;
-
+    private SwipeRefreshLayout tokenRefresh;
 
     public final static String SHARE_ADDRESS_EXTRA = "share_address_extra";
     private BalanceConversionUtils.RateUpdateListener mRateUpdateListener;
     private String CONTRACT_ADDRESS ;
     private Boolean isTokenAccount = false;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,8 +103,10 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         mReceiptBtn = findViewById(R.id.receipt_btn);
         mNoTransactionView = findViewById(R.id.no_transaction_view);
         refreshLayout = findViewById(R.id.layout_swipe_refresh);
+        mProgressDialog = new ProgressDialog(this);
         super.setTitle(mAccountItem.getAccountName());
         handler = new MyHandler();
+        mAddressTv.setText(getResources().getString(R.string.address) + ": " + mAccountItem.getAddress());
 
         mReceiptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,12 +132,6 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             }
         });
 
-        if (isTokenAccount){
-            initViewForToken();
-        }else {
-            initViewForNormal();
-        }
-        mAddressTv.setText(getResources().getString(R.string.address) + ": " + mAccountItem.getAddress());
         mAddressTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -143,6 +142,29 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             }
         });
 
+        if (isTokenAccount){
+            initViewForToken();
+        }else {
+            initViewForNormal();
+        }
+
+    }
+
+    private SwipeRefreshLayout.OnRefreshListener listener = new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            if (isTokenAccount){
+                tokenRefresh.setRefreshing(false);
+                getTokenTransactions(true);
+            }else {
+                getNormalTransactions(true);
+            }
+        }
+    };
+
+    private void initViewForNormal(){
+        items = new  ArrayList<>();
+
         refreshLayout.setOnRefreshListener(listener);
         refreshLayout.post(new Runnable() {
             @Override
@@ -152,22 +174,6 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         });
         listener.onRefresh();
 
-    }
-
-    private SwipeRefreshLayout.OnRefreshListener listener = new SwipeRefreshLayout.OnRefreshListener() {
-        @Override
-        public void onRefresh() {
-            if (isTokenAccount){
-                getTokenTransactions(true);
-            }else {
-                getNormalTransactions(true);
-            }
-        }
-    };
-
-    private void initViewForNormal(){
-
-        items = new  ArrayList<>();
         adapter = new AccountDetailAdapter(this , new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -178,13 +184,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        mRecyclerView = findViewById(R.id.recyclerView);
-        final LinearLayoutManager manager = new LinearLayoutManager(this);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(manager);
-        mRecyclerView.setAdapter(adapter);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        initRecyclerView();
         updateBalanceConversionText();
         mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS) + " ETH");
         if(mRateUpdateListener != null){
@@ -204,13 +204,26 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         BalanceConversionUtils.registerListener(mRateUpdateListener);
     }
 
+    private void initRecyclerView(){
+        mRecyclerView = findViewById(R.id.recyclerView);
+        final LinearLayoutManager manager = new LinearLayoutManager(this);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(manager);
+        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+    }
+
     private void initViewForToken(){
+        tokenRefresh = findViewById(R.id.token_refresh);
+        tokenRefresh.setVisibility(View.VISIBLE);
+        tokenRefresh.setOnRefreshListener(listener);
+        if (refreshLayout != null) refreshLayout.setVisibility(View.GONE);
+        webView = findViewById(R.id.webView);
         mBalanceTv.setText(TokenUtils.getBalanceText(mTokenItem.getBalance(), mTokenItem.getDecimals()) + " " + mTokenItem.getCoinName());
         mBalanceTranslateTv.setText(this.getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
                 TokenUtils.getTokenConversionText(mTokenItem.getBalance(), mTokenItem.getDecimals(), mTokenItem.getRate())));
 
         CONTRACT_ADDRESS = mTokenItem.getContractAddress();
-        webView = findViewById(R.id.webView);
         getTokenTransactions(false);
 
     }
@@ -225,29 +238,26 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        BalanceConversionUtils.clearListener();
+        TokenUtils.setRateUpdateListener(null);
+    }
+
     private class MyHandler extends Handler{
-        public static final int MSG_UPDATE = -1;
-        public static final int MSG_LOAD_DONE = 0;
-        public static final int MSG_LOADING = 1;
+        public static final int MSG_UPDATE = 101;
+        public static final int MSG_LOAD_DONE = 102;
 
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+            Log.i(AppUtils.APP_TAG,"msg.what = " + msg.what);
             switch (msg.what){
                 case MSG_UPDATE:
                     mNoTransactionView.setVisibility(View.GONE);
                     adapter.addItems(items);
                     refreshLayout.setRefreshing(false);
-                    break;
-                case MSG_LOAD_DONE:
-                    if (refreshLayout != null){
-                        refreshLayout.setRefreshing(false);
-                    }
-                    break;
-                case MSG_LOADING:
-                    if (refreshLayout != null){
-                        refreshLayout.setRefreshing(true);
-                    }
                     break;
                 default:
                         break;
@@ -303,7 +313,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             }, force);
 
         }catch (IOException e){
-            Log.i("@@@@","exception in asyncTask");
+            Log.i(AppUtils.APP_TAG,"exception in getNormalTransactions asyncTask");
         }
     }
 
@@ -325,18 +335,17 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
                 return false;
             }
 
-        });
-
-        webView.setWebChromeClient(new WebChromeClient(){
             @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                super.onProgressChanged(view, newProgress);
-                Message message = handler.obtainMessage();
-                if (newProgress == 100){
-                    message.what = MyHandler.MSG_LOAD_DONE;
-                }
-                handler.sendMessage(message);
+            public void onPageFinished(WebView view, String url) {
+                mProgressDialog.dismiss();
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                mProgressDialog.show();
             }
         });
+
     }
 }
