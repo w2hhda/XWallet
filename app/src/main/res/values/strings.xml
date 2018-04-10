@@ -125,4 +125,7 @@
     <string name="currency">货币单位</string>
     <string name="change_currency_success">修改成功</string>
     <string name="change_currency_failed">修改失败，请重试</string>
+    <string name="erc20_token">代币</string>
+    <string name="delete_token">删除代币</string>
+    <string name="confirm_delete_token">确认要删除代币<xliff:g id="name">%s</xliff:g>吗？</string>
 </resources>

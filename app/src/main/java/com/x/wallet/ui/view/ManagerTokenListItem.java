@@ -2,37 +2,38 @@ package com.x.wallet.ui.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.x.wallet.R;
+import com.x.wallet.ui.data.TokenItem;
 import com.x.wallet.ui.data.TokenItemBean;
 
 /**
  * Created by wuliang on 18-3-30.
  */
 
-public class TokenListItem extends RelativeLayout{
+public class ManagerTokenListItem extends RelativeLayout{
     private ImageView mImageView;
     private TextView mShortNameTv;
-    private TextView mWholeNameTv;
     private ImageView mCheckIv;
 
-    private TokenItemBean mTokenItem;
+    private TokenItem mTokenItem;
 
     public static final String BASE_URL = "file:///android_asset/";
 
-    public TokenListItem(Context context) {
+    public ManagerTokenListItem(Context context) {
         super(context);
     }
 
-    public TokenListItem(Context context, AttributeSet attrs) {
+    public ManagerTokenListItem(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public TokenListItem(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ManagerTokenListItem(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -41,22 +42,18 @@ public class TokenListItem extends RelativeLayout{
         super.onFinishInflate();
         mImageView = findViewById(R.id.token_icon);
         mShortNameTv = findViewById(R.id.shortname_tv);
-        mWholeNameTv = findViewById(R.id.wholename_tv);
         mCheckIv = findViewById(R.id.check_iv);
     }
 
-    public void bind(TokenItemBean tokenItem, boolean isChecked){
+    public void bind(TokenItem tokenItem){
         mTokenItem = tokenItem;
         mShortNameTv.setText(tokenItem.getSymbol());
-        mWholeNameTv.setText(tokenItem.getName());
-        mCheckIv.setImageResource(isChecked ? R.drawable.ic_radio_button_checked : R.drawable.ic_radio_button_unchecked);
-        if (isChecked){
-            this.setClickable(false);
-        }
+        //mCheckIv.setImageResource(R.drawable.ic_radio_button_unchecked);
+
         Picasso.get().load(BASE_URL + mTokenItem.getContractAddress() + ".png").into(mImageView);
     }
 
-    public TokenItemBean getTokenItem() {
+    public TokenItem getTokenItem() {
         return mTokenItem;
     }
 }

@@ -30,17 +30,19 @@ public class AddTokenActivity extends WithBackAppCompatActivity {
     private LoaderManager mLoaderManager;
     private static final int TOKEN_LIST_LOADER = 1;
     private RecyclerViewArrayAdapter mAdapter;
+    private String accountAddress;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_token_activity);
+        accountAddress = getIntent().getStringExtra(AppUtils.ACCOUNT_ADDRESS);
+
         initRecyclerView();
 
         initLoaderManager();
 
         final long accountId = getIntent().getLongExtra(AppUtils.ACCOUNT_ID, -1);
-        final String accountAddress = getIntent().getStringExtra(AppUtils.ACCOUNT_ADDRESS);
         final boolean hasToken = getIntent().getBooleanExtra(AppUtils.HAS_TOKEN_KEY, false);
 
         initAddBtn(accountId, accountAddress, hasToken);
@@ -60,7 +62,7 @@ public class AddTokenActivity extends WithBackAppCompatActivity {
         final LinearLayoutManager manager = new LinearLayoutManager(this);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(manager);
-        mAdapter = new RecyclerViewArrayAdapter(R.layout.token_list_item);
+        mAdapter = new RecyclerViewArrayAdapter(R.layout.token_list_item, accountAddress);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }

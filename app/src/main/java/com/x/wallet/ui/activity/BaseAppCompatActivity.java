@@ -14,7 +14,9 @@ public class BaseAppCompatActivity extends AppCompatActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(Build.VERSION.SDK_INT>=21){
-            getSupportActionBar().setElevation(0);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setElevation(0);
+            }
         }
     }
 }

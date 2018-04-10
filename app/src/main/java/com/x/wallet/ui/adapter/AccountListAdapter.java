@@ -63,4 +63,8 @@ public class AccountListAdapter extends CursorRecyclerAdapter<AccountListAdapter
         }
     }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 }
