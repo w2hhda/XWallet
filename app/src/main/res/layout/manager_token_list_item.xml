@@ -40,5 +40,5 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_radio_button_unchecked" />
+        android:src="@drawable/delete_token" />
 </com.x.wallet.ui.view.ManagerTokenListItem>
