@@ -1,7 +1,6 @@
 package com.x.wallet.ui.activity;
 
 
-import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -17,7 +16,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -77,7 +75,6 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     private BalanceConversionUtils.RateUpdateListener mRateUpdateListener;
     private String CONTRACT_ADDRESS ;
     private Boolean isTokenAccount = false;
-    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -103,7 +100,6 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         mReceiptBtn = findViewById(R.id.receipt_btn);
         mNoTransactionView = findViewById(R.id.no_transaction_view);
         refreshLayout = findViewById(R.id.layout_swipe_refresh);
-        mProgressDialog = new ProgressDialog(this);
         super.setTitle(mAccountItem.getAccountName());
         handler = new MyHandler();
         mAddressTv.setText(getResources().getString(R.string.address) + ": " + mAccountItem.getAddress());
@@ -154,7 +150,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         @Override
         public void onRefresh() {
             if (isTokenAccount){
-                tokenRefresh.setRefreshing(false);
+                //tokenRefresh.setRefreshing(false);
                 getTokenTransactions(true);
             }else {
                 getNormalTransactions(true);
@@ -337,13 +333,17 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                mProgressDialog.dismiss();
+                if (tokenRefresh.isRefreshing()){
+                    tokenRefresh.setRefreshing(false);
+                }
             }
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-                mProgressDialog.show();
+                if (tokenRefresh != null){
+                    tokenRefresh.setRefreshing(true);
+                }
             }
         });
 
