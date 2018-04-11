@@ -105,28 +105,35 @@ public class SendTransactionService extends IntentService {
     private Credentials getCredential(String address, String password){
         String keyStore;
         Credentials credentials = null;
-        Cursor cursor = XWalletApplication.getApplication().getContentResolver().query(XWalletProvider.CONTENT_URI,
-                new String[]{DbUtils.DbColumns.ADDRESS,DbUtils.DbColumns.KEYSTORE},null, null, null);
-        while (cursor.moveToNext()){
+        Cursor cursor = null;
+        try {//need to delete loop
+            cursor = XWalletApplication.getApplication().getContentResolver().query(XWalletProvider.CONTENT_URI,
+                    new String[]{DbUtils.DbColumns.ADDRESS,DbUtils.DbColumns.KEYSTORE},null, null, null);
+            while (cursor.moveToNext()){
 
-            if (cursor.getString(0).equalsIgnoreCase(address)){
-                keyStore = cursor.getString(1);
-                if (keyStore == null){
-                    return  null;
+                if (cursor.getString(0).equalsIgnoreCase(address)){
+                    keyStore = cursor.getString(1);
+                    if (keyStore == null){
+                        return  null;
+                    }
+
+                    ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
+
+                    try {
+                        WalletFile walletFile = mapper.readValue(keyStore, WalletFile.class);
+                        credentials = Credentials.create(Wallet.decrypt(password, walletFile));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (CipherException e){
+
+                    }
                 }
 
-                ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
-
-                try {
-                    WalletFile walletFile = mapper.readValue(keyStore, WalletFile.class);
-                    credentials = Credentials.create(Wallet.decrypt(password, walletFile));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (CipherException e){
-
-                }
             }
-
+        } finally {
+            if (cursor != null){
+                cursor.close();
+            }
         }
         Log.i(AppUtils.APP_TAG, "transaction service get credential ok");
 

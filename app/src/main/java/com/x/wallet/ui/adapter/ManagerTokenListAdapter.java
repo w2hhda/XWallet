@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.transaction.token.DeleteTokenAsyncTask;
 import com.x.wallet.ui.activity.ManageAccountActivity;
@@ -68,6 +69,7 @@ public class ManagerTokenListAdapter extends RecyclerView.Adapter<ManagerTokenLi
                                                 });
                                                 handler.sendEmptyMessage(ManageAccountActivity.MyHandler.MSG_UPDATE);
                                                 Toast.makeText(context, "delete ok!", Toast.LENGTH_SHORT).show();
+                                                AppUtils.writeDeletedToken(address, accountName);
                                             }
                                         }).execute();
                             }

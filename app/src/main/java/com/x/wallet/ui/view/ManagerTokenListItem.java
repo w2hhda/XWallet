@@ -2,15 +2,15 @@ package com.x.wallet.ui.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.ui.data.TokenItem;
-import com.x.wallet.ui.data.TokenItemBean;
+
+import java.io.IOException;
 
 /**
  * Created by wuliang on 18-3-30.
@@ -48,9 +48,7 @@ public class ManagerTokenListItem extends RelativeLayout{
     public void bind(TokenItem tokenItem){
         mTokenItem = tokenItem;
         mShortNameTv.setText(tokenItem.getSymbol());
-        //mCheckIv.setImageResource(R.drawable.ic_radio_button_unchecked);
-
-        Picasso.get().load(BASE_URL + mTokenItem.getContractAddress() + ".png").into(mImageView);
+        AppUtils.setImage(mImageView, mTokenItem.getContractAddress());
     }
 
     public TokenItem getTokenItem() {

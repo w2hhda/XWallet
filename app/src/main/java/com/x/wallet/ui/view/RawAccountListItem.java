@@ -8,13 +8,14 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 import com.x.wallet.ui.data.AllAccountItem;
+
+import java.io.IOException;
 
 /**
  * Created by wuliang on 18-3-30.
@@ -65,7 +66,7 @@ public class RawAccountListItem extends RelativeLayout {
             mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), accountItem.getDecimals()));
             mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
                     TokenUtils.getTokenConversionText(accountItem.getBalance(), accountItem.getDecimals(), accountItem.getRate())));
-            Picasso.get().load(TokenListItem.BASE_URL + mAccountItem.getContractAddress() + ".png").into(mImageView);
+            AppUtils.setImage(mImageView, mAccountItem.getContractAddress());
             Log.i(AppUtils.APP_TAG, "RawAccountListItem bind balance = " + accountItem.getBalance() + ", rate = " + accountItem.getRate());
         }
     }

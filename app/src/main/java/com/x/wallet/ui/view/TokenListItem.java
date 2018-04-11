@@ -6,9 +6,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.ui.data.TokenItemBean;
+
+import java.io.IOException;
 
 /**
  * Created by wuliang on 18-3-30.
@@ -53,7 +55,7 @@ public class TokenListItem extends RelativeLayout{
         if (isChecked){
             this.setClickable(false);
         }
-        Picasso.get().load(BASE_URL + mTokenItem.getContractAddress() + ".png").into(mImageView);
+        AppUtils.setImage(mImageView, mTokenItem.getContractAddress());
     }
 
     public TokenItemBean getTokenItem() {
