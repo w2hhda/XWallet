@@ -19,19 +19,12 @@
         android:scaleType="fitCenter"
         android:src="@drawable/icon_coin_eos" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+    <TextView
+        android:id="@+id/shortname_tv"
         android:layout_toEndOf="@id/token_icon"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/shortname_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
+        android:layout_width="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_height="wrap_content" />
 
     <ImageView
         android:id="@+id/delete_iv"
@@ -40,5 +33,5 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_radio_button_unchecked" />
+        android:src="@drawable/delete_token" />
 </com.x.wallet.ui.view.ManagerTokenListItem>

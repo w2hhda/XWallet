@@ -59,32 +59,39 @@ public class ConfirmPasswordAsyncTask extends AsyncTask<Void, Void, Boolean> {
     protected Boolean doInBackground(Void... voids) {
         String keyStore;
         String selection = DbUtils.DbColumns.ADDRESS + " = ?";
-        Cursor cursor = XWalletApplication.getApplication().getContentResolver().query(XWalletProvider.CONTENT_URI,
-                new String[]{DbUtils.DbColumns.KEYSTORE},selection, new String[]{address}, null);
+        Cursor cursor = null;
+        try {
+            cursor = XWalletApplication.getApplication().getContentResolver().query(XWalletProvider.CONTENT_URI,
+                    new String[]{DbUtils.DbColumns.KEYSTORE},selection, new String[]{address}, null);
 
-        if (cursor != null && cursor.moveToFirst()){
-            keyStore = cursor.getString(0);
-            if (keyStore == null){
-                return  false;
-            }
-
-            ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
-
-            try {
-                WalletFile walletFile = mapper.readValue(keyStore, WalletFile.class);
-                ECKeyPair keyPair = Wallet.decrypt(password, walletFile);
-                if (keyPair != null){
-                    WalletFile file = Wallet.createStandard(password, keyPair);
-                    String newAddress = "0x" +file.getAddress();
-                    if (newAddress.equalsIgnoreCase(address)){
-                        return true;
-                    }
+            if (cursor != null && cursor.moveToFirst()){
+                keyStore = cursor.getString(0);
+                if (keyStore == null){
+                    return  false;
                 }
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }catch (CipherException e){
+                ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
 
+                try {
+                    WalletFile walletFile = mapper.readValue(keyStore, WalletFile.class);
+                    ECKeyPair keyPair = Wallet.decrypt(password, walletFile);
+                    if (keyPair != null){
+                        WalletFile file = Wallet.createStandard(password, keyPair);
+                        String newAddress = "0x" +file.getAddress();
+                        if (newAddress.equalsIgnoreCase(address)){
+                            return true;
+                        }
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }catch (CipherException e){
+
+                }
+            }
+        } finally {
+            if (cursor != null){
+                cursor.close();
             }
         }
 

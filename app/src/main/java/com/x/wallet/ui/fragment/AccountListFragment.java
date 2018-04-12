@@ -292,7 +292,9 @@ public class AccountListFragment extends Fragment {
     private void requestBalance(ItemLoadedCallback<BalanceLoaderManager.BalanceLoaded> callback1,
                                 ItemLoadedCallback<BalanceLoaderManager.BalanceLoaded> callback2){
         //XWalletApplication.getApplication().getBalanceLoaderManager().getBalance(callback1);
-        //XWalletApplication.getApplication().getBalanceLoaderManager().getAllTokenBalance(callback2);
+        if (callback1 != null) {
+            XWalletApplication.getApplication().getBalanceLoaderManager().getAllTokenBalance(callback2);
+        }
         XWalletApplication.getApplication().getBalanceLoaderManager().getAllBalance(callback1);
     }
 }

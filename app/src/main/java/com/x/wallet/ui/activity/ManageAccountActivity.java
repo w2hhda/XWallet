@@ -271,16 +271,15 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
             }
         }, R.string.change_password);
     }
-    private class MyHandler extends Handler {
-        public static final int MSG_UPDATE = -1;
-
+    public class MyHandler extends Handler {
+        public static final int MSG_UPDATE = 200;
 
         @Override
         public void handleMessage(Message msg) {
+            Log.i(AppUtils.APP_TAG, "ManagerAccountActivity.MyHandler: msg.what = " + msg.what);
             super.handleMessage(msg);
             switch (msg.what){
                 case MSG_UPDATE:
-                    managerTokenLayout.invalidate();
                     updateTokenLayoutVisibility(mAdapter.getItemCount());
                     break;
                 default:

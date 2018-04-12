@@ -11,8 +11,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.transaction.token.DeleteTokenAsyncTask;
+import com.x.wallet.ui.activity.ManageAccountActivity;
 import com.x.wallet.ui.data.TokenItem;
 import com.x.wallet.ui.dialog.ContentShowDialogHelper;
 import com.x.wallet.ui.view.ManagerTokenListItem;
@@ -59,11 +61,15 @@ public class ManagerTokenListAdapter extends RecyclerView.Adapter<ManagerTokenLi
                                             @Override
                                             public void onDeleteFinished() {
                                                 tokenItems.remove(tokenItems.get(position));
-                                                notifyItemRemoved(position);
-                                                notifyItemRangeChanged(position, tokenItems.size());
-                                                //notifyDataSetChanged();
-                                                handler.sendEmptyMessage(-1);
+                                                holder.mView.post(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        notifyDataSetChanged();
+                                                    }
+                                                });
+                                                handler.sendEmptyMessage(ManageAccountActivity.MyHandler.MSG_UPDATE);
                                                 Toast.makeText(context, "delete ok!", Toast.LENGTH_SHORT).show();
+                                                AppUtils.writeDeletedToken(address, accountName);
                                             }
                                         }).execute();
                             }

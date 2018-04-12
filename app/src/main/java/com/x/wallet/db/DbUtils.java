@@ -144,4 +144,25 @@ public class DbUtils {
         return XWalletApplication.getApplication().getContentResolver().query(
                 XWalletProvider.CONTENT_URI_TOKEN, new String[]{DbUtils.TokenTableColumns.ACCOUNT_ADDRESS}, null, null, null);
     }
+
+    public static long queryEthAccountId(String address){
+        String selection = DbColumns.ADDRESS + " = ?";
+        Cursor cursor = null;
+        try{
+            cursor = XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
+                    XWalletProvider.CONTENT_URI,
+                    new String[]{DbColumns._ID},
+                    selection,
+                    new String[]{address}, null);
+            if(cursor != null && cursor.getCount() > 0){
+                cursor.moveToFirst();
+                return cursor.getLong(0);
+            }
+        } finally {
+            if(cursor != null){
+                cursor.close();
+            }
+        }
+        return -1;
+    }
 }

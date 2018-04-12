@@ -98,7 +98,11 @@
 
         </android.support.v4.widget.SwipeRefreshLayout>
 
-
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/token_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
         <WebView
             android:id="@+id/webView"
             android:layout_width="match_parent"
@@ -106,6 +110,7 @@
             android:paddingBottom="144px"
             android:visibility="gone">
         </WebView>
+        </android.support.v4.widget.SwipeRefreshLayout>
         <LinearLayout
             android:id="@+id/no_transaction_view"
             android:layout_width="wrap_content"

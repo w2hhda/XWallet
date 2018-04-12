@@ -1,6 +1,7 @@
 package com.x.wallet.transaction.balance;
 
 import android.content.ContentProviderOperation;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -9,6 +10,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.x.wallet.AppUtils;
+import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
@@ -51,6 +53,7 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
     }
 
     public ItemLoadedFuture getAllTokenBalance(final ItemLoadedCallback<BalanceLoaded> callback){
+        Log.i("@@@@","ItemLoadedFuture getAllTokenBalance,callback = " + callback);
         return getBalance(Uri.parse(ALL_TOKEN_BALANCE), callback);
     }
 
@@ -268,18 +271,20 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
             try{
                 //1.query from db
                 cursor = mContext.getContentResolver().query(
-                        XWalletProvider.CONTENT_URI_TOKEN, new String[]{DbUtils.TokenTableColumns.ACCOUNT_ADDRESS}, null, null, null);
+                        XWalletProvider.CONTENT_URI, new String[]{DbUtils.DbColumns.ADDRESS}, null, null, null);
                 if(cursor != null && cursor.getCount() > 0){
                     while (cursor.moveToNext()){
                         String accountAddress = cursor.getString(0);
                         Log.i(AppUtils.APP_TAG, "BalanceLoaderManager requestBalanceForToken accountAddress = " + accountAddress);
                         if(!TextUtils.isEmpty(accountAddress)){
+                            Log.i("@@@@","requestBalanceForToken for address: " + accountAddress);
                             requestBalanceForToken(accountAddress);
                         } else {
                             removeCallback();
                         }
                     }
                 } else {
+                    Log.i("@@@@","requestBalanceForToken have no tokens");
                     removeCallback();
                 }
             } finally {
@@ -315,7 +320,14 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                                 }
 
                                 //2.insert into db
-                                updateTokenBalanceIntoDb(address, tokens);
+                                //updateTokenBalanceIntoDb(address, tokens);
+                                //3.parse if has new tokens
+                                long accountId = DbUtils.queryEthAccountId(address);
+                                if (accountId == -1)
+                                    return;
+
+                                insertTokenIntoDb(address, tokens, Long.toString(accountId));
+
                             }
                         } catch (Exception e){
                             Log.e(AppUtils.APP_TAG, "BalanceLoaderManager requestBalanceForToken onResponse exception1 address = " + address, e);
@@ -368,6 +380,45 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
             }catch (Exception e){
                 Log.e(AppUtils.APP_TAG, "BalanceLoaderManager updateTokenBalanceIntoDb exception", e);
             }
+        }
+    }
+
+    private void insertTokenIntoDb(String address, List<TokenListBean.TokenBean> tokens, String accountId) {
+        for (TokenListBean.TokenBean token : tokens) {
+            String mHasToken = "0";
+            TokenListBean.TokenInfo tokenInfo = token.getTokenInfo();
+            boolean isExist = DbUtils.isAlreadyExistToken(DbUtils.UPDATE_TOKEN_SELECTION, new String[]{address, tokenInfo.getSymbol()});
+            boolean hasDeleted = AppUtils.hasDeleted(address, tokenInfo.getName());
+            Log.i(AppUtils.APP_TAG, "Loader insertTokenIntoDb isExist = " + isExist + ", hasDeleted = " + hasDeleted);
+
+            if (isExist || hasDeleted) {
+                return;
+            }
+
+            ContentValues values = new ContentValues();
+            values.put(DbUtils.TokenTableColumns.ACCOUNT_ID, accountId);
+            values.put(DbUtils.TokenTableColumns.ACCOUNT_ADDRESS, address);
+            values.put(DbUtils.TokenTableColumns.ID_IN_ALL, tokens.indexOf(token));
+            values.put(DbUtils.TokenTableColumns.NAME, tokenInfo.getName());
+            values.put(DbUtils.TokenTableColumns.SYMBOL, tokenInfo.getSymbol());
+            values.put(DbUtils.TokenTableColumns.DECIMALS, tokenInfo.getDecimals());
+            values.put(DbUtils.TokenTableColumns.CONTRACT_ADDRESS, tokenInfo.getAddress());
+            values.put(DbUtils.TokenTableColumns.BALANCE, token.getBalance());
+            values.put(DbUtils.TokenTableColumns.RATE, tokenInfo.getPrice().getRate());
+            Uri uri = XWalletApplication.getApplication().getApplicationContext().getContentResolver()
+                    .insert(XWalletProvider.CONTENT_URI_TOKEN, values);
+
+            if (mHasToken.equals(0)) {
+                ContentValues updateValues = new ContentValues();
+                updateValues.put(DbUtils.DbColumns.HAS_TOKEN, AppUtils.HAS_TOKEN);
+                int count = XWalletApplication.getApplication().getApplicationContext().getContentResolver()
+                        .update(XWalletProvider.CONTENT_URI, updateValues,
+                                DbUtils.DbColumns._ID + " = ?",
+                                new String[]{String.valueOf(accountId)});
+                Log.i(AppUtils.APP_TAG, "Loader InsertTokenIntoDb  count = " + count + ", mAccountId = " + accountId);
+            }
+            Log.i(AppUtils.APP_TAG, "Loader InsertTokenIntoDb  uri = " + uri);
+
         }
     }
 
