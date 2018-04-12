@@ -9,7 +9,10 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.x.wallet.AppUtils;
+import com.x.wallet.R;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
@@ -17,6 +20,8 @@ import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.data.BalanceResultBean;
 import com.x.wallet.lib.eth.data.PriceResultBean;
 import com.x.wallet.transaction.token.BackgroundLoaderManager;
+import com.x.wallet.transaction.token.ReadFileUtils;
+import com.x.wallet.transaction.token.TokenDeserializer;
 import com.x.wallet.transaction.token.TokenUtils;
 
 import java.io.IOException;
@@ -231,6 +236,10 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                                 //1.parse
                                 BalanceResultBean balanceResultBean = new Gson().fromJson(body.string(), BalanceResultBean.class);
                                 Log.i(AppUtils.APP_TAG, "BalanceLoaderManager requestBalance onResponse message = " + balanceResultBean.getMessage());
+                                if (!balanceResultBean.getMessage().equalsIgnoreCase("OK")){
+                                    Log.e(AppUtils.APP_TAG,"BalanceLoaderManager requestBalance onResponse NOT OK! Don't save it");
+                                    return;
+                                }
                                 List<BalanceResultBean.ResultBean> userBeanList = balanceResultBean.getResult();
 
                                 //2.insert into db
@@ -346,7 +355,14 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
         }
 
         private List<TokenListBean.TokenBean> parseTokenJson(String result){
-            TokenListBean tokenListBean = new Gson().fromJson(result, TokenListBean.class);
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.registerTypeAdapter(TokenListBean.class, new TokenDeserializer());
+            Gson gson = gsonBuilder.create();
+            TokenListBean tokenListBean = gson.fromJson(result, TokenListBean.class);
+
+
+            //TokenListBean tokenListBean = new Gson().fromJson(result, TokenListBean.class);
             return tokenListBean.getTokens();
         }
 
@@ -392,7 +408,22 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
             Log.i(AppUtils.APP_TAG, "Loader insertTokenIntoDb isExist = " + isExist + ", hasDeleted = " + hasDeleted);
 
             if (isExist || hasDeleted) {
-                return;
+                continue;
+            }
+            String symbol = null;
+            int decimals = 1;
+            double rate = 0;
+            try {
+                if (tokenInfo != null){
+                    symbol = tokenInfo.getSymbol();
+                    decimals = tokenInfo.getDecimals();
+                    if (tokenInfo.getPrice() != null){
+                        rate = tokenInfo.getPrice().getRate();
+                    }
+                }
+            }catch (JsonSyntaxException | IllegalStateException e){
+                Log.e(AppUtils.APP_TAG, "try to insert illegal token, just ignore");
+                continue;
             }
 
             ContentValues values = new ContentValues();
@@ -400,11 +431,11 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
             values.put(DbUtils.TokenTableColumns.ACCOUNT_ADDRESS, address);
             values.put(DbUtils.TokenTableColumns.ID_IN_ALL, tokens.indexOf(token));
             values.put(DbUtils.TokenTableColumns.NAME, tokenInfo.getName());
-            values.put(DbUtils.TokenTableColumns.SYMBOL, tokenInfo.getSymbol());
-            values.put(DbUtils.TokenTableColumns.DECIMALS, tokenInfo.getDecimals());
+            values.put(DbUtils.TokenTableColumns.SYMBOL, symbol);
+            values.put(DbUtils.TokenTableColumns.DECIMALS, decimals);
             values.put(DbUtils.TokenTableColumns.CONTRACT_ADDRESS, tokenInfo.getAddress());
             values.put(DbUtils.TokenTableColumns.BALANCE, token.getBalance());
-            values.put(DbUtils.TokenTableColumns.RATE, tokenInfo.getPrice().getRate());
+            values.put(DbUtils.TokenTableColumns.RATE, rate);
             Uri uri = XWalletApplication.getApplication().getApplicationContext().getContentResolver()
                     .insert(XWalletProvider.CONTENT_URI_TOKEN, values);
 

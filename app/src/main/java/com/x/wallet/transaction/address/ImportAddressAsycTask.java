@@ -12,6 +12,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.XWalletApplication;
@@ -20,6 +22,8 @@ import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.common.AccountData;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.transaction.balance.TokenListBean;
+import com.x.wallet.transaction.token.ReadFileUtils;
+import com.x.wallet.transaction.token.TokenDeserializer;
 
 import java.io.IOException;
 import java.util.List;
@@ -154,7 +158,22 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Integer>{
             boolean isExist = DbUtils.isAlreadyExistToken(DbUtils.UPDATE_TOKEN_SELECTION, new String[]{address, tokenInfo.getSymbol()});
             Log.i(AppUtils.APP_TAG, "insertTokenIntoDb when import isExist = " + isExist);
             if (isExist) {
-                return;
+                continue;
+            }
+            String symbol = null;
+            int decimals = 1;
+            double rate = 0;
+            try {
+                if (tokenInfo != null){
+                    symbol = tokenInfo.getSymbol();
+                    decimals = tokenInfo.getDecimals();
+                    if (tokenInfo.getPrice() != null){
+                        rate = tokenInfo.getPrice().getRate();
+                    }
+                }
+            }catch (JsonSyntaxException | IllegalStateException e){
+                Log.e(AppUtils.APP_TAG, "try to insert illegal token, just ignore");
+                continue;
             }
 
             ContentValues values = new ContentValues();
@@ -162,11 +181,11 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Integer>{
             values.put(DbUtils.TokenTableColumns.ACCOUNT_ADDRESS, address);
             values.put(DbUtils.TokenTableColumns.ID_IN_ALL, tokens.indexOf(token));
             values.put(DbUtils.TokenTableColumns.NAME, tokenInfo.getName());
-            values.put(DbUtils.TokenTableColumns.SYMBOL, tokenInfo.getSymbol());
-            values.put(DbUtils.TokenTableColumns.DECIMALS, tokenInfo.getDecimals());
+            values.put(DbUtils.TokenTableColumns.SYMBOL, symbol);
+            values.put(DbUtils.TokenTableColumns.DECIMALS, decimals);
             values.put(DbUtils.TokenTableColumns.CONTRACT_ADDRESS, tokenInfo.getAddress());
-            values.put(DbUtils.TokenTableColumns.BALANCE, "0");
-            values.put(DbUtils.TokenTableColumns.RATE, "0");
+            values.put(DbUtils.TokenTableColumns.BALANCE, token.getBalance());
+            values.put(DbUtils.TokenTableColumns.RATE, rate);
             Uri uri = XWalletApplication.getApplication().getApplicationContext().getContentResolver()
                     .insert(XWalletProvider.CONTENT_URI_TOKEN, values);
 
@@ -228,7 +247,10 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Integer>{
     }
 
     private List<TokenListBean.TokenBean> parseTokenJson(String result){
-        TokenListBean tokenListBean = new Gson().fromJson(result, TokenListBean.class);
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(TokenListBean.class, new TokenDeserializer());
+        Gson gson = gsonBuilder.create();
+        TokenListBean tokenListBean = gson.fromJson(result, TokenListBean.class);
         return tokenListBean.getTokens();
     }
 }
