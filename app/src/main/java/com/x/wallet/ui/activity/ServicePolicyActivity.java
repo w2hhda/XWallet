@@ -21,11 +21,11 @@ public class ServicePolicyActivity extends WithBackAppCompatActivity {
             switch (type){
                 case TYPE_SERVICE:
                     setTitle(getResources().getString(R.string.service_policy));
-                    webView.loadUrl("file:///android_asset/xwallet_user_service_policy");
+                    webView.loadUrl("file:///android_asset/coinpay_user_service_policy");
                     break;
                 case TYPE_PRIVACY:
                     setTitle(getResources().getString(R.string.privacy_policy));
-                    webView.loadUrl("file:///android_asset/xwallet_private_policy");
+                    webView.loadUrl("file:///android_asset/coinpay_private_policy");
                     break;
             }
         }

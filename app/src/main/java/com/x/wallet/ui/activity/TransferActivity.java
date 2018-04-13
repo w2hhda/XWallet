@@ -142,9 +142,10 @@ public class TransferActivity extends WithBackAppCompatActivity {
                     return;
                 }
 
-                if (transferAmount.getText() == null || transferAmount.getText().length() == 0
+                if (TextUtils.isEmpty(transferAmount.getText())
                         || !isValideNumber(transferAmount.getText().toString())
                         || new BigDecimal(transferAmount.getText().toString()).equals(BigDecimal.ZERO)){
+                    Log.i(AppUtils.APP_TAG,"invalid amount = " + transferAmount.getText().toString());
                     Toast.makeText(TransferActivity.this, getResources().getString(R.string.invalidate_balance), Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -326,7 +327,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
     }
 
     private Boolean isValideNumber(String str){
-        Pattern pattern = Pattern.compile("[0-9]+.?[0-9]+");
+        Pattern pattern = Pattern.compile("([1-9]\\d*\\.?\\d*)|(0\\.\\d*[1-9])");
         Matcher isNum = pattern.matcher(str);
         if (!isNum.matches()) {
             return false;
