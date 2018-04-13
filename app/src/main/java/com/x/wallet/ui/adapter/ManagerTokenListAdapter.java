@@ -2,6 +2,7 @@ package com.x.wallet.ui.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,68 +23,27 @@ import com.x.wallet.ui.view.ManagerTokenListItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ManagerTokenListAdapter extends RecyclerView.Adapter<ManagerTokenListAdapter.ViewHolder> {
-    private List<TokenItem> tokenItems;
+public class ManagerTokenListAdapter extends CursorRecyclerAdapter<ManagerTokenListAdapter.ViewHolder> {
     private int layoutId;
-    private String address;
-    private Handler handler;
-    public ManagerTokenListAdapter(int layoutId, String address, Handler handler) {
+    private final View.OnClickListener mViewClickListener;
+
+    public ManagerTokenListAdapter(Context context, Cursor c, int layoutId, View.OnClickListener clickListener) {
+        super(context, c, 0);
         this.layoutId = layoutId;
-        this.address = address;
-        tokenItems = new ArrayList<>();
-        this.handler = handler;
-    }
-
-    public void addAll(List<TokenItem> items){
-        tokenItems.addAll(items);
-        notifyDataSetChanged();
-
+        mViewClickListener = clickListener;
+        setHasStableIds(true);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position ) {
+    public void bindViewHolder(ViewHolder holder, Context context, Cursor cursor) {
         ManagerTokenListItem listItem = (ManagerTokenListItem) holder.mView;
-        final String accountName = tokenItems.get(position).getName();
-        final Context context = holder.mView.getContext();
-        holder.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ContentShowDialogHelper.showConfirmDialog(context, R.string.delete_token
-                        , context.getResources().getString(R.string.confirm_delete_token, accountName)
-                        , new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                                new DeleteTokenAsyncTask(context,
-                                        tokenItems.get(position),
-                                        address,
-                                        new DeleteTokenAsyncTask.OnDeleteTokenFinishedListener() {
-                                            @Override
-                                            public void onDeleteFinished() {
-                                                tokenItems.remove(tokenItems.get(position));
-                                                holder.mView.post(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        notifyDataSetChanged();
-                                                    }
-                                                });
-                                                handler.sendEmptyMessage(ManageAccountActivity.MyHandler.MSG_UPDATE);
-                                                Toast.makeText(context, "delete ok!", Toast.LENGTH_SHORT).show();
-                                                AppUtils.writeDeletedToken(address, accountName);
-                                            }
-                                        }).execute();
-                            }
-                        });
-            }
-        });
-        listItem.bind(tokenItems.get(position));
+        listItem.bind(cursor);
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder createViewHolder(Context context, ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
-
-        return new ViewHolder(view);
+        return new ViewHolder(view, mViewClickListener);
     }
 
     @Override
@@ -91,19 +51,13 @@ public class ManagerTokenListAdapter extends RecyclerView.Adapter<ManagerTokenLi
         return position;
     }
 
-    @Override
-    public int getItemCount() {
-        return tokenItems == null ? 0 : tokenItems.size();
-    }
-
     static class ViewHolder extends RecyclerView.ViewHolder {
         public View mView;
-        public ImageView imageView;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(View itemView, View.OnClickListener listener) {
             super(itemView);
             mView = itemView;
-            imageView = mView.findViewById(R.id.delete_iv);
+            mView.findViewById(R.id.delete_iv).setOnClickListener(listener);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.x.wallet.ui.view;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -9,8 +10,6 @@ import android.widget.TextView;
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.ui.data.TokenItem;
-
-import java.io.IOException;
 
 /**
  * Created by wuliang on 18-3-30.
@@ -48,6 +47,12 @@ public class ManagerTokenListItem extends RelativeLayout{
     public void bind(TokenItem tokenItem){
         mTokenItem = tokenItem;
         mShortNameTv.setText(tokenItem.getSymbol());
+        AppUtils.setImage(mImageView, mTokenItem.getContractAddress());
+    }
+
+    public void bind(Cursor cursor){
+        mTokenItem = TokenItem.createFromCursor(cursor);
+        mShortNameTv.setText(mTokenItem.getSymbol());
         AppUtils.setImage(mImageView, mTokenItem.getContractAddress());
     }
 

@@ -31,12 +31,18 @@
 
                 <TextView
                     android:id="@+id/address_tv"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:singleLine="true"
+                    android:ellipsize="middle"
                     android:gravity="center_horizontal"
-                    android:textColor="@color/gray_b2"
-                    android:textSize="13sp" />
+                    android:textColor="@color/gray_83"
+                    android:drawablePadding="4dp"
+                    android:drawableRight="@drawable/copy_address_icon"
+                    android:textSize="12sp" />
             </LinearLayout>
         </FrameLayout>
 
@@ -131,7 +137,24 @@
             android:id="@+id/manage_token_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+            <RelativeLayout android:id="@+id/add_token_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingEnd="20dip"
+                android:paddingStart="20dip"
+                android:background="@drawable/item_bg_selector">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dip"
+                    android:layout_marginTop="15dip"
+                    android:text="@string/add_token"
+                    android:textColor="@color/gray_66"
+                    android:textSize="16sp" />
 
+                <include layout="@layout/into_view" />
+            </RelativeLayout>
+            <include layout="@layout/create_account_divider_view_without_padding" />
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerView_manage_token"
                 android:layout_width="match_parent"

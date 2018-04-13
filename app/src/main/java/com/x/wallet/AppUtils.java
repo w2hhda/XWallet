@@ -125,7 +125,6 @@ public class AppUtils {
             }catch (IOException e){
 
             }
-            Log.i("@@@@","set assert ok!");
         }else if (file.exists()){
             view.setImageURI(Uri.fromFile(file));
         }else {
