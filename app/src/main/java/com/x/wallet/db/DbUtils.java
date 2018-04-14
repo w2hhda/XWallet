@@ -39,7 +39,30 @@ public class DbUtils {
         String RATE = "rate"; //usdprice             //9
     }
 
+    public interface TxTableColumns{
+        String _ID = "_id";                             //0
+        String TX_HASH = "tx_hash";                     //1
+        String TIME_STAMP = "timestamp";                //2
+        String NONCE = "nonce";                         //3
+        String FROM_ADDRESS = "from_address";           //4
+        String TO_ADDRESS = "to_address";               //5
+        String VALUE = "value";                         //6
+        String GAS_LIMIT = "gas_limit";                 //7
+        String GAS_PRICE = "gas_price";                 //8
+        String IS_ERROR = "is_error";                   //9
+        String TX_RECEIPT_STATUS = "tx_receipt_status"; //10
+        String INPUT_DATA = "input_data";               //11
+        String GAS_USED = "gas_used";                   //12
+        String CONTRACT_ADDRESS = "contract_address";   //13
+        String TOKEN_SYMBOL = "token_symbol";           //14
+        String TOKEN_NAME = "token_name";               //15
+        String TOKEN_DECIMALS = "token_decimals";       //16
+        String BLOCK_NUMBER = "block_number";           //17
+
+    }
+
     public static final String UPDATE_TOKEN_SELECTION = DbUtils.TokenTableColumns.ACCOUNT_ADDRESS + " = ? AND " + DbUtils.TokenTableColumns.SYMBOL + " = ?";
+    public static final String UPDATE_TX_SELECTION = TxTableColumns.TX_HASH + " = ？";
 
     public static ContentValues createContentValues(AccountData accountData) {
         ContentValues values = new ContentValues();
@@ -164,5 +187,89 @@ public class DbUtils {
             }
         }
         return -1;
+    }
+
+    public static boolean isTxExist(String txHash){
+        Cursor cursor = null;
+        try{
+            cursor = XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
+                    XWalletProvider.CONTENT_URI_TRANSACTION,
+                    null,
+                    null,
+                    null, null);
+            if(cursor != null && cursor.getCount() > 0){
+                while (cursor.moveToNext()) {
+                    String hash = cursor.getString(cursor.getColumnIndex(TxTableColumns.TX_HASH));
+                    if (hash != null && hash.equalsIgnoreCase(txHash)) {
+                        return true;
+                    }
+                }
+            }
+        } finally {
+            if(cursor != null){
+                cursor.close();
+            }
+        }
+        return false;
+    }
+
+    public static boolean isTokenNeedUpdate(String txHash, String blockNumber){
+        Cursor cursor = null;
+        try{
+            cursor = XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
+                    XWalletProvider.CONTENT_URI_TRANSACTION,
+                    null,
+                    null,
+                    null, null);
+            if(cursor != null && cursor.getCount() > 0){
+                while (cursor.moveToNext()) {
+                    String hash = cursor.getString(cursor.getColumnIndex(TxTableColumns.TX_HASH));
+                    String blockNum = cursor.getString(cursor.getColumnIndex(TxTableColumns.BLOCK_NUMBER));
+                    if (hash != null && hash.equalsIgnoreCase(txHash)) {
+                        if (blockNum != null && blockNum.equals(blockNumber)) {
+                            String value = cursor.getString(cursor.getColumnIndex(TxTableColumns.VALUE));
+                            //value = 0, need to insert contract address .etc when load token tx list.
+                            return value.equals("0");
+                        }
+                    }
+                }
+            }
+        } finally {
+            if(cursor != null){
+                cursor.close();
+            }
+        }
+        return false;
+    }
+
+    public static boolean isTxNeedUpdate(String txHash, String blockNumber){
+        Cursor cursor = null;
+        try {
+            cursor = XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
+                    XWalletProvider.CONTENT_URI_TRANSACTION,
+                    null,
+                    null,
+                    null, null);
+            if(cursor != null && cursor.getCount() > 0){
+                while (cursor.moveToNext()) {
+                    // hash exits & block number = 0, means new tx, need to update
+                    String hash = cursor.getString(cursor.getColumnIndex(TxTableColumns.TX_HASH));
+                    String blockNum = cursor.getString(cursor.getColumnIndex(TxTableColumns.BLOCK_NUMBER));
+
+                    if (hash != null && hash.equalsIgnoreCase(txHash)){
+                        if (blockNum != null && !blockNum.equals(blockNumber)) {
+                            //new tx
+                            return true;
+                        }
+                    }
+
+                }
+            }
+        }finally {
+            if (cursor != null){
+                cursor.close();
+            }
+        }
+        return false;
     }
 }

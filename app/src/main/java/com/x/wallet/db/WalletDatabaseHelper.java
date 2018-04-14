@@ -67,5 +67,25 @@ public class WalletDatabaseHelper extends SQLiteOpenHelper {
                 DbUtils.TokenTableColumns.CONTRACT_ADDRESS + " TEXT," +
                 DbUtils.TokenTableColumns.BALANCE + " TEXT DEFAULT 0," +
                 DbUtils.TokenTableColumns.RATE + " TEXT DEFAULT 0);");
+
+        db.execSQL("CREATE TABLE " + XWalletProvider.TABLE_TRANSACTION + " (" +
+                DbUtils.TxTableColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                DbUtils.TxTableColumns.TX_HASH + " TEXT," +
+                DbUtils.TxTableColumns.TIME_STAMP + " TEXT," +
+                DbUtils.TxTableColumns.NONCE + " TEXT," +
+                DbUtils.TxTableColumns.FROM_ADDRESS + " TEXT," +
+                DbUtils.TxTableColumns.TO_ADDRESS + " TEXT," +
+                DbUtils.TxTableColumns.VALUE + " TEXT," +
+                DbUtils.TxTableColumns.GAS_LIMIT + " TEXT," +
+                DbUtils.TxTableColumns.GAS_PRICE + " TEXT," +
+                DbUtils.TxTableColumns.IS_ERROR + " TEXT," +
+                DbUtils.TxTableColumns.TX_RECEIPT_STATUS + " TEXT," +
+                DbUtils.TxTableColumns.INPUT_DATA + " TEXT," +
+                DbUtils.TxTableColumns.GAS_USED + " TEXT," +
+                DbUtils.TxTableColumns.CONTRACT_ADDRESS + " TEXT," +
+                DbUtils.TxTableColumns.TOKEN_SYMBOL + " TEXT," +
+                DbUtils.TxTableColumns.TOKEN_NAME + " TEXT," +
+                DbUtils.TxTableColumns.TOKEN_DECIMALS + " INTEGER DEFAULT 0," +
+                DbUtils.TxTableColumns.BLOCK_NUMBER + " TEXT DEFAULT 0);");
     }
 }

@@ -1,11 +1,14 @@
 package com.x.wallet.ui.activity;
 
 
+import android.app.LoaderManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,38 +19,24 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
-import com.x.wallet.lib.eth.api.EtherscanAPI;
-import com.x.wallet.lib.eth.data.TransactionsResultBean;
-import com.x.wallet.lib.eth.util.CacheHelper;
+import com.x.wallet.XWalletApplication;
+import com.x.wallet.db.DbUtils;
+import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
+import com.x.wallet.transaction.balance.ItemLoadedCallback;
+import com.x.wallet.transaction.history.HistoryLoaderManager;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
-import com.x.wallet.ui.adapter.AccountDetailAdapter;
+import com.x.wallet.ui.adapter.TransactionAdapter;
 import com.x.wallet.ui.data.RawAccountItem;
 import com.x.wallet.ui.data.SerializableAccountItem;
 import com.x.wallet.ui.data.TransactionItem;
 import com.x.wallet.ui.view.TransactionListItem;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 /**
  * Created by wuliang on 18-3-16.
@@ -64,16 +53,20 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     private View mReceiptBtn;
     private View mNoTransactionView;
     private RecyclerView mRecyclerView;
-    private AccountDetailAdapter adapter;
-    private List<TransactionItem> items;
     private MyHandler handler;
-    private WebView webView;
     private SwipeRefreshLayout refreshLayout;
-    private SwipeRefreshLayout tokenRefresh;
+    private TransactionAdapter mAdapter;
+    private LoaderManager mLoaderManager;
+
+    private static final int TX_LIST_LOADER = 1;
+    private static final int TX_TOKEN_LIST_LOADER = 2;
+    private static final String NORMAL_REQUEST = "normal_request";
+    private static final String TOKEN_REQUEST = "token_request";
+    private static final String ALL_REQUEST = "all_request";
+
 
     public final static String SHARE_ADDRESS_EXTRA = "share_address_extra";
     private BalanceConversionUtils.RateUpdateListener mRateUpdateListener;
-    private String CONTRACT_ADDRESS ;
     private Boolean isTokenAccount = false;
 
     @Override
@@ -137,52 +130,30 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
                 Toast.makeText(AccountDetailActivity.this, R.string.has_copied_address, Toast.LENGTH_SHORT).show();
             }
         });
-
-        if (isTokenAccount){
-            initViewForToken();
-        }else {
-            initViewForNormal();
-        }
+        initRecyclerView();
+        initViewForNormal();
+        initSwipeRefreshView();
+        initLoaderManager(isTokenAccount);
 
     }
 
     private SwipeRefreshLayout.OnRefreshListener listener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
-            if (isTokenAccount){
-                //tokenRefresh.setRefreshing(false);
-                getTokenTransactions(true);
-            }else {
-                getNormalTransactions(true);
-            }
+            requestHistory(createItemLoadedCallback(), isTokenAccount ? TOKEN_REQUEST : NORMAL_REQUEST);
         }
     };
 
     private void initViewForNormal(){
-        items = new  ArrayList<>();
 
-        refreshLayout.setOnRefreshListener(listener);
-        refreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                refreshLayout.setRefreshing(true);
-            }
-        });
-        listener.onRefresh();
-
-        adapter = new AccountDetailAdapter(this , new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                TransactionListItem listItem = (TransactionListItem)view;
-                TransactionItem item = listItem.getmTransactionItem();
-                Intent intent = new Intent("com.x.wallet.action_SEE_TRANSACTION_DETAIL");
-                intent.putExtra(AppUtils.TRANSACTION_ITEM, item);
-                startActivity(intent);
-            }
-        });
-        initRecyclerView();
-        updateBalanceConversionText();
-        mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS) + " ETH");
+        if (isTokenAccount){
+            mBalanceTv.setText(TokenUtils.getBalanceText(mTokenItem.getBalance(), mTokenItem.getDecimals()) + " " + mTokenItem.getCoinName());
+            mBalanceTranslateTv.setText(this.getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
+                    TokenUtils.getTokenConversionText(mTokenItem.getBalance(), mTokenItem.getDecimals(), mTokenItem.getRate())));
+        }else {
+            updateBalanceConversionText();
+            mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS) + " ETH");
+        }
         if(mRateUpdateListener != null){
             BalanceConversionUtils.unRegisterListener(mRateUpdateListener);
         }
@@ -200,43 +171,127 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         BalanceConversionUtils.registerListener(mRateUpdateListener);
     }
 
+    private void initSwipeRefreshView(){
+        refreshLayout.setOnRefreshListener(listener);
+        refreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                refreshLayout.setRefreshing(true);
+            }
+        });
+        listener.onRefresh();
+    }
+
     private void initRecyclerView(){
+        mAdapter = new TransactionAdapter(this, null, R.layout.transaction_list_item, mAccountItem.getAddress() ,
+                isTokenAccount,
+                new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        TransactionListItem listItem = (TransactionListItem)v;
+                        TransactionItem item = listItem.getmTransactionItem();
+                        Intent intent = new Intent("com.x.wallet.action_SEE_TRANSACTION_DETAIL");
+                        intent.putExtra(AppUtils.TRANSACTION_ITEM, item);
+                        startActivity(intent);
+                    }
+                });
         mRecyclerView = findViewById(R.id.recyclerView);
         final LinearLayoutManager manager = new LinearLayoutManager(this);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(manager);
-        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
     }
 
-    private void initViewForToken(){
-        tokenRefresh = findViewById(R.id.token_refresh);
-        tokenRefresh.setVisibility(View.VISIBLE);
-        tokenRefresh.setOnRefreshListener(listener);
-        if (refreshLayout != null) refreshLayout.setVisibility(View.GONE);
-        webView = findViewById(R.id.webView);
-        mBalanceTv.setText(TokenUtils.getBalanceText(mTokenItem.getBalance(), mTokenItem.getDecimals()) + " " + mTokenItem.getCoinName());
-        mBalanceTranslateTv.setText(this.getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
-                TokenUtils.getTokenConversionText(mTokenItem.getBalance(), mTokenItem.getDecimals(), mTokenItem.getRate())));
+    private void initLoaderManager(boolean isTokenAccount){
+        mLoaderManager = getLoaderManager();
+        Loader tokenListLoader;
+        if (!isTokenAccount) {
+            tokenListLoader = getLoaderManager().initLoader(
+                    TX_LIST_LOADER,
+                    new Bundle(),
+                    new AccountDetailActivity.NormalLoaderCallbacks());
+        }else {
+            Bundle data = new Bundle();
+            data.putString("tokenAddress", mTokenItem.getContractAddress());
+            tokenListLoader = getLoaderManager().initLoader(
+                    TX_TOKEN_LIST_LOADER,
+                    data,
+                    new AccountDetailActivity.NormalLoaderCallbacks());
+        }
+        tokenListLoader.forceLoad();
+    }
 
-        CONTRACT_ADDRESS = mTokenItem.getContractAddress();
-        getTokenTransactions(false);
+    private class NormalLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor> {
+        final String baseSelection = DbUtils.TxTableColumns.FROM_ADDRESS + " = ? OR " + DbUtils.TxTableColumns.TO_ADDRESS + " = ?";
+        final String order = DbUtils.TxTableColumns.TIME_STAMP + " DESC";
+        final String selectionToken = "( " + baseSelection + " )" + " AND " + DbUtils.TxTableColumns.CONTRACT_ADDRESS + " = ?";
+        //from and " to & exclude contract address "
+        final String selectionNormal = DbUtils.TxTableColumns.FROM_ADDRESS + " = ? OR (" + DbUtils.TxTableColumns.TO_ADDRESS + " = ? AND " + DbUtils.TxTableColumns.CONTRACT_ADDRESS + " = ? )";
+        final String address = mAccountItem.getAddress();
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
+            if (id == TX_LIST_LOADER) {
+                return new CursorLoader(AccountDetailActivity.this, XWalletProvider.CONTENT_URI_TRANSACTION, null, selectionNormal, new String[]{address, address, ""}, order);
+            }else {
+                String token = bundle.getString("tokenAddress");
+                AppUtils.log(selectionToken + "address = " + token);
+                return new CursorLoader(AccountDetailActivity.this, XWalletProvider.CONTENT_URI_TRANSACTION, null, selectionToken,
+                        new String[]{address, address, token}, order);
+            }
+        }
 
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            AppUtils.log("AccountDetailActivity onLoadFinished cursor.count = " + data.getCount());
+            updateVisibility(data.getCount());
+            requestHistory(createItemLoadedCallback(), ALL_REQUEST);
+            mAdapter.swapCursor(data);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+
+        }
+    }
+
+    private ItemLoadedCallback createItemLoadedCallback(){
+        return new ItemLoadedCallback<HistoryLoaderManager.HistoryLoaded>() {
+            @Override
+            public void onItemLoaded(HistoryLoaderManager.HistoryLoaded result, Throwable exception) {
+                if (refreshLayout != null){
+                    refreshLayout.setRefreshing(false);
+                }
+                //handler.sendEmptyMessage(MyHandler.MSG_UPDATE);
+            }
+        };
+    }
+
+    private void requestHistory(ItemLoadedCallback<HistoryLoaderManager.HistoryLoaded> callback1,
+                                String requestType){
+        if (requestType.equals(NORMAL_REQUEST)) {
+            XWalletApplication.getApplication().getmHistoryLoaderManager().getTokenHistory(mAccountItem.getAddress(), callback1);
+        }else if (requestType.equals(TOKEN_REQUEST)) {
+            XWalletApplication.getApplication().getmHistoryLoaderManager().getNormalHistory(mAccountItem.getAddress(), callback1);
+        }else{
+            XWalletApplication.getApplication().getmHistoryLoaderManager().getTokenHistory(mAccountItem.getAddress(), callback1);
+            XWalletApplication.getApplication().getmHistoryLoaderManager().getNormalHistory(mAccountItem.getAddress(), callback1);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (isTokenAccount){
-
-        }else {
-            getNormalTransactions(false);
-        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if(mLoaderManager != null){
+            mLoaderManager.destroyLoader(TX_LIST_LOADER);
+            mLoaderManager.destroyLoader(TX_TOKEN_LIST_LOADER);
+            mLoaderManager = null;
+        }
         BalanceConversionUtils.clearListener();
         TokenUtils.setRateUpdateListener(null);
     }
@@ -252,12 +307,19 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             switch (msg.what){
                 case MSG_UPDATE:
                     mNoTransactionView.setVisibility(View.GONE);
-                    adapter.addItems(items);
                     refreshLayout.setRefreshing(false);
                     break;
                 default:
                         break;
             }
+        }
+    }
+
+    private void updateVisibility(int count){
+        if (count > 0){
+            mNoTransactionView.setVisibility(View.GONE);
+        }else {
+            mNoTransactionView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -268,84 +330,4 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         }
     }
 
-    private void getNormalTransactions(Boolean force){
-        try {
-            //String address = "0xe2258d66b820fc4f0017017373c7b9f742596f27";
-            EtherscanAPI.getInstance().getNormalTransactions(mAccountItem.getAddress(), new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    ResponseBody body = response.body();
-                    if(body != null){
-                        String result = body.string();
-                        CacheHelper.instance().put(CacheHelper.TYPE_TXS_NORMAL, mAccountItem.getAddress(), result);
-                        TransactionsResultBean bean = new Gson().fromJson(result, TransactionsResultBean.class);
-                        List<TransactionsResultBean.ReceiptBean> receiptBeans = bean.getResult();
-
-                        items.clear();
-                        for(TransactionsResultBean.ReceiptBean receiptBean: receiptBeans){
-                            Boolean isReceive = true;
-                            Boolean isToken = false;
-                            if (receiptBean.getFrom().equalsIgnoreCase(mAccountItem.getAddress())){
-                                isReceive = false;
-                            }
-                            if (receiptBean.getInput() != null && receiptBean.getInput().length() > 10 && new BigInteger(receiptBean.getValue()).equals(BigInteger.ZERO)){ //input contains token transaction info
-                                isToken = true;
-                            }
-                            items.add(TransactionItem.createFromReceipt(receiptBean, isReceive, isToken));
-                        }
-
-                        if (items.size() > 0) {
-                            Message message = handler.obtainMessage();
-                            message.what = MyHandler.MSG_UPDATE;
-                            handler.sendMessage(message);
-                        }
-                    }
-                }
-            }, force);
-
-        }catch (IOException e){
-            Log.i(AppUtils.APP_TAG,"exception in getNormalTransactions asyncTask");
-        }
-    }
-
-    private void getTokenTransactions(Boolean force){
-        if (new BigDecimal(mTokenItem.getBalance()).compareTo(BigDecimal.ZERO) > 0) {
-            mNoTransactionView.setVisibility(View.GONE);
-            webView.setVisibility(View.VISIBLE);
-        }
-        WebSettings webSettings = webView.getSettings();
-
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setDomStorageEnabled(true);
-        final String url = "https://etherscan.io/token/generic-tokentxns2?contractAddress=" + CONTRACT_ADDRESS + "&a=" + mAccountItem.getAddress();
-        webView.loadUrl(url);
-
-        webView.setWebViewClient(new WebViewClient(){
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                return false;
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                if (tokenRefresh.isRefreshing()){
-                    tokenRefresh.setRefreshing(false);
-                }
-            }
-
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-                if (tokenRefresh != null){
-                    tokenRefresh.setRefreshing(true);
-                }
-            }
-        });
-
-    }
 }

@@ -6,6 +6,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
@@ -191,7 +192,7 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                                                 new DeleteTokenAsyncTask.OnDeleteTokenFinishedListener() {
                                                     @Override
                                                     public void onDeleteFinished() {
-                                                        Toast.makeText(ManageAccountActivity.this, "delete ok!", Toast.LENGTH_SHORT).show();
+                                                        //Toast.makeText(ManageAccountActivity.this, "delete ok!", Toast.LENGTH_SHORT).show();
                                                         //mAdapter.swapCursor();
                                                         AppUtils.writeDeletedToken(mAccountItem.getAddress(), item.getName());
                                                     }
@@ -362,7 +363,7 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-            return new android.content.CursorLoader(ManageAccountActivity.this, XWalletProvider.CONTENT_URI_TOKEN, null, DbUtils.TokenTableColumns.ACCOUNT_ADDRESS + " = ?", new String[]{mAccountItem.getAddress()}, null);
+            return new CursorLoader(ManageAccountActivity.this, XWalletProvider.CONTENT_URI_TOKEN, null, DbUtils.TokenTableColumns.ACCOUNT_ADDRESS + " = ?", new String[]{mAccountItem.getAddress()}, null);
         }
 
         @Override

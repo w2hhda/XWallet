@@ -244,14 +244,20 @@ public class AppUtils {
     public static void writeDeletedToken(String address, String tokenName){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(XWalletApplication.getApplication().getApplicationContext());
         String deletedToken = preferences.getString(address,"");
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(address, deletedToken + " " + tokenName);
-        editor.apply();
+        if (!deletedToken.contains(tokenName)) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(address, deletedToken + " " + tokenName);
+            editor.apply();
+        }
     }
 
     public static Boolean hasDeleted(String address, String tokenName){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(XWalletApplication.getApplication().getApplicationContext());
         String deletedToken = preferences.getString(address,"");
         return deletedToken.contains(tokenName);
+    }
+
+    public static void log(String msg){
+        Log.i("CoinPay", msg);
     }
 }
