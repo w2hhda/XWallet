@@ -113,6 +113,7 @@
         </activity>
         <activity
             android:name=".ui.activity.TransferActivity"
+            android:label="@string/send_out_transaction"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.x.wallet.action_TRANSFER_TO_ADDRESS_ACTION" />

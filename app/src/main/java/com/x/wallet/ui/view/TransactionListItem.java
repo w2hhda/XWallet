@@ -91,7 +91,7 @@ public class TransactionListItem extends RelativeLayout{
                 mCoinUnitTv.setText(item.getTokenSymbols());
             }else {
                 if (item.getToken() || item.getError()) {
-                    mTransactionName.setText(getResources().getString(R.string.transfer_fee, item.getToAddress()));
+                    mTransactionName.setText(getResources().getString(R.string.transfer_fee_prefix, item.getToAddress()));
                 } else {
                     mTransactionName.setText(getResources().getString(R.string.send_out_transaction_prefix, item.getToAddress()));
                 }

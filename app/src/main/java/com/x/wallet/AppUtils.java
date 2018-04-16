@@ -53,12 +53,6 @@ public class AppUtils {
         }
     }
 
-    public static String formatDate(long timeStamp) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date date = new Date(timeStamp * 1000L);
-        return sdf.format(date);
-    }
-
     public interface IMPORTTYPE{
         int IMPORT_TYPE_MNEMONIC = 0;
         int IMPORT_TYPE_KEY = 1;
@@ -267,5 +261,20 @@ public class AppUtils {
 
     public static void log(String msg){
         Log.i("CoinPay", msg);
+    }
+
+    public static String formatDate(long timeStamp) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date date = new Date(timeStamp * 1000L);
+        return sdf.format(date);
+    }
+
+    public static Boolean isValideNumber(String str){
+        Pattern pattern = Pattern.compile("([1-9]\\d*\\.?\\d*)|(0\\.\\d*[1-9])");
+        Matcher isNum = pattern.matcher(str);
+        if (!isNum.matches()) {
+            return false;
+        }
+        return true;
     }
 }

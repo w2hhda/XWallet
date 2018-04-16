@@ -32,8 +32,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -73,19 +71,32 @@ public class TransferActivity extends WithBackAppCompatActivity {
     }
 
     private void initView(final String address){
-        this.setTitle(getResources().getString(R.string.send_out_transaction));
+        initToAddressView();
+        initAmountView();
+        initFeeView();
+        initSendBtn(address);
+    }
 
+    private void initToAddressView(){
         toAddress = findViewById(R.id.transfer_to_address);
-        priceTv = findViewById(R.id.gas_price_tv);
+        ImageButton scanBtn = findViewById(R.id.wallet_scan);
+        scanBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(TransferActivity.this, ScanAddressQRActivity.class);
+                startActivityForResult(intent, ScanAddressQRActivity.REQUEST_CODE);
+            }
+        });
+    }
+
+    private void initAmountView(){
         transferAmount = findViewById(R.id.transfer_to_amount);
         unitIndicator = findViewById(R.id.unit_indicator);
-        ImageButton scanBtn = findViewById(R.id.wallet_scan);
-        Button sendBtn = findViewById(R.id.send_transfer);
-        availableBalance = findViewById(R.id.available_balance);
         if (mTokenItem != null){
             unitIndicator.setText(mTokenItem.getCoinName());
         }
-        
+        availableBalance = findViewById(R.id.available_balance);
+
         StringBuilder indicator= new StringBuilder();
         if (mTokenItem != null){
             indicator.append(TokenUtils.getBalanceText(mTokenItem.getBalance(), mTokenItem.getDecimals()) );
@@ -97,16 +108,11 @@ public class TransferActivity extends WithBackAppCompatActivity {
             indicator.append(mAccountItem.getCoinName());
         }
         availableBalance.setText(indicator);
+    }
 
+    private void initFeeView(){
+        priceTv = findViewById(R.id.gas_price_tv);
         getGasPrice();
-
-        scanBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(TransferActivity.this, ScanAddressQRActivity.class);
-                startActivityForResult(intent, ScanAddressQRActivity.REQUEST_CODE);
-            }
-        });
 
         final SeekBar gasPriceSeekBar = findViewById(R.id.gas_price_seekbar);
         gasPriceSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -133,6 +139,10 @@ public class TransferActivity extends WithBackAppCompatActivity {
                 updateGasPrice(TransferActivity.this, gasPriceSeekBar.getProgress());
             }
         });
+    }
+
+    private void initSendBtn(final String address){
+        Button sendBtn = findViewById(R.id.send_transfer);
 
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,7 +153,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
                 }
 
                 if (TextUtils.isEmpty(transferAmount.getText())
-                        || !isValideNumber(transferAmount.getText().toString())
+                        || !AppUtils.isValideNumber(transferAmount.getText().toString())
                         || new BigDecimal(transferAmount.getText().toString()).equals(BigDecimal.ZERO)){
                     Log.i(AppUtils.APP_TAG,"invalid amount = " + transferAmount.getText().toString());
                     Toast.makeText(TransferActivity.this, getResources().getString(R.string.invalidate_balance), Toast.LENGTH_SHORT).show();
@@ -220,7 +230,6 @@ public class TransferActivity extends WithBackAppCompatActivity {
                 });
             }
         });
-
     }
 
     private Intent getIntentForSend(String address, String password){
@@ -324,14 +333,5 @@ public class TransferActivity extends WithBackAppCompatActivity {
 
             }
         });
-    }
-
-    private Boolean isValideNumber(String str){
-        Pattern pattern = Pattern.compile("([1-9]\\d*\\.?\\d*)|(0\\.\\d*[1-9])");
-        Matcher isNum = pattern.matcher(str);
-        if (!isNum.matches()) {
-            return false;
-        }
-        return true;
     }
 }
