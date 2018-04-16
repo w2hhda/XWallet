@@ -88,7 +88,7 @@
     <string name="backup_mnemonic_failed">助记词顺序不对，请确认</string>
     <string name="transaction_detail">交易明细</string>
     <string name="transfer_from_address">转出地址</string>
-    <string name="transfer_hash">转账串号</string>
+    <string name="transfer_hash">转账号</string>
     <string name="blank_all_balance">"0.00"</string>
     <string name="blank_balance">≈ ¥ 0</string>
     <string name="input_keystore_password_hint">输入Keystore密码</string>
@@ -128,4 +128,5 @@
     <string name="erc20_token">代币</string>
     <string name="delete_token">删除代币</string>
     <string name="confirm_delete_token">确认要删除代币<xliff:g id="name">%s</xliff:g>吗？</string>
+    <string name="manage_password_hind">请输入密码</string>
 </resources>

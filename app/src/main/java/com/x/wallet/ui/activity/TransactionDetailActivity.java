@@ -37,7 +37,7 @@ public class TransactionDetailActivity extends WithBackAppCompatActivity {
         String amountResult = ExchangeCalUtil.getInstance().weiToEther(new BigInteger(item.getAmount())).stripTrailingZeros().toPlainString();
         amount.setText(amountResult + " ETH");
 
-        String faxResult = ExchangeCalUtil.getInstance().weiToEther(new BigInteger(item.getTransactionFax())).stripTrailingZeros().toPlainString();
+        String faxResult = ExchangeCalUtil.getInstance().weiToEther(new BigInteger(item.getTransactionFee())).stripTrailingZeros().toPlainString();
         fax.setText(faxResult + " ETH");
         hash.setText(item.getReceiptHash());
     }

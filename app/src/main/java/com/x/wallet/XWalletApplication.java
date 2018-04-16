@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.balance.BalanceLoaderManager;
+import com.x.wallet.transaction.history.HistoryLoaderManager;
 import com.x.wallet.transaction.token.TokenLoaderManager;
 import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 
@@ -18,6 +19,7 @@ public class XWalletApplication extends Application{
     private static XWalletApplication mXWalletApplication = null;
     private BalanceLoaderManager mBalanceLoaderManager;
     private TokenLoaderManager mTokenLoaderManager;
+    private HistoryLoaderManager mHistoryLoaderManager;
 
     @Override
     public void onCreate() {
@@ -25,6 +27,7 @@ public class XWalletApplication extends Application{
         mXWalletApplication = this;
         mBalanceLoaderManager = new BalanceLoaderManager(getApplicationContext());
         mTokenLoaderManager = new TokenLoaderManager(getApplicationContext());
+        mHistoryLoaderManager = new HistoryLoaderManager(getApplicationContext());
         initApp();
     }
 
@@ -53,5 +56,9 @@ public class XWalletApplication extends Application{
 
     public TokenLoaderManager getTokenLoaderManager() {
         return mTokenLoaderManager;
+    }
+
+    public HistoryLoaderManager getmHistoryLoaderManager() {
+        return mHistoryLoaderManager;
     }
 }

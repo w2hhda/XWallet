@@ -104,46 +104,6 @@ public class EtherscanAPI {
     }
 
 
-//    /**
-//     * Download and save token icon in permanent image cache (TokenIconCache)
-//     *
-//     * @param c         Application context, used to load TokenIconCache if reinstanced
-//     * @param tokenName Name of token
-//     * @param lastToken Boolean defining whether this is the last icon to download or not. If so callback is called to refresh recyclerview (notifyDataSetChanged)
-//     * @param callback  Callback to @see rehanced.com.simpleetherwallet.fragments.FragmentDetailOverview#onLastIconDownloaded()
-//     * @throws IOException Network exceptions
-//     */
-//    public void loadTokenIcon(final Context c, String tokenName, final boolean lastToken, final LastIconLoaded callback) throws IOException {
-//        if (tokenName.indexOf(" ") > 0)
-//            tokenName = tokenName.substring(0, tokenName.indexOf(" "));
-//        if (TokenIconCache.instance(c).contains(tokenName)) return;
-//
-//        if(tokenName.equalsIgnoreCase("OMGToken"))
-//            tokenName = "omise";
-//        else if(tokenName.equalsIgnoreCase("0x"))
-//            tokenName = "0xtoken_28";
-//
-//        final String tokenNamef = tokenName;
-//        get("http://etherscan.io//token/images/" + tokenNamef + ".PNG", new Callback() {
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//            }
-//
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//                if (c == null) return;
-//                ResponseBody in = response.body();
-//                InputStream inputStream = in.byteStream();
-//                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-//                final Bitmap bitmap = BitmapFactory.decodeStream(bufferedInputStream);
-//                TokenIconCache.instance(c).put(c, tokenNamef, new BitmapDrawable(c.getResources(), bitmap).getBitmap());
-//                // if(lastToken) // TODO: resolve race condition
-//                callback.onLastIconDownloaded();
-//            }
-//        });
-//    }
-
-
     public void getGasLimitEstimate(String to, Callback b) throws IOException {
         get("http://api.etherscan.io/api?module=proxy&action=eth_estimateGas&to=" + to + "&value=0xff22&gasPrice=0x051da038cc&gas=0xffffff&apikey=" + token, b);
     }
@@ -180,6 +140,12 @@ public class EtherscanAPI {
 
     public void forwardTransaction(String raw, Callback b) throws IOException {
         get("http://api.etherscan.io/api?module=proxy&action=eth_sendRawTransaction&hex=" + raw + "&apikey=" + token, b);
+    }
+
+    public void getTokenTxHistory(String address, Callback b) throws  IOException {
+        String url = "http://api.etherscan.io/api?module=account&action=tokentx&address=";
+        url = url + address + "&startblock=0&endblock=999999999&sort=desc&apikey=" + token;
+        get(url, b);
     }
     
 
