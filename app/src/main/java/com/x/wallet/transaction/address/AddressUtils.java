@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.XWalletApplication;
+import com.x.wallet.btc.BtcUtils;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.common.AccountData;
@@ -27,9 +28,11 @@ public class AddressUtils {
         AccountData accountData = CoinAddressHelper.createAddress(coinType, password);
         if(accountData != null){
             fillAccountData(accountData, coinType, accountName);
+            BtcUtils.stopPeer(coinType);
             Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(accountData));
             Log.i(AppUtils.APP_TAG, "AddressUtils createAddress uri = " + uri);
             Log.i(AppUtils.APP_TAG, "AddressUtils createAddress accountData = " + accountData);
+            BtcUtils.startPeer(coinType);
             return uri;
         } else {
             Log.i(AppUtils.APP_TAG, "AddressUtils createAddress accountData is null");

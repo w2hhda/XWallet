@@ -16,6 +16,7 @@ import com.google.gson.JsonSyntaxException;
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.XWalletApplication;
+import com.x.wallet.btc.BtcUtils;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.common.AccountData;
@@ -103,6 +104,7 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Integer>{
                 if(isAddressExist){
                     resultType = AppUtils.CREATE_ADDRESS_FAILED_ADDRESS_EXIST;
                 } else {
+                    BtcUtils.stopPeer(mCoinType);
                     mUri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(data));
                     if(mUri != null){
                         resultType = AppUtils.CREATE_ADDRESS_OK;
@@ -111,6 +113,7 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Integer>{
                             requestBalanceForToken(data, accountId);
                         }
                     }
+                    BtcUtils.startPeer(mCoinType);
                 }
             }
         }

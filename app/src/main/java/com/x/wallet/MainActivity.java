@@ -6,6 +6,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 
+import com.x.wallet.btc.BtcUtils;
 import com.x.wallet.ui.activity.BaseAppCompatActivity;
 import com.x.wallet.ui.fragment.AccountListFragment;
 import com.x.wallet.ui.fragment.SettingsFragment;
@@ -22,6 +23,7 @@ public class MainActivity extends BaseAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initViews();
+        BtcUtils.visitBlockchainService(BtcUtils.BLOCKCHAIN_SERVICE_ACTION_START);
     }
 
     private void initViews(){

@@ -19,14 +19,19 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewStub;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.XWalletApplication;
+import com.x.wallet.btc.BtcAccountDetailHelper;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
+import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.balance.ItemLoadedCallback;
 import com.x.wallet.transaction.history.HistoryLoaderManager;
@@ -49,14 +54,16 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     private TextView mBalanceTranslateTv;
     private TextView mBalanceTv;
     private TextView mAddressTv;
-    private View mSendOutBtn;
-    private View mReceiptBtn;
+
     private View mNoTransactionView;
     private RecyclerView mRecyclerView;
     private MyHandler handler;
     private SwipeRefreshLayout refreshLayout;
     private TransactionAdapter mAdapter;
     private LoaderManager mLoaderManager;
+
+    private View mSendOutBtn;
+    private View mReceiptBtn;
 
     private static final int TX_LIST_LOADER = 1;
     private static final int TX_TOKEN_LIST_LOADER = 2;
@@ -68,6 +75,8 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     public final static String SHARE_ADDRESS_EXTRA = "share_address_extra";
     private BalanceConversionUtils.RateUpdateListener mRateUpdateListener;
     private Boolean isTokenAccount = false;
+
+    private BtcAccountDetailHelper mBtcAccountDetailHelper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -112,9 +121,16 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
 
     private void initCenterView(){
         mNoTransactionView = findViewById(R.id.no_transaction_view);
-        initSwipeRefreshView();
-        initRecyclerView();
-        initLoaderManager(isTokenAccount);
+        if(mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_BTC){
+            initBtcAccount();
+        } else {
+            SwipeRefreshLayout view = (SwipeRefreshLayout)getStubView(R.id.transaction_list_view_stub, R.id.layout_swipe_refresh);
+            view.setVisibility(View.VISIBLE);
+            refreshLayout = view;
+            initSwipeRefreshView();
+            initRecyclerView();
+            initLoaderManager(isTokenAccount);
+        }
     }
 
     private void initBottomView(){
@@ -178,8 +194,17 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         BalanceConversionUtils.registerListener(mRateUpdateListener);
     }
 
+    private View getStubView(int stubId, int viewId) {
+        View view = findViewById(viewId);
+        if (view == null) {
+            ViewStub stub = (ViewStub) findViewById(stubId);
+            view = stub.inflate();
+        }
+
+        return view;
+    }
+
     private void initSwipeRefreshView(){
-        refreshLayout = findViewById(R.id.layout_swipe_refresh);
         refreshLayout.setOnRefreshListener(listener);
         refreshLayout.post(new Runnable() {
             @Override
@@ -197,7 +222,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         TransactionListItem listItem = (TransactionListItem)v;
-                        TransactionItem item = listItem.getmTransactionItem();
+                        TransactionItem item = listItem.getTransactionItem();
                         Intent intent = new Intent("com.x.wallet.action_SEE_TRANSACTION_DETAIL");
                         intent.putExtra(AppUtils.TRANSACTION_ITEM, item);
                         startActivity(intent);
@@ -324,11 +349,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     }
 
     private void updateVisibility(int count){
-        if (count > 0){
-            mNoTransactionView.setVisibility(View.GONE);
-        }else {
-            mNoTransactionView.setVisibility(View.VISIBLE);
-        }
+        mNoTransactionView.setVisibility(count > 0 ? View.GONE : View.VISIBLE);
     }
 
     public void updateBalanceConversionText(){
@@ -338,4 +359,25 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         }
     }
 
+    private void initBtcAccount(){
+        ListView listView = (ListView)getStubView(R.id.transaction_list_btc_view_stub, R.id.listview);
+        listView.setVisibility(View.VISIBLE);
+        BtcAccountDetailHelper.OnDataLoadFinishedListener onDataLoadFinishedListener = new BtcAccountDetailHelper.OnDataLoadFinishedListener() {
+            @Override
+            public void onBalanceLoadFinished(String balance) {
+                mBalanceTv.setText(balance + " " + mAccountItem.getCoinName());
+            }
+
+            @Override
+            public void onTransationListLoadFinished(int count) {
+                updateVisibility(count);
+            }
+        };
+        mBtcAccountDetailHelper = new BtcAccountDetailHelper(this);
+        mBtcAccountDetailHelper.init(mAccountItem.getAddress(),
+                listView,
+                getLoaderManager(),
+                onDataLoadFinishedListener
+        );
+    }
 }

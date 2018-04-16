@@ -20,6 +20,7 @@ import net.bither.bitherj.core.In;
 import net.bither.bitherj.core.Out;
 import net.bither.bitherj.core.Tx;
 
+import java.util.HashSet;
 import java.util.List;
 
 public interface ITxProvider {
@@ -90,4 +91,12 @@ public interface ITxProvider {
     byte[] isIdentify(Tx tx);
 
     void clearAllTx();
+
+    void updateSyncComplete(String address, boolean isSyncComplete);
+
+    HashSet<String> getAllAddressToHashSet();
+
+    public List<String> getAllAddressPubToList();
+
+    String getEncryptPrivateKey(String address);
 }

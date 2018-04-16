@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.x.wallet.AppUtils;
+import com.x.wallet.btc.BtcDbHelper;
 
 /**
  * Created by wuliang on 18-3-14.
@@ -24,7 +25,7 @@ public class WalletDatabaseHelper extends SQLiteOpenHelper {
         mContext = context;
     }
 
-    static synchronized WalletDatabaseHelper getInstance(Context context) {
+    public static synchronized WalletDatabaseHelper getInstance(Context context) {
         if (sInstance == null) {
             sInstance = new WalletDatabaseHelper(context);
         }
@@ -89,5 +90,7 @@ public class WalletDatabaseHelper extends SQLiteOpenHelper {
                 DbUtils.TxTableColumns.TOKEN_NAME + " TEXT," +
                 DbUtils.TxTableColumns.TOKEN_DECIMALS + " INTEGER DEFAULT 0," +
                 DbUtils.TxTableColumns.BLOCK_NUMBER + " TEXT DEFAULT 0);");
+
+        BtcDbHelper.createBitCoinTable(db);
     }
 }

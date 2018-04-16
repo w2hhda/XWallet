@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,6 +51,12 @@ public class AppUtils {
         } else{
             return context.getResources().getColor(colorId, null);
         }
+    }
+
+    public static String formatDate(long timeStamp) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date date = new Date(timeStamp * 1000L);
+        return sdf.format(date);
     }
 
     public interface IMPORTTYPE{

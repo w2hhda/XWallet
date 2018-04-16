@@ -76,6 +76,12 @@ public class TokenUtils {
         return TokenUtils.format(translate(rawBalance, decimals));
     }
 
+    public static String getBalanceText(long rawBalance, int decimals){
+        if (rawBalance == 0) return ZERO;
+
+        return TokenUtils.format(translate(Long.toString(rawBalance), decimals));
+    }
+
     private static BigDecimal translate(String rawBalance, int decimals){
         BigDecimal balance = new BigDecimal(rawBalance);
         return balance.divide(BigDecimal.TEN.pow(decimals));

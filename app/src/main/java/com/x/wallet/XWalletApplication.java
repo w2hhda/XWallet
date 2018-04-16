@@ -3,6 +3,7 @@ package com.x.wallet;
 import android.app.Application;
 import android.util.Log;
 
+import com.x.wallet.btc.BtcUtils;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.balance.BalanceLoaderManager;
 import com.x.wallet.transaction.history.HistoryLoaderManager;
@@ -29,6 +30,7 @@ public class XWalletApplication extends Application{
         mTokenLoaderManager = new TokenLoaderManager(getApplicationContext());
         mHistoryLoaderManager = new HistoryLoaderManager(getApplicationContext());
         initApp();
+        BtcUtils.init();
     }
 
     private void initApp() {

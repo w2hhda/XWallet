@@ -17,6 +17,7 @@
 package net.bither.bitherj.db.imp;
 
 import com.google.common.base.Function;
+import com.x.wallet.lib.common.LibUtils;
 
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.In;
@@ -1282,5 +1283,62 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
         public void setAddress(String address) {
             this.address = address;
         }
+    }
+
+    public void updateSyncComplete(String address, boolean isSyncComplete){
+        String sql = "update account set is_synced=? where address=?";
+        this.execUpdate(sql, new String[]{isSyncComplete ? "1" : "0", address});
+    }
+
+    public HashSet<String> getAllAddressToHashSet(){
+        final HashSet<String> result = new HashSet<>();
+        String sql = "select address from account where coin_type = " + LibUtils.COINTYPE.COIN_BTC;
+        IDb db = this.getReadDb();
+        this.execQueryLoop(db, sql, null, new Function<ICursor, Void>() {
+            @Nullable
+
+            @Override
+            public Void apply(@Nullable ICursor c) {
+                System.out.println("testdb AbstractTxProvider getAllAddressToHashSet c = " + c);
+                if(c != null){
+                    result.add(c.getString(0));
+                }
+                return null;
+            }
+        });
+        return result;
+    }
+
+    public List<String> getAllAddressPubToList(){
+        final List<String> result = new ArrayList<>();
+        String sql = "select pub_key from account where coin_type = " + LibUtils.COINTYPE.COIN_BTC;
+        IDb db = this.getReadDb();
+        this.execQueryLoop(db, sql, null, new Function<ICursor, Void>() {
+            @Nullable
+
+            @Override
+            public Void apply(@Nullable ICursor c) {
+                System.out.println("testdb AbstractTxProvider getAllAddressPubToList c = " + c);
+                if(c != null){
+                    result.add(c.getString(0));
+                }
+                return null;
+            }
+        });
+        return result;
+    }
+
+    public String getEncryptPrivateKey(String address) {
+        String sql = "select encrypt_priv_key from account where address=?";
+        final String[] encryptPrivateKey = {null};
+        this.execQueryOneRecord(sql, new String[]{address}, new Function<ICursor, Void>() {
+            @Nullable
+            @Override
+            public Void apply(@Nullable ICursor c) {
+                encryptPrivateKey[0] = c.getString(0);
+                return null;
+            }
+        });
+        return encryptPrivateKey[0];
     }
 }

@@ -59,6 +59,7 @@
     <string name="copy_address">复制地址</string>
     <string name="has_copied_address">地址已复制</string>
     <string name="coin_unit_eth">ETH</string>
+    <string name="coin_unit_btc">BTC</string>
     <string name="all_balance_prefix">"<xliff:g id="unit">%s</xliff:g> <xliff:g id="value">%s</xliff:g>"</string>
     <string name="item_balance">"≈ <xliff:g id="unit">%s</xliff:g> <xliff:g id="value">%s</xliff:g>"</string>
     <string name="transfer_to_address">转账至</string>

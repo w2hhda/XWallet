@@ -61,7 +61,7 @@
                     android:text="0.0" />
 
                 <TextView
-                    android:id="@+id/coin_type_tv"
+                    android:id="@+id/coin_unit_tv"
                     style="@style/TransactionListItemUnitTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
