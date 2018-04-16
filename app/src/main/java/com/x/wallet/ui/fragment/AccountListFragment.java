@@ -31,6 +31,7 @@ import com.x.wallet.transaction.balance.BalanceLoaderManager;
 import com.x.wallet.transaction.balance.ItemLoadedCallback;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
+import com.x.wallet.ui.ActionUtils;
 import com.x.wallet.ui.adapter.AccountListAdapter;
 import com.x.wallet.ui.data.AllAccountItem;
 import com.x.wallet.ui.data.RawAccountItem;
@@ -156,7 +157,7 @@ public class AccountListFragment extends Fragment {
                 builder.setItems(AccountListFragment.this.getResources().getStringArray(R.array.account_action_array), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int which) {
-                        handleAccountAction(which);
+                        ActionUtils.handleAddAccountAction(AccountListFragment.this.getContext(), which);
                     }
                 });
                 builder.setTitle(R.string.add_account);
@@ -256,23 +257,6 @@ public class AccountListFragment extends Fragment {
         @Override
         public void onLoaderReset(Loader<String> loader) {
 
-        }
-    }
-
-    private void handleAccountAction(int actionType){
-//        Intent intent = new Intent("com.x.wallet.action.COINTYPE_CHOOSE_ACTION");
-//        intent.putExtra(AppUtils.ACTION_TYPE, actionType);
-//        AccountListFragment.this.startActivity(intent);
-//        AccountListFragment.this.startActivity(intent);
-
-        if(actionType == AppUtils.ACCOUNT_ACTION_TYPE_NEW){
-            Intent intent = new Intent("com.x.wallet.action.CREATE_ACCOUNT_ACTION");
-            intent.putExtra(AppUtils.COIN_TYPE, LibUtils.COINTYPE.COIN_ETH);
-            startActivity(intent);
-        } else {
-            Intent intent = new Intent("com.x.wallet.action.IMPORT_ACCOUNT_ACTION");
-            intent.putExtra(AppUtils.COIN_TYPE, LibUtils.COINTYPE.COIN_ETH);
-            startActivity(intent);
         }
     }
 

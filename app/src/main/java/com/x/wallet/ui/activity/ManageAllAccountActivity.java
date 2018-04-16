@@ -19,6 +19,7 @@ import com.x.wallet.R;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.common.LibUtils;
+import com.x.wallet.ui.ActionUtils;
 import com.x.wallet.ui.adapter.ManageAllAccountListAdapter;
 import com.x.wallet.ui.data.AccountItem;
 import com.x.wallet.ui.view.AccountListItem;
@@ -110,25 +111,12 @@ public class ManageAllAccountActivity extends WithBackAppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_add_account:
-                handleAccountAction(AppUtils.ACCOUNT_ACTION_TYPE_NEW);
+                ActionUtils.handleAddAccountAction(this, AppUtils.ACCOUNT_ACTION_TYPE_NEW);
                 return true;
             case R.id.action_import_account:
-                handleAccountAction(AppUtils.ACCOUNT_ACTION_TYPE_IMPORT);
+                ActionUtils.handleAddAccountAction(this, AppUtils.ACCOUNT_ACTION_TYPE_IMPORT);
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void handleAccountAction(int actionType){
-
-        if(actionType == AppUtils.ACCOUNT_ACTION_TYPE_NEW){
-            Intent intent = new Intent("com.x.wallet.action.CREATE_ACCOUNT_ACTION");
-            intent.putExtra(AppUtils.COIN_TYPE, LibUtils.COINTYPE.COIN_ETH);
-            startActivity(intent);
-        } else {
-            Intent intent = new Intent("com.x.wallet.action.IMPORT_ACCOUNT_ACTION");
-            intent.putExtra(AppUtils.COIN_TYPE, LibUtils.COINTYPE.COIN_ETH);
-            startActivity(intent);
-        }
     }
 }
