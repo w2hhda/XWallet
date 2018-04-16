@@ -40,7 +40,6 @@ public class ManageAllAccountActivity extends WithBackAppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.manage_all_account_activity);
-        super.setTitle(getResources().getString(R.string.manage_account));
         initRecyclerView();
         init();
         XWalletApplication.getApplication().getBalanceLoaderManager().getBalance(null);

@@ -10,13 +10,13 @@
         <item name="android:statusBarColor">@color/colorPrimary</item>
         <item name="android:actionOverflowButtonStyle">@style/CustomeOverflowBtnStyle</item>
         <item name="actionOverflowMenuStyle">@style/CustomeOverflowMenuStyle</item>
-        <!--<item name="android:homeAsUpIndicator">@drawable/ic_back</item>-->
+        <item name="android:homeAsUpIndicator">@drawable/ic_back</item>
         <item name="toolbarStyle">@style/NoSpaceActionBarTheme</item>
     </style>
 
-    <style name="NoSpaceActionBarTheme" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">
-        <item name="contentInsetEndWithActions">0dp</item>
-        <item name="contentInsetEnd">0dp</item>
+    <style name="NoSpaceActionBarTheme" parent="Base.Widget.AppCompat.Toolbar">
+        <item name="contentInsetStart">0dp</item>
+        <item name="contentInsetStartWithNavigation">0dp</item>
     </style>
 
     <style name="CustomeOverflowBtnStyle" parent="@style/Widget.AppCompat.Light.ActionButton.Overflow">

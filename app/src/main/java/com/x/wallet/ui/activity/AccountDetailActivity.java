@@ -93,7 +93,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         mReceiptBtn = findViewById(R.id.receipt_btn);
         mNoTransactionView = findViewById(R.id.no_transaction_view);
         refreshLayout = findViewById(R.id.layout_swipe_refresh);
-        super.setTitle(mAccountItem.getAccountName());
+        setTitle(mAccountItem.getAccountName());
         handler = new MyHandler();
         mAddressTv.setText(getResources().getString(R.string.address) + ": " + mAccountItem.getAddress());
 

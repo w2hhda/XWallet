@@ -80,7 +80,6 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
     }
 
     private void initViews(){
-        super.setTitle(getResources().getString(R.string.manage_account));
         managerTokenLayout = findViewById(R.id.manage_token_layout);
         mAccountNameTv = findViewById(R.id.account_name_tv);
         mAccountNameTv.setText(mAccountItem.getAccountName());
