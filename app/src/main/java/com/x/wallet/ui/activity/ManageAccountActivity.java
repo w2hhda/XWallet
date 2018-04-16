@@ -85,7 +85,7 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
         mAccountNameTv.setText(mAccountItem.getAccountName());
 
         mAddressTv = findViewById(R.id.address_tv);
-        mAddressTv.setText(getResources().getString(R.string.address) + ": " + mAccountItem.getAddress());
+        mAddressTv.setText(getResources().getString(R.string.address, mAccountItem.getAddress()));
         mAddressTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

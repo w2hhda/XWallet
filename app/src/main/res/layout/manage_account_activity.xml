@@ -18,7 +18,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="center"
                 android:orientation="vertical">
 
                 <TextView
@@ -42,7 +42,8 @@
                     android:textColor="@color/gray_83"
                     android:drawablePadding="4dp"
                     android:drawableRight="@drawable/copy_address_icon"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:layout_gravity="center_horizontal"/>
             </LinearLayout>
         </FrameLayout>
 

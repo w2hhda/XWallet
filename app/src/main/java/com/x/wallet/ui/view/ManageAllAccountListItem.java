@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.x.wallet.R;
+import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.data.AccountItem;
@@ -52,7 +53,7 @@ public class ManageAllAccountListItem extends CardView {
         mAccountNameTv.setText(mAccountItem.getAccountName());
         mAddressTv.setText(mAccountItem.getAddress());
         mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS));
-        mCoinBalanceUnitTv.setText(R.string.coin_unit_eth);
+        mCoinBalanceUnitTv.setText(mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_BTC ? R.string.coin_unit_btc : R.string.coin_unit_eth);
     }
 
     public AccountItem getAccountItem() {

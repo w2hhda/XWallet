@@ -150,7 +150,7 @@ public class TransactionListItem extends RelativeLayout{
                     if (Utils.isEmpty(subAddress)) {
                         mTransactionName.setText(getResources().getString(R.string.receipt_transaction_prefix, "---"));
                     } else {
-                        mTransactionName.setText(Utils.shortenAddress(subAddress));
+                        mTransactionName.setText(getResources().getString(R.string.receipt_transaction_prefix, subAddress));
                     }
                 } catch (ScriptException e) {
                     e.printStackTrace();
