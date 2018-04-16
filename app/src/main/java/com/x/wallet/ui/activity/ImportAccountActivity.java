@@ -44,16 +44,19 @@ public class ImportAccountActivity extends WithBackAppCompatActivity {
         keyFragment.setArguments(bundle);
         adapter.addFragment(keyFragment, this.getResources().getText(R.string.key).toString());
 
-        ImportKeyStoreFragment keyStoreFragment = new ImportKeyStoreFragment();
-        keyStoreFragment.setArguments(bundle);
-        adapter.addFragment(keyStoreFragment, this.getResources().getText(R.string.keystore).toString());
-
-        pager.setAdapter(adapter);
-
         final TabLayout tabLayout = findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText(this.getResources().getText(R.string.mnemonic)));
         tabLayout.addTab(tabLayout.newTab().setText(this.getResources().getText(R.string.key)));
-        tabLayout.addTab(tabLayout.newTab().setText(this.getResources().getText(R.string.keystore)));
+
+        if(mCoinType == LibUtils.COINTYPE.COIN_ETH){
+            ImportKeyStoreFragment keyStoreFragment = new ImportKeyStoreFragment();
+            keyStoreFragment.setArguments(bundle);
+            adapter.addFragment(keyStoreFragment, this.getResources().getText(R.string.keystore).toString());
+            tabLayout.addTab(tabLayout.newTab().setText(this.getResources().getText(R.string.keystore)));
+        }
+
+        pager.setAdapter(adapter);
+
         tabLayout.setupWithViewPager(pager);
         final int margin = this.getResources().getDimensionPixelSize(R.dimen.tab_margin);
         tabLayout.post(new Runnable() {

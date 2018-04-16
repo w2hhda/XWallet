@@ -15,12 +15,29 @@ public class AccountData {
     private String mEncryptPrivKey;
     private String mKeyStore;
 
+    //Btc need
+    private String mPubKey;
+    private boolean mIsSyncComplete;
+
     public AccountData(String address, String encryptSeed, String encryptMnemonic, String encryptPrivKey, String keyStore) {
         mAddress = address;
         mEncryptSeed = encryptSeed;
         mEncryptMnemonic = encryptMnemonic;
         mEncryptPrivKey = encryptPrivKey;
         mKeyStore = keyStore;
+        mPubKey = null;
+        mIsSyncComplete = true;
+    }
+
+    public AccountData(String address, String encryptSeed, String encryptMnemonic, String encryptPrivKey,
+                       String pubKey, boolean isSyncComplete) {
+        mAddress = address;
+        mEncryptSeed = encryptSeed;
+        mEncryptMnemonic = encryptMnemonic;
+        mEncryptPrivKey = encryptPrivKey;
+        mKeyStore = null;
+        mPubKey = pubKey;
+        mIsSyncComplete = isSyncComplete;
     }
 
     public String getAddress() {
@@ -85,6 +102,14 @@ public class AccountData {
 
     public void setKeyStore(String keyStore) {
         mKeyStore = keyStore;
+    }
+
+    public String getPubKey() {
+        return mPubKey;
+    }
+
+    public boolean isSyncComplete() {
+        return mIsSyncComplete;
     }
 
     @Override

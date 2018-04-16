@@ -9,7 +9,6 @@ import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.common.AccountData;
-import com.x.wallet.lib.btc.BtcAddressHelper;
 import com.x.wallet.lib.common.CoinAddressHelper;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.lib.eth.api.EthAccountCreateHelper;
@@ -51,12 +50,7 @@ public class AddressUtils {
         }
         Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughMnemonic mnemonicShuzu.length = " + mnemonicShuzu.length);
         List<String> words = Arrays.asList(mnemonicShuzu);
-        AccountData accountData;
-        if (coinType == LibUtils.COINTYPE.COIN_BTC) {
-            accountData = BtcAddressHelper.createAddressFromImportMnemonic(words, password);
-        }else {
-            accountData = EthAccountCreateHelper.importFromMnemonic(words, password);
-        }
+        AccountData accountData = CoinAddressHelper.importAddressThroughMnemonic(words, coinType, password);
         if(accountData != null){
             fillAccountData(accountData, coinType, accountName);
             //Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(accountData));
@@ -74,19 +68,15 @@ public class AddressUtils {
             Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughKey key is null!");
             return null;
         }
-        if (coinType == LibUtils.COINTYPE.COIN_ETH) {
-            AccountData accountData = EthAccountCreateHelper.importFromPrivateKey(key, password);
-            if (accountData != null) {
-                fillAccountData(accountData, coinType, accountName);
-                //Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(accountData));
-                //Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughKey uri = " + uri);
-                Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughKey accountData = " + accountData);
-                return accountData;
-            } else {
-                Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughKey accountData is null");
-            }
+        AccountData accountData = CoinAddressHelper.importAddressThroughKey(coinType, password, key);
+        if (accountData != null) {
+            fillAccountData(accountData, coinType, accountName);
+            //Uri uri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(accountData));
+            //Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughKey uri = " + uri);
+            Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughKey accountData = " + accountData);
+            return accountData;
         } else {
-
+            Log.i(AppUtils.APP_TAG, "AddressUtils importAddressThroughKey accountData is null");
         }
         return null;
     }

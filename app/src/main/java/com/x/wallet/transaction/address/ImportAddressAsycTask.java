@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -20,9 +19,9 @@ import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.common.AccountData;
+import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.transaction.balance.TokenListBean;
-import com.x.wallet.transaction.token.ReadFileUtils;
 import com.x.wallet.transaction.token.TokenDeserializer;
 
 import java.io.IOException;
@@ -107,8 +106,10 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Integer>{
                     mUri = XWalletApplication.getApplication().getContentResolver().insert(XWalletProvider.CONTENT_URI, DbUtils.createContentValues(data));
                     if(mUri != null){
                         resultType = AppUtils.CREATE_ADDRESS_OK;
-                        long accountId = ContentUris.parseId(mUri);
-                        requestBalanceForToken(data, accountId);
+                        if(mCoinType == LibUtils.COINTYPE.COIN_ETH){
+                            long accountId = ContentUris.parseId(mUri);
+                            requestBalanceForToken(data, accountId);
+                        }
                     }
                 }
             }

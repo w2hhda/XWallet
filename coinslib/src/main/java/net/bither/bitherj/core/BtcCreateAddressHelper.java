@@ -8,13 +8,15 @@ import com.x.wallet.lib.common.AccountData;
 import com.x.wallet.lib.common.LibUtils;
 
 import net.bither.bitherj.crypto.DumpedPrivateKey;
+import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.EncryptedData;
-import net.bither.bitherj.crypto.KeyCrypterException;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.crypto.hd.DeterministicKey;
 import net.bither.bitherj.crypto.hd.HDKeyDerivation;
 import net.bither.bitherj.crypto.mnemonic.MnemonicException;
 import net.bither.bitherj.crypto.mnemonic.MnemonicHelper;
+import net.bither.bitherj.utils.Base58;
+import net.bither.bitherj.utils.PrivateKeyUtil;
 import net.bither.bitherj.utils.Utils;
 
 import java.security.SecureRandom;
@@ -31,7 +33,7 @@ public class BtcCreateAddressHelper {
             byte[] mnemonicSeed = new byte[16];
             random.nextBytes(mnemonicSeed);
 
-            return create(mnemonicSeed, password);
+            return create(false, mnemonicSeed, password);
         } catch (Exception e){
             Log.e(LibUtils.TAG_BTC, "BtcCreateAddressHelper createAddressFromRandom exception", e);
         }
@@ -41,14 +43,29 @@ public class BtcCreateAddressHelper {
     public static AccountData createAddressFromImportMnemonic(List<String> words, CharSequence password){
         try{
             byte[] mnemonicSeed = MnemonicHelper.toEntropy(words);
-            return create(mnemonicSeed, password);
+            return create(true, mnemonicSeed, password);
         } catch (Exception e){
             Log.e(LibUtils.TAG_BTC, "BtcCreateAddressHelper createAddressFromImportMnemonic exception", e);
         }
         return null;
     }
 
-    private static AccountData create(byte[] mnemonicSeed, CharSequence password) throws MnemonicException.MnemonicLengthException{
+    public static AccountData createAddressFromImportKey(String key, String password) {
+        if(!Utils.validBitcoinPrivateKey(key)){
+            Log.e(LibUtils.TAG_BTC, "BtcCreateAddressHelper createAddressFromImportKey key is not valid!");
+            return null;
+        }
+        final ECKey compressKey = initEcKey(key, true);
+        if (compressKey == null) {
+            return null;
+        }
+        return new AccountData(compressKey.toAddress(),
+                null,
+                null, getEncryptedString(key, password, true),
+                Base58.encode(compressKey.getPubKey()), false);
+    }
+
+    private static AccountData create(boolean isFromImport, byte[] mnemonicSeed, CharSequence password) throws MnemonicException.MnemonicLengthException{
         byte[] hdSeed = MnemonicHelper.seedFromMnemonic(mnemonicSeed);
 
         EncryptedData encryptedHDSeed = new EncryptedData(hdSeed, password, false);
@@ -58,7 +75,7 @@ public class BtcCreateAddressHelper {
         DeterministicKey account = getAccount(master);
         account.clearPrivateKey();
 
-        return startToGenerateAddress(account, encryptedMnemonicSeed, encryptedHDSeed);
+        return startToGenerateAddress(isFromImport, account, encryptedMnemonicSeed, encryptedHDSeed);
     }
 
     private static DeterministicKey getAccount(DeterministicKey master) {
@@ -70,7 +87,7 @@ public class BtcCreateAddressHelper {
         return account;
     }
 
-    private static AccountData startToGenerateAddress(DeterministicKey accountKey, EncryptedData encryptedMnemonicSeed,
+    private static AccountData startToGenerateAddress(boolean isFromImport, DeterministicKey accountKey, EncryptedData encryptedMnemonicSeed,
                                         EncryptedData encryptedHDSeed) {
         DeterministicKey externalKey = getChainRootKey(accountKey, AbstractHD.PathType
                 .EXTERNAL_ROOT_PATH);
@@ -80,7 +97,7 @@ public class BtcCreateAddressHelper {
         AccountData accountData = new AccountData(Utils.toAddress(Utils.sha256hash160(subExternalPub)),
                 encryptedHDSeed.toEncryptedString(),
                 encryptedMnemonicSeed.toEncryptedString(),
-                null, null);
+                null, Base58.encode(subExternalPub), !isFromImport);
         externalKey.wipe();
         return accountData;
     }
@@ -192,5 +209,74 @@ public class BtcCreateAddressHelper {
     public static String encryptMnemonicSeed(byte[] dataToEncrypt, CharSequence password){
         EncryptedData encryptedMnemonicSeed = new EncryptedData(dataToEncrypt, password, false);
         return encryptedMnemonicSeed.toEncryptedString();
+    }
+
+    private static ECKey initEcKey(String content, boolean isCompress) {
+        ECKey ecKey = getEckey(content);
+        ECKey resultKey = null;
+        try {
+            if (ecKey == null) {
+                return null;
+            } else {
+                resultKey = new ECKey(ecKey.getPriv(), null, isCompress);
+                if (resultKey == null) {
+                    return null;
+                }
+                return resultKey;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (ecKey != null) {
+                ecKey.clearPrivateKey();
+            }
+            if (resultKey != null) {
+                resultKey.clearPrivateKey();
+            }
+        }
+    }
+
+    private static ECKey getEckey(String content) {
+        ECKey ecKey = null;
+        DumpedPrivateKey dumpedPrivateKey = null;
+        try {
+            dumpedPrivateKey = new DumpedPrivateKey(content);
+            ecKey = dumpedPrivateKey.getKey();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (dumpedPrivateKey != null) {
+                dumpedPrivateKey.clearPrivateKey();
+            }
+        }
+        return ecKey;
+    }
+
+    private static String getEncryptedString(String content, String password, boolean isCompress){
+        ECKey ecKey = getEckey(content);
+        ECKey resultKey = null;
+        try {
+            if (ecKey == null) {
+                return null;
+            } else {
+                resultKey = new ECKey(ecKey.getPriv(), null, isCompress);
+                if (resultKey == null) {
+                    return null;
+                }
+                ecKey = PrivateKeyUtil.encrypt(resultKey, password);
+                return PrivateKeyUtil.getEncryptedString(ecKey);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (ecKey != null) {
+                ecKey.clearPrivateKey();
+            }
+            if (resultKey != null) {
+                resultKey.clearPrivateKey();
+            }
+        }
     }
 }

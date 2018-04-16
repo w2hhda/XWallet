@@ -12,6 +12,9 @@ import com.x.wallet.lib.common.AccountData;
  */
 
 public class DbUtils {
+    public static final int IS_SYNCED = 1;
+    public static final int NOT_SYNCED = 0;
+
     public interface DbColumns{
         String _ID = "_id";
         String ADDRESS = "address";
@@ -24,6 +27,8 @@ public class DbUtils {
         String KEYSTORE = "keystore";
         String BALANCE = "balance";
         String HAS_TOKEN = "has_token";
+        String PUB_KEY = "pub_key";
+        String IS_SYNCED = "is_synced";
     }
 
     public interface TokenTableColumns{
@@ -62,7 +67,6 @@ public class DbUtils {
     }
 
     public static final String UPDATE_TOKEN_SELECTION = DbUtils.TokenTableColumns.ACCOUNT_ADDRESS + " = ? AND " + DbUtils.TokenTableColumns.SYMBOL + " = ?";
-    public static final String UPDATE_TX_SELECTION = TxTableColumns.TX_HASH + " = ？";
 
     public static ContentValues createContentValues(AccountData accountData) {
         ContentValues values = new ContentValues();
@@ -85,6 +89,12 @@ public class DbUtils {
         if(!TextUtils.isEmpty(accountData.getKeyStore())){
             values.put(DbUtils.DbColumns.KEYSTORE, accountData.getKeyStore());
         }
+
+        if(!TextUtils.isEmpty(accountData.getPubKey())){
+            values.put(DbColumns.PUB_KEY, accountData.getPubKey());
+        }
+
+        values.put(DbColumns.IS_SYNCED, accountData.isSyncComplete() ? IS_SYNCED : NOT_SYNCED);
         return values;
     }
 
