@@ -225,6 +225,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
                         TransactionItem item = listItem.getTransactionItem();
                         Intent intent = new Intent("com.x.wallet.action_SEE_TRANSACTION_DETAIL");
                         intent.putExtra(AppUtils.TRANSACTION_ITEM, item);
+                        intent.putExtra(AppUtils.ACCOUNT_TYPE, isTokenAccount);
                         startActivity(intent);
                     }
                 });
@@ -303,13 +304,14 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     private void requestHistory(ItemLoadedCallback<HistoryLoaderManager.HistoryLoaded> callback1,
                                 String requestType){
         if (requestType.equals(NORMAL_REQUEST)) {
-            XWalletApplication.getApplication().getmHistoryLoaderManager().getTokenHistory(mAccountItem.getAddress(), callback1);
-        }else if (requestType.equals(TOKEN_REQUEST)) {
             XWalletApplication.getApplication().getmHistoryLoaderManager().getNormalHistory(mAccountItem.getAddress(), callback1);
+        }else if (requestType.equals(TOKEN_REQUEST)) {
+            XWalletApplication.getApplication().getmHistoryLoaderManager().getTokenHistory(mAccountItem.getAddress(), callback1);
         }else{
             XWalletApplication.getApplication().getmHistoryLoaderManager().getTokenHistory(mAccountItem.getAddress(), callback1);
             XWalletApplication.getApplication().getmHistoryLoaderManager().getNormalHistory(mAccountItem.getAddress(), callback1);
         }
+        XWalletApplication.getApplication().getBalanceLoaderManager().getAllBalance(null);
     }
 
     @Override

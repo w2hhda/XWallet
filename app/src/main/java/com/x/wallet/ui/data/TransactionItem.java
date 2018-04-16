@@ -27,9 +27,12 @@ public class TransactionItem implements Serializable {
     private String nonce;
     private String tokenSymbols;
     private String tokenDecimals;
+    private String blockNumber;
+    private Boolean isPending = false;
     private Boolean isToken = false;
     private Boolean isError = false;
     private int txReceiptStatus;
+    private int decimals;
 
     public TransactionItem() {
     }
@@ -44,36 +47,6 @@ public class TransactionItem implements Serializable {
         this.timeStamp = timeStamp;
         this.transactionFee = transactionFee;
         this.nonce = nonce;
-    }
-
-    public static TransactionItem createFromReceipt(TransactionsResultBean.ReceiptBean receipts, Boolean isReceive, Boolean isToken){
-        TransactionItem item = new TransactionItem();
-        item.setToAddress(receipts.getTo());
-        item.setFromAddress(receipts.getFrom());
-        item.setReceiptHash(receipts.getHash());
-        item.setTimeStamp(receipts.getTimeStamp());
-        BigInteger gasUsed = new BigInteger(receipts.getGasUsed());
-        BigInteger gasPrice = new BigInteger(receipts.getGasPrice());
-        item.setTransactionFee(gasUsed.multiply(gasPrice).toString());
-        item.setNonce(receipts.getNonce());
-        item.setError(receipts.getIsError() == 1);
-        item.setTxReceiptStatus(receipts.getTxreceipt_status());
-        if (isReceive){
-            item.setTransactionType(TRANSACTION_TYPE_RECEIVE);
-        }else {
-            item.setTransactionType(TRANSACTION_TYPE_TRANSFER_OUT);
-        }
-
-        if (isToken){
-            item.setAmount(gasPrice.multiply(gasUsed).toString());
-            item.setToken(true);
-        }else {
-            item.setAmount(receipts.getValue());
-            item.setToken(false);
-        }
-
-        return item;
-
     }
 
     private static final int TX_HASH            = 1;
@@ -100,6 +73,8 @@ public class TransactionItem implements Serializable {
         item.setReceiptHash(cursor.getString(TX_HASH));
         item.setTimeStamp(cursor.getString(TIME_STAMP));
         item.setNonce(cursor.getString(NONCE));
+        item.setBlockNumber(cursor.getString(BLOCK_NUMBER));
+        item.setAmount(cursor.getString(VALUE));
 
         //token tx haven't tx_receipt_status now
         if (!TextUtils.isEmpty(cursor.getString(TX_RECEIPT_STATUS))){
@@ -132,34 +107,44 @@ public class TransactionItem implements Serializable {
             item.setTransactionFee(new BigInteger(gasPrice).multiply(new BigInteger(gasUsed)).toString());
         }
 
+        Boolean isPending = cursor.getString(BLOCK_NUMBER).equals("0");
+
+        String isError = cursor.getString(IS_ERROR);
+        if ((isError != null && isError.equals("0")) || isPending){
+            item.setError(false);
+        }else {
+            item.setError(true);
+        }
+
         if (isTokenAccount){
             item.setTokenSymbols(cursor.getString(TOKEN_SYMBOL));
             item.setTokenDecimals(cursor.getString(TOKEN_DECIMALS));
         } else {
-            item.setTokenSymbols("ETH");
-            item.setTokenDecimals("18");
-
-        }
-
-        String isError = cursor.getString(IS_ERROR);
-        if (isError != null && isError.equals("0")){
-            item.setError(false);
-            //token show fee in eth list.
-            if (!isTokenAccount && !TextUtils.isEmpty(cursor.getString(CONTRACT_ADDRESS))){
-                item.setAmount(item.getTransactionFee());
-            }else {
-                item.setAmount(cursor.getString(VALUE));
-            }
-        }else {
-            item.setError(true);
-            if (!isTokenAccount) { //when error, show the transactionFee
-                item.setAmount(item.getTransactionFee());
-            }else {
-                item.setAmount(cursor.getString(VALUE));
+            item.setmCoinType("ETH");
+            item.setDecimals(18);
+            if (item.getToken()){
+                item.setTokenSymbols(cursor.getString(TOKEN_SYMBOL));
+                item.setTokenDecimals(cursor.getString(TOKEN_DECIMALS));
             }
         }
 
         return item;
+    }
+
+    public int getDecimals() {
+        return decimals;
+    }
+
+    public void setDecimals(int decimals) {
+        this.decimals = decimals;
+    }
+
+    public String getBlockNumber() {
+        return blockNumber;
+    }
+
+    public void setBlockNumber(String blockNumber) {
+        this.blockNumber = blockNumber;
     }
 
     public String getTokenDecimals() {
