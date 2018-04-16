@@ -81,22 +81,45 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             mTokenItem = (RawAccountItem) getIntent().getSerializableExtra(AppUtils.TOKEN_DATA);
             isTokenAccount = true;
         }
-
+        setTitle(mAccountItem.getAccountName());
         initViews();
     }
 
     private void initViews(){
+        handler = new MyHandler();
+
+        initHeadView();
+        initCenterView();
+        initBottomView();
+    }
+
+    private void initHeadView(){
         mBalanceTranslateTv = findViewById(R.id.balance_translate_tv);
         mBalanceTv = findViewById(R.id.balance_tv);
         mAddressTv = findViewById(R.id.address_tv);
+        mAddressTv.setText(getResources().getString(R.string.address, mAccountItem.getAddress()));
+        mAddressTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("", mAccountItem.getAddress());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(AccountDetailActivity.this, R.string.has_copied_address, Toast.LENGTH_SHORT).show();
+            }
+        });
+        initViewForNormal();
+    }
+
+    private void initCenterView(){
+        mNoTransactionView = findViewById(R.id.no_transaction_view);
+        initSwipeRefreshView();
+        initRecyclerView();
+        initLoaderManager(isTokenAccount);
+    }
+
+    private void initBottomView(){
         mSendOutBtn = findViewById(R.id.send_btn);
         mReceiptBtn = findViewById(R.id.receipt_btn);
-        mNoTransactionView = findViewById(R.id.no_transaction_view);
-        refreshLayout = findViewById(R.id.layout_swipe_refresh);
-        setTitle(mAccountItem.getAccountName());
-        handler = new MyHandler();
-        mAddressTv.setText(getResources().getString(R.string.address) + ": " + mAccountItem.getAddress());
-
         mReceiptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,21 +143,6 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        mAddressTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("", mAccountItem.getAddress());
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(AccountDetailActivity.this, R.string.has_copied_address, Toast.LENGTH_SHORT).show();
-            }
-        });
-        initRecyclerView();
-        initViewForNormal();
-        initSwipeRefreshView();
-        initLoaderManager(isTokenAccount);
-
     }
 
     private SwipeRefreshLayout.OnRefreshListener listener = new SwipeRefreshLayout.OnRefreshListener() {
@@ -145,7 +153,6 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     };
 
     private void initViewForNormal(){
-
         if (isTokenAccount){
             mBalanceTv.setText(TokenUtils.getBalanceText(mTokenItem.getBalance(), mTokenItem.getDecimals()) + " " + mTokenItem.getCoinName());
             mBalanceTranslateTv.setText(this.getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
@@ -172,6 +179,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     }
 
     private void initSwipeRefreshView(){
+        refreshLayout = findViewById(R.id.layout_swipe_refresh);
         refreshLayout.setOnRefreshListener(listener);
         refreshLayout.post(new Runnable() {
             @Override

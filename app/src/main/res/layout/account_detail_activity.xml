@@ -54,7 +54,7 @@
     </FrameLayout>
 
     <LinearLayout
-        android:id="@+id/contransaction_title_container"
+        android:id="@+id/transaction_title_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/account_detail_top"
@@ -84,7 +84,7 @@
         android:id="@+id/account_detail_center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/contransaction_title_container"
+        android:layout_below="@id/transaction_title_container"
         android:background="@color/main_bg_color">
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/layout_swipe_refresh"
