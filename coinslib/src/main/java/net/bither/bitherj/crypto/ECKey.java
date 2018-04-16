@@ -16,15 +16,14 @@
 
 package net.bither.bitherj.crypto;
 
-import android.util.Log;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
-import net.bither.bitherj.utils.Base58;
 import net.bither.bitherj.utils.Sha256Hash;
 import net.bither.bitherj.utils.Utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongycastle.asn1.ASN1InputStream;
 import org.spongycastle.asn1.ASN1Integer;
 import org.spongycastle.asn1.ASN1OctetString;
@@ -85,6 +84,8 @@ import static com.google.common.base.Preconditions.checkState;
  * signature and want to find out who signed it, rather than requiring the user to provide the expected identity.</p>
  */
 public class ECKey implements Serializable {
+    private static final Logger log = LoggerFactory.getLogger(ECKey.class);
+
     /**
      * The parameters of the secp256k1 curve that Bitcoin uses.
      */
@@ -170,7 +171,7 @@ public class ECKey implements Serializable {
     }
 
     /**
-     * A constructor variant with BigInteger pubkey. See {@link ECKey#ECKey(BigInteger, byte[])}.
+     * A constructor variant with BigInteger pubkey. See {@link net.bither.bitherj.crypto.ECKey#ECKey(java.math.BigInteger, byte[])}.
      */
 //    public ECKey(BigInteger privKey, BigInteger pubKey) {
 //        this(privKey, Utils.bigIntegerToBytes(pubKey, 65));
@@ -211,7 +212,6 @@ public class ECKey implements Serializable {
         if (privKey == null && pubKey == null)
             throw new IllegalArgumentException("ECKey requires at least private or public key");
         this.priv = privKey;
-        System.out.println("test1 ECKey priv = " + priv);
         this.pub = null;
         if (pubKey == null) {
             // Derive public from private.
@@ -365,7 +365,6 @@ public class ECKey implements Serializable {
      * It turns the ECKEy into a watch only key.
      */
     public void clearPrivateKey() {
-        System.out.println("test1 ECKey clearPrivateKey priv = " + priv);
         priv = BigInteger.ZERO;
         if (encryptedPrivateKey != null) {
             encryptedPrivateKey.clear();
@@ -455,7 +454,7 @@ public class ECKey implements Serializable {
 
     /**
      * Signs the given hash and returns the R and S components as BigIntegers. In the Bitcoin protocol, they are
-     * usually encoded using DER format, so you want {@link ECDSASignature#toASN1()}
+     * usually encoded using DER format, so you want {@link net.bither.bitherj.crypto.ECKey.ECDSASignature#toASN1()}
      * instead. However sometimes the independent components can be useful, for instance, if you're doing to do
      * further EC maths on them.
      *
@@ -502,6 +501,7 @@ public class ECKey implements Serializable {
                 privateKeyForSigning = priv;
             }
         }
+        System.out.println("private key: " + Utils.bytesToHexString(Utils.bigIntegerToBytes(privateKeyForSigning, 32)));
 
         this.pubKeyUnCompressed = publicKeyFromPrivate(privateKeyForSigning, false);
 
@@ -516,7 +516,7 @@ public class ECKey implements Serializable {
 
     /**
      * Signs the given hash and returns the R and S components as BigIntegers. In the Bitcoin protocol, they are
-     * usually encoded using DER format, so you want {@link ECDSASignature#encodeToDER()}
+     * usually encoded using DER format, so you want {@link net.bither.bitherj.crypto.ECKey.ECDSASignature#encodeToDER()}
      * instead. However sometimes the independent components can be useful, for instance, if you're doing to do further
      * EC maths on them.
      *
@@ -629,7 +629,7 @@ public class ECKey implements Serializable {
         } catch (NullPointerException e) {
             // Bouncy Castle contains a bug that can cause NPEs given specially crafted signatures. Those signatures
             // are inherently invalid/attack sigs so we just fail them here rather than crash the thread.
-            Log.e("ECKey", "Caught NPE inside bouncy castle");
+            log.error("Caught NPE inside bouncy castle");
             e.printStackTrace();
             return false;
         }
@@ -807,7 +807,7 @@ public class ECKey implements Serializable {
      *
      * @param message         Some piece of human readable text.
      * @param signatureBase64 The Bitcoin-format message signature in base64
-     * @throws SignatureException If the public key could not be recovered or if there was a signature format error.
+     * @throws java.security.SignatureException If the public key could not be recovered or if there was a signature format error.
      */
     public static ECKey signedMessageToKey(String message, String signatureBase64) throws SignatureException {
         byte[] signatureEncoded;
@@ -850,7 +850,7 @@ public class ECKey implements Serializable {
     }
 
     /**
-     * Convenience wrapper around {@link ECKey#signedMessageToKey(String, String)}. If the key derived from the
+     * Convenience wrapper around {@link net.bither.bitherj.crypto.ECKey#signedMessageToKey(String, String)}. If the key derived from the
      * signature is not the same as this one, throws a SignatureException.
      */
     public void verifyMessage(String message, String signatureBase64) throws SignatureException {
@@ -1020,23 +1020,23 @@ public class ECKey implements Serializable {
         try {
             ECKey rebornUnencryptedKey = encryptedKey.decrypt(keyCrypter, aesKey);
             if (rebornUnencryptedKey == null) {
-                Log.e("ECKey", genericErrorText + "The test decrypted key was missing.");
+                log.error(genericErrorText + "The test decrypted key was missing.");
                 return false;
             }
 
             byte[] originalPrivateKeyBytes = originalKey.getPrivKeyBytes();
             if (originalPrivateKeyBytes != null) {
                 if (rebornUnencryptedKey.getPrivKeyBytes() == null) {
-                    Log.e("ECKey", genericErrorText + "The test decrypted key was missing.");
+                    log.error(genericErrorText + "The test decrypted key was missing.");
                     return false;
                 } else {
                     if (originalPrivateKeyBytes.length != rebornUnencryptedKey.getPrivKeyBytes().length) {
-                        Log.e("ECKey", genericErrorText + "The test decrypted private key was a different length to the original.");
+                        log.error(genericErrorText + "The test decrypted private key was a different length to the original.");
                         return false;
                     } else {
                         for (int i = 0; i < originalPrivateKeyBytes.length; i++) {
                             if (originalPrivateKeyBytes[i] != rebornUnencryptedKey.getPrivKeyBytes()[i]) {
-                                Log.e("ECKey", genericErrorText + "Byte " + i + " of the private key did not match the original.");
+                                log.error(genericErrorText + "Byte " + i + " of the private key did not match the original.");
                                 return false;
                             }
                         }
@@ -1044,7 +1044,7 @@ public class ECKey implements Serializable {
                 }
             }
         } catch (KeyCrypterException kce) {
-            Log.e("ECKey", kce.getMessage());
+            log.error(kce.getMessage());
             return false;
         }
 

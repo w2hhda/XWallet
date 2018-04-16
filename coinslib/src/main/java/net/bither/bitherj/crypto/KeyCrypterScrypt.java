@@ -15,12 +15,12 @@
  */
 package net.bither.bitherj.crypto;
 
-import android.util.Log;
-
 import com.lambdaworks.crypto.SCrypt;
 
 import net.bither.bitherj.utils.Utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.BufferedBlockCipher;
 import org.spongycastle.crypto.engines.AESFastEngine;
 import org.spongycastle.crypto.modes.CBCBlockCipher;
@@ -34,6 +34,7 @@ import java.security.SecureRandom;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class KeyCrypterScrypt implements KeyCrypter, Serializable {
+    private static final Logger log = LoggerFactory.getLogger(KeyCrypterScrypt.class);
     private static final long serialVersionUID = 949662512049152670L;
     private static final int BITCOINJ_SCRYPT_N = 16384;
     private static final int BITCOINJ_SCRYPT_R = 8;
@@ -82,7 +83,7 @@ public class KeyCrypterScrypt implements KeyCrypter, Serializable {
 
         if (salt == null
                 || salt.length == 0) {
-            Log.w("KeyCrypterScrypt", "You are using a ScryptParameters with no salt. Your encryption may be vulnerable to a dictionary attack.");
+            log.warn("You are using a ScryptParameters with no salt. Your encryption may be vulnerable to a dictionary attack.");
         }
     }
 
@@ -98,7 +99,7 @@ public class KeyCrypterScrypt implements KeyCrypter, Serializable {
             } else {
                 // Warn the user that they are not using a salt.
                 // (Some early MultiBit wallets had a blank salt).
-                Log.w("KeyCrypterScrypt", "You are using a ScryptParameters with no salt. Your encryption may be vulnerable to a dictionary attack.");
+                log.warn("You are using a ScryptParameters with no salt. Your encryption may be vulnerable to a dictionary attack.");
             }
 
             byte[] keyBytes = SCrypt.scrypt(passwordBytes, salt, BITCOINJ_SCRYPT_N, BITCOINJ_SCRYPT_R, BITCOINJ_SCRYPT_P, KEY_LENGTH);

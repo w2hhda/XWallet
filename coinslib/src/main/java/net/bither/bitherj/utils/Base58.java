@@ -248,4 +248,5 @@ public class Base58 {
         String address = encode(result);
         return address;
     }
+
 }

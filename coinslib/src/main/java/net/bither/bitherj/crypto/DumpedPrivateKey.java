@@ -19,6 +19,7 @@ package net.bither.bitherj.crypto;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 
+import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.exception.AddressFormatException;
 import net.bither.bitherj.utils.Base58;
 import net.bither.bitherj.utils.Utils;
@@ -38,11 +39,10 @@ public class DumpedPrivateKey {
 
     protected int version;
     protected byte[] bytes;
-    private static final int dumpedPrivateKeyHeader = 128;
 
     // Used by ECKey.getPrivateKeyEncoded()
     public DumpedPrivateKey(byte[] keyBytes, boolean compressed) {
-        version = dumpedPrivateKeyHeader;
+        version = BitherjSettings.dumpedPrivateKeyHeader;
         bytes = encode(keyBytes, compressed);
         checkArgument(version < 256 && version >= 0);
         this.compressed = compressed;
@@ -75,9 +75,9 @@ public class DumpedPrivateKey {
         bytes = new byte[tmp.length - 1];
         System.arraycopy(tmp, 1, bytes, 0, tmp.length - 1);
 
-        if (version != dumpedPrivateKeyHeader)
+        if (version != BitherjSettings.dumpedPrivateKeyHeader)
             throw new AddressFormatException("Mismatched version number, trying to cross networks? " + version +
-                    " vs dumpedPrivateKeyHeader");
+                    " vs " + BitherjSettings.dumpedPrivateKeyHeader);
         if (bytes.length == 33 && bytes[32] == 1) {
             compressed = true;
             bytes = Arrays.copyOf(bytes, 32);  // Chop off the additional marker byte.

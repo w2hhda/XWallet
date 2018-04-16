@@ -1,12 +1,15 @@
 package net.bither.bitherj.crypto;
 
-import android.util.Log;
-
 import net.bither.bitherj.qrcode.QRCodeUtil;
 import net.bither.bitherj.qrcode.SaltForQRCode;
 import net.bither.bitherj.utils.Utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class EncryptedData {
+
+    private static final Logger log = LoggerFactory.getLogger(EncryptedData.class);
 
     private byte[] encryptedData;
     private byte[] initialisationVector;
@@ -16,7 +19,7 @@ public class EncryptedData {
     public EncryptedData(String str) {
         String[] strs = QRCodeUtil.splitOfPasswordSeed(str);
         if (strs.length != 3) {
-            Log.e("EncryptedData", "decryption: EncryptedData format error");
+            log.error("decryption: EncryptedData format error");
         }
         initialisationVector = Utils.hexStringToByteArray
                 (strs[1]);

@@ -17,9 +17,10 @@
  */
 
 package net.bither.bitherj.crypto.mnemonic;
-
 import net.bither.bitherj.utils.Sha256Hash;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,11 +31,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+
 /**
  * A MnemonicCode object may be used to convert between binary seed values and lists of words per
  * <a href="https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki">the BIP 39 specification</a>
  */
+
+
+
+
 public abstract class MnemonicCode {
+    private static final Logger log = LoggerFactory.getLogger(MnemonicCode.class);
+
     private MnemonicWordList mnemonicWordList = MnemonicWordList.English;
 
     private ArrayList<String> wordList;
@@ -203,6 +211,7 @@ public abstract class MnemonicCode {
 
         long start = System.currentTimeMillis();
         byte[] seed = PBKDF2SHA512.derive(pass, salt, PBKDF2_ROUNDS, 64);
+        log.info("PBKDF2 took {}ms", System.currentTimeMillis() - start);
         return seed;
     }
 
@@ -294,7 +303,7 @@ public abstract class MnemonicCode {
         boolean[] entropyBits = bytesToBits(entropy);
         int checksumLengthBits = entropyBits.length / 32;
 
-        // We append these bits to the end of the initial entropy.
+        // We append these bits to the end of the initial entropy. 
         boolean[] concatBits = new boolean[entropyBits.length + checksumLengthBits];
         System.arraycopy(entropyBits, 0, concatBits, 0, entropyBits.length);
         System.arraycopy(hashBits, 0, concatBits, entropyBits.length, checksumLengthBits);
@@ -320,12 +329,6 @@ public abstract class MnemonicCode {
             }
             words.add(this.wordList.get(index));
         }
-        /*ArrayList<String> words = new ArrayList<String>();
-        String[] t = {"bread", "once", "repeat", "domain", "diesel", "shuffle", "bleak", "raise",
-                "tackle", "olive", "stuff", "alien"};
-        for(int i = 0; i < 12; i++){
-            words.add(t[i]);
-        }*/
 
         return words;
     }

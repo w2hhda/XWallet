@@ -65,8 +65,8 @@ public final class HDKeyDerivation {
         // Split I into two 32-byte sequences, Il and Ir.
         // Use Il as master secret key, and Ir as master chain code.
         checkState(i.length == 64, i.length);
-        byte[] il = Arrays.copyOfRange(i, 0, 32); //master private key(m)
-        byte[] ir = Arrays.copyOfRange(i, 32, 64); //a master chain code
+        byte[] il = Arrays.copyOfRange(i, 0, 32);
+        byte[] ir = Arrays.copyOfRange(i, 32, 64);
         Arrays.fill(i, (byte) 0);
         DeterministicKey masterPrivKey = createMasterPrivKeyFromBytes(il, ir);
         Arrays.fill(il, (byte) 0);

@@ -157,7 +157,7 @@ public class DeterministicKey extends ECKey {
     }
 
     /**
-     * Returns the last element of the path returned by {@link DeterministicKey#getPath()}
+     * Returns the last element of the path returned by {@link net.bither.bitherj.crypto.hd.DeterministicKey#getPath()}
      */
     public ChildNumber getChildNumber() {
         return getDepth() == 0 ? ChildNumber.ZERO : childNumberPath.get(childNumberPath.size() - 1);
@@ -384,20 +384,19 @@ public class DeterministicKey extends ECKey {
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("pub" + Utils.bytesToHexString(pub));
-        builder.append("chainCode" + Utils.bytesToHexString(chainCode));
-        builder.append("path" + getPathAsString());
+        builder.append("pub: " + Utils.bytesToHexString(pub));
+        builder.append("chainCode: " + Utils.bytesToHexString(chainCode));
+        builder.append("path: " + getPathAsString());
         if (creationTimeSeconds > 0)
-            builder.append("creationTimeSeconds" + creationTimeSeconds);
-        builder.append("isEncrypted" + isEncrypted());
-        builder.append("isPubKeyOnly" + isPubKeyOnly());
+            builder.append("creationTimeSeconds: " + creationTimeSeconds);
+        builder.append("isEncrypted: " + isEncrypted());
+        builder.append("isPubKeyOnly: " + isPubKeyOnly());
         return builder.toString();
     }
 
     @Override
     public void clearPrivateKey() {
         super.clearPrivateKey();
-        System.out.println("test1 DeterministicKey clearPrivateKey priv = " + priv);
         priv = null;
     }
 
@@ -423,10 +422,6 @@ public class DeterministicKey extends ECKey {
 
     public String serializePrivB58() {
         return toBase58(serialize(false));
-    }
-
-    public String ser(){
-        return toBase58(getPrivKeyBytes33());
     }
 
     static String toBase58(byte[] ser) {

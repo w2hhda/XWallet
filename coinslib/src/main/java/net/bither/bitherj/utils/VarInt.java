@@ -114,6 +114,4 @@ public class VarInt {
             return bytes;
         }
     }
-
-
 }
