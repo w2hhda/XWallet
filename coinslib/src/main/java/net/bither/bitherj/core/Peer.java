@@ -17,6 +17,7 @@
 package net.bither.bitherj.core;
 
 import com.google.common.util.concurrent.Service;
+import com.x.wallet.lib.btc.CustomeAddressManager;
 
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.db.AbstractDb;
@@ -270,7 +271,7 @@ public class Peer extends PeerSocketHandler {
             needToRequestDependencyDict.remove(hash);
         }
         HashSet<Tx> checkedTxs = new HashSet<Tx>();
-
+        HashSet<String> addressHashSet = AbstractDb.txProvider.getAllAddressToHashSet();
         for (Tx eachTx : needCheckDependencyTxs) {
             boolean stillNeedDependency = false;
             for (HashSet<Tx> set : needToRequestDependencyDict.values()) {
@@ -280,7 +281,7 @@ public class Peer extends PeerSocketHandler {
                 }
             }
             if (!stillNeedDependency) {
-                PeerManager.instance().relayedTransaction(this, eachTx, false);
+                PeerManager.instance().relayedTransaction(this, eachTx, false, addressHashSet);
                 checkedTxs.add(eachTx);
             }
         }
@@ -297,6 +298,7 @@ public class Peer extends PeerSocketHandler {
         } else {
             needToRequestDependencyDict.remove(new Sha256Hash(tx.getTxHash()));
         }
+        HashSet<String> addressHashSet = AbstractDb.txProvider.getAllAddressToHashSet();
         HashSet<Tx> invalidTxs = new HashSet<Tx>();
         HashSet<Tx> checkedTxs = new HashSet<Tx>();
         for (Tx eachTx : needCheckDependencyTxs) {
@@ -335,7 +337,7 @@ public class Peer extends PeerSocketHandler {
                     }
                 }
                 if (!stillNeedDependency) {
-                    PeerManager.instance().relayedTransaction(this, eachTx, false);
+                    PeerManager.instance().relayedTransaction(this, eachTx, false, addressHashSet);
                     checkedTxs.add(eachTx);
                 }
             } else {
@@ -550,7 +552,8 @@ public class Peer extends PeerSocketHandler {
 
     private void processTransaction(Tx tx) throws VerificationException {
         if (currentFilteredBlock != null) { // we're collecting tx messages for a merkleblock
-            PeerManager.instance().relayedTransaction(this, tx, true);
+            HashSet<String> addressHashSet = AbstractDb.txProvider.getAllAddressToHashSet();
+            PeerManager.instance().relayedTransaction(this, tx, true, addressHashSet);
             // we can't we byte array hash or BigInteger as the key.
             // byte array can't be compared
             // BigInteger can't be cast back to byte array
@@ -584,7 +587,8 @@ public class Peer extends PeerSocketHandler {
         } else {
             log.info("peer[{}:{}] receive tx {}", this.peerAddress.getHostAddress(),
                     this.peerPort, Utils.hashToString(tx.getTxHash()));
-            if (AddressManager.getInstance().isTxRelated(tx, tx.getInAddresses())) {
+            HashSet<String> addressHashSet = AbstractDb.txProvider.getAllAddressToHashSet();
+            if (CustomeAddressManager.isTxRelated(addressHashSet, tx, tx.getInAddresses())) {
                 unrelatedTxRelayCount = 0;
             } else {
                 unrelatedTxRelayCount++;
@@ -604,7 +608,7 @@ public class Peer extends PeerSocketHandler {
                 valid = false;
             }
             if (valid && !tx.hasDustOut()) {
-                PeerManager.instance().relayedTransaction(this, tx, false);
+                PeerManager.instance().relayedTransaction(this, tx, false, addressHashSet);
             }
             /*
             log.info("peer[{}:{}] receive tx {}", this.peerAddress.getHostAddress(),

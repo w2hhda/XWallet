@@ -16,11 +16,16 @@
 
 package net.bither.bitherj.core;
 
+import android.util.Log;
+
+import com.x.wallet.lib.btc.CustomeAddressManager;
+
 import net.bither.bitherj.AbstractApp;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.db.AbstractDb;
 import net.bither.bitherj.exception.ProtocolException;
 import net.bither.bitherj.net.NioClientManager;
+import net.bither.bitherj.utils.Base58;
 import net.bither.bitherj.utils.DnsDiscovery;
 import net.bither.bitherj.utils.Sha256Hash;
 import net.bither.bitherj.utils.Utils;
@@ -795,7 +800,7 @@ public class PeerManager {
         if (!isRunning()) {
             return null;
         }
-        BloomFilter filter = getBloomFilter();
+        BloomFilter filter = getBloomFilter2(); //getBloomFilter();
         filterFpRate = filter.getFalsePositiveRate(bloomFilterElementCount);
         filterUpdateHeight = getLastBlockHeight();
         return filter;
@@ -1123,5 +1128,120 @@ public class PeerManager {
     public void onDestroy() {
         instance = null;
         NioClientManager.instance().onDestroy();
+    }
+
+    private BloomFilter getBloomFilter2() {
+        Log.i("testPeer", "PeerManager getBloomFilter2 bloomFilter = " + bloomFilter);
+        if (bloomFilter == null) {
+
+            filterUpdateHeight = getLastBlockHeight();
+            filterFpRate = BloomFilter.DEFAULT_BLOOM_FILTER_FP_RATE;
+
+            if (downloadingPeer != null && filterUpdateHeight + 500 < downloadingPeer.getVersionLastBlockHeight()) {
+                filterFpRate = BloomFilter.BLOOM_REDUCED_FALSEPOSITIVE_RATE; // lower false
+                // positive rate during chain sync
+            } else if (downloadingPeer != null && filterUpdateHeight < downloadingPeer
+                    .getVersionLastBlockHeight()) { // partially
+                // lower fp rate if we're nearly synced
+                filterFpRate -= (BloomFilter.DEFAULT_BLOOM_FILTER_FP_RATE - BloomFilter
+                        .BLOOM_REDUCED_FALSEPOSITIVE_RATE) * (downloadingPeer
+                        .getVersionLastBlockHeight() - filterUpdateHeight) / BitherjSettings
+                        .BLOCK_DIFFICULTY_INTERVAL;
+            }
+            HashSet<String> addressHashSet = AbstractDb.txProvider.getAllAddressToHashSet();
+            List<Out> outs = new ArrayList<Out>();
+            for (Out out : AbstractDb.txProvider.getOuts()) {
+                if (addressHashSet.contains(out.getOutAddress())) {
+                    outs.add(out);
+                }
+            }
+            List<String> addresses = AbstractDb.txProvider.getAllAddressPubToList();
+
+            bloomFilterElementCount = addresses.size() * 2 + outs.size() + 100;
+
+            BloomFilter filter = new BloomFilter(bloomFilterElementCount, filterFpRate, tweak,
+                    BloomFilter.BloomUpdate.UPDATE_ALL);
+            try{
+                for (String address : addresses) { // add addresses to watch for any tx receiveing
+                    // money to the wallet
+                    Log.i("test", "PeerManager getBloomFilter2 address = " + address);
+                    byte[] pub = Base58.decode(address);
+                    if (pub != null && !filter.contains(pub)) {
+                        filter.insert(pub);
+                    }
+                    if (pub != null) {
+                        byte[] hash = Utils.sha256hash160(pub);
+                        if (hash != null && !filter.contains(hash)) {
+                            filter.insert(hash);
+                        }
+                    }
+                }
+            } catch (Exception e){
+                Log.w("test", "PeerManager getBloomFilter2", e);
+            }
+
+            for (Out out : outs) {
+                byte[] outpoint = out.getOutpointData();
+                if (!filter.contains(outpoint)) {
+                    filter.insert(outpoint);
+                }
+            }
+
+            bloomFilter = filter;
+        }
+        return bloomFilter;
+    }
+
+    public void relayedTransaction(final Peer fromPeer, final Tx tx, final boolean isConfirmed, final HashSet<String> addressHashSet) {
+        if (!isRunning()) {
+            return;
+        }
+        if (fromPeer == downloadingPeer) {
+            lastRelayTime = System.currentTimeMillis();
+        }
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                boolean isRel = CustomeAddressManager.registerTx(addressHashSet, tx, Tx.TxNotificationType
+                        .txReceive, isConfirmed);
+                if (isRel) {
+                    boolean isAlreadyInDb = AbstractDb.txProvider.isExist(tx.getTxHash());
+
+                    if (publishedTx.get(new Sha256Hash(tx.getTxHash())) == null) {
+                        publishedTx.put(new Sha256Hash(tx.getTxHash()), tx);
+                    }
+
+                    // keep track of how many peers relay a tx, this indicates how likely it is
+                    // to be
+                    // confirmed in future blocks
+                    if (txRelays.get(new Sha256Hash(tx.getTxHash())) == null) {
+                        txRelays.put(new Sha256Hash(tx.getTxHash()), new HashSet<Peer>());
+                    }
+
+                    long count = txRelays.get(new Sha256Hash(tx.getTxHash())).size();
+                    txRelays.get(new Sha256Hash(tx.getTxHash())).add(fromPeer);
+                    if (txRelays.get(new Sha256Hash(tx.getTxHash())).size() > count) {
+                        tx.sawByPeer();
+                    }
+
+                    if (!isAlreadyInDb) {
+                        bloomFilter = null; // reset the filter so a new one will be created with
+                        // the new
+                        // wallet addresses
+
+                        for (Peer p : connectedPeers) {
+                            p.sendFilterLoadMessage(bloomFilterForPeer(p));
+                        }
+                    }
+
+                    // after adding addresses to the filter, re-request upcoming blocks that were
+                    // requested using the old one
+                    if (downloadingPeer != null && BlockChain.getInstance().lastBlock != null) {
+                        downloadingPeer.refetchBlocksFrom(new Sha256Hash(BlockChain.getInstance()
+                                .lastBlock.getBlockHash()));
+                    }
+                }
+            }
+        });
     }
 }

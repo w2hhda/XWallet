@@ -80,20 +80,20 @@ public class TransactionListItem extends RelativeLayout{
         mCoinUnitTv.setText(item.getTokenSymbols());
         
         if (item.getTransactionType().equalsIgnoreCase(TransactionItem.TRANSACTION_TYPE_RECEIVE)){
-            mAmount.setText("+" + amount);
+            mAmount.setText(getResources().getString(R.string.receive_amount_prefix, amount));
             mAmount.setTextColor(getResources().getColor(R.color.manage_account_textColor));
-            mTransactionName.setText(getResources().getString(R.string.receipt_transaction) + ":  " + item.getFromAddress());
+            mTransactionName.setText(getResources().getString(R.string.receipt_transaction_prefix, item.getFromAddress()));
         }else {
-            mAmount.setText("-" + amount);
+            mAmount.setText(getResources().getString(R.string.send_amount_prefix, amount));
             mAmount.setTextColor(getResources().getColor(R.color.colorRed));
             if (isTokenAccount){
-                mTransactionName.setText(getResources().getString(R.string.send_out_transaction) + ":  " + item.getToAddress());
+                mTransactionName.setText(getResources().getString(R.string.send_out_transaction_prefix, item.getToAddress()));
                 mCoinUnitTv.setText(item.getTokenSymbols());
             }else {
                 if (item.getToken() || item.getError()) {
-                    mTransactionName.setText(getResources().getString(R.string.transfer_fax) + ":  " + item.getToAddress());
+                    mTransactionName.setText(getResources().getString(R.string.transfer_fee, item.getToAddress()));
                 } else {
-                    mTransactionName.setText(getResources().getString(R.string.send_out_transaction) + ":  " + item.getToAddress());
+                    mTransactionName.setText(getResources().getString(R.string.send_out_transaction_prefix, item.getToAddress()));
                 }
             }
         }
@@ -130,7 +130,13 @@ public class TransactionListItem extends RelativeLayout{
         } catch (Exception e) {
             return 0;
         }
-        mAmount.setText(TokenUtils.getBalanceText(value, BtcUtils.BTC_DECIMALS_COUNT) + " ");
+        if(value > 0){
+            mAmount.setText(getResources().getString(R.string.receive_amount_prefix, TokenUtils.getBalanceText(value, BtcUtils.BTC_DECIMALS_COUNT)));
+            mAmount.setTextColor(getResources().getColor(R.color.manage_account_textColor));
+        } else {
+            mAmount.setText(getResources().getString(R.string.send_amount_prefix, TokenUtils.getBalanceText(Math.abs(value), BtcUtils.BTC_DECIMALS_COUNT)));
+            mAmount.setTextColor(getResources().getColor(R.color.colorRed));
+        }
         return value;
     }
 
@@ -142,21 +148,21 @@ public class TransactionListItem extends RelativeLayout{
                 try {
                     String subAddress = mTransaction.getFromAddress();
                     if (Utils.isEmpty(subAddress)) {
-                        mTransactionName.setText("---");
+                        mTransactionName.setText(getResources().getString(R.string.receipt_transaction_prefix, "---"));
                     } else {
                         mTransactionName.setText(Utils.shortenAddress(subAddress));
                     }
                 } catch (ScriptException e) {
                     e.printStackTrace();
-                    mTransactionName.setText("---");
+                    mTransactionName.setText(getResources().getString(R.string.receipt_transaction_prefix, "---"));
                 }
             }
         } else {
             String subAddress = mTransaction.getFirstOutAddress();
             if (subAddress != null) {
-                mTransactionName.setText(Utils.shortenAddress(subAddress));
+                mTransactionName.setText(getResources().getString(R.string.send_out_transaction_prefix, subAddress));
             } else {
-                mTransactionName.setText("---");
+                mTransactionName.setText(getResources().getString(R.string.send_out_transaction_prefix, "---"));
             }
         }
     }

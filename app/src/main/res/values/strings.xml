@@ -65,7 +65,7 @@
     <string name="transfer_to_address">转账至</string>
     <string name="transfer_to_hint">请输入地址或扫描二维码</string>
     <string name="transfer_amount">转账额度</string>
-    <string name="transfer_fax">手续费</string>
+    <string name="transfer_fee">"手续费: <xliff:g id="address">%s</xliff:g>"</string>
     <string name="cancel">取消</string>
     <string name="app_declare">我已经仔细阅读并同意</string>
     <string name="privacy_policy">隐私条款</string>
@@ -130,4 +130,8 @@
     <string name="delete_token">删除代币</string>
     <string name="confirm_delete_token">确认要删除代币<xliff:g id="name">%s</xliff:g>吗？</string>
     <string name="manage_password_hind">请输入密码</string>
+    <string name="send_out_transaction_prefix">"转账:  <xliff:g id="address">%s</xliff:g>"</string>
+    <string name="receipt_transaction_prefix">"收款:  <xliff:g id="address">%s</xliff:g>"</string>
+    <string name="receive_amount_prefix">"+<xliff:g id="amount">%s</xliff:g>"</string>
+    <string name="send_amount_prefix">"-<xliff:g id="amount">%s</xliff:g>"</string>
 </resources>

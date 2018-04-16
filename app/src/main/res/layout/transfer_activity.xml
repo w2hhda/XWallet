@@ -148,7 +148,7 @@
             android:layout_marginTop="56px"
             android:layout_marginStart="16dp"
             android:textSize="34px"
-            android:text="@string/transfer_fax"
+            android:text="@string/transfer_fee"
             android:textColor="@color/address_title_textColor"
             android:id="@+id/textView3" />
 

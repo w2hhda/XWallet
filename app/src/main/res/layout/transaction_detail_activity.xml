@@ -100,7 +100,7 @@
                 style="@style/ItemNameStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/transfer_fax" />
+                android:text="@string/transfer_fee" />
 
             <TextView
                 style="@style/ItemDetailStyle"
