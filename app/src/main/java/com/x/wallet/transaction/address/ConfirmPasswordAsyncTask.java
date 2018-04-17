@@ -206,10 +206,29 @@ public class ConfirmPasswordAsyncTask extends AsyncTask<ConfirmTransactionCallba
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
+                    Cursor cursor;
                     try {
+                        final String selection = DbUtils.TxTableColumns.FROM_ADDRESS + " = ?";
+                        final String sortOrder = DbUtils.TxTableColumns.NONCE + " DESC";
+                        cursor = XWalletApplication.getApplication().getContentResolver().query(XWalletProvider.CONTENT_URI_TRANSACTION,
+                                new String[]{DbUtils.TxTableColumns.NONCE},selection, new String[]{address}, sortOrder);
+                        long localNonce = 0;
+                        if (cursor != null && cursor.getCount() > 0){
+                            cursor.moveToFirst();
+                            localNonce = Long.parseLong(cursor.getString(0));
+                        }
+                        AppUtils.log("localNonce = " + localNonce);
+
                         JSONObject jsonObject = new JSONObject(response.body().string());
                         String result = jsonObject.getString("result").substring(2);
-                        BigInteger nonce = new BigInteger(result, 16);
+
+                        Long netNonce = Long.parseLong(result, 16);
+                        AppUtils.log("netNonce = " + netNonce);
+                        if (localNonce >= netNonce){
+                            netNonce = localNonce + 1;
+                        }
+                        BigInteger nonce = BigInteger.valueOf(netNonce);
+                        AppUtils.log("nonce ready to insert = " + nonce);
                         BigInteger gasP = new BigInteger(gasPrice);
                         values.put(DbUtils.TxTableColumns.NONCE, nonce.toString());
                         RawTransaction tx = getRawTransaction(
@@ -306,7 +325,7 @@ public class ConfirmPasswordAsyncTask extends AsyncTask<ConfirmTransactionCallba
                             } else {
                                 if (result != null && result.contains("Error")) {
                                     handleErrorCallback(callback, new Throwable(result));
-                                } 
+                                }
                             }
                         }else {
                             String errorMsg = object.getJSONObject("error").getString("message");
