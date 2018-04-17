@@ -2,15 +2,12 @@ package com.x.wallet.btc;
 
 import android.app.LoaderManager;
 import android.content.Context;
-import android.content.Loader;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.x.wallet.lib.btc.BtcLibHelper;
-import com.x.wallet.transaction.token.TokenUtils;
 
 import net.bither.bitherj.core.Tx;
 
@@ -23,17 +20,10 @@ import java.util.List;
  */
 
 public class BtcAccountDetailHelper {
-    private static final String ADDRESS = "address";
-    private static final int ACCOUNT_DETAIL_BALANCE_LOADER = 1;
-
-    private LoaderManager mLoaderManager;
-    private AccountBalanceLoaderCallbacks mAccountBalanceLoaderCallbacks;
-    private BtcAccountBalanceLoader mBtcAccountBalanceLoader;
-    private long mBalance;
-
     private Context mContext;
     private String mAddress;
 
+    private BtcAccountBalanceLoaderHelper mBtcAccountBalanceLoaderHelper;
     private OnDataLoadFinishedListener mOnDataLoadFinishedListener;
 
     private ListView mListView;
@@ -45,7 +35,6 @@ public class BtcAccountDetailHelper {
 
     public BtcAccountDetailHelper(Context context) {
         mContext = context;
-        mAccountBalanceLoaderCallbacks = new AccountBalanceLoaderCallbacks();
     }
 
     public void init(String address, ListView listView, LoaderManager loaderManager,
@@ -76,19 +65,23 @@ public class BtcAccountDetailHelper {
             }
         });
 
-        final Bundle args = new Bundle();
-        args.putString(ADDRESS, address);
-        mLoaderManager = loaderManager;
-        mBtcAccountBalanceLoader = (BtcAccountBalanceLoader) mLoaderManager.initLoader(ACCOUNT_DETAIL_BALANCE_LOADER, args, mAccountBalanceLoaderCallbacks);
+        mBtcAccountBalanceLoaderHelper = new BtcAccountBalanceLoaderHelper(mContext, loaderManager, address, new BtcAccountBalanceLoaderHelper.OnDataLoadFinishedListener() {
+            @Override
+            public void onBalanceLoadFinished(String balance) {
+                if(mOnDataLoadFinishedListener != null){
+                    mOnDataLoadFinishedListener.onBalanceLoadFinished(balance);
+                }
+            }
+        });
 
         loadData();
     }
 
-    public void loadData() {
+    private void loadData() {
         page = 1;
         hasMore = true;
         loadTx();
-        mBtcAccountBalanceLoader.forceLoad();
+        mBtcAccountBalanceLoaderHelper.forceLoad();
     }
 
     private void loadTx() {
@@ -132,31 +125,8 @@ public class BtcAccountDetailHelper {
     }
 
     public void destory(){
-        if (mLoaderManager != null) {
-            mLoaderManager.destroyLoader(ACCOUNT_DETAIL_BALANCE_LOADER);
-            mLoaderManager = null;
-        }
-    }
-
-    private class AccountBalanceLoaderCallbacks implements LoaderManager.LoaderCallbacks<Long> {
-
-        @Override
-        public Loader<Long> onCreateLoader(int id, Bundle args) {
-            return new BtcAccountBalanceLoader(mContext, args.getString(ADDRESS));
-        }
-
-        @Override
-        public void onLoadFinished(Loader<Long> loader, Long balance) {
-            Log.i("testBtcDetail", "BtcAccountDetailHelper onLoadFinished balance = " + balance);
-            mBalance = balance;
-            if(mOnDataLoadFinishedListener != null){
-                mOnDataLoadFinishedListener.onBalanceLoadFinished(TokenUtils.getBalanceText(balance, BtcUtils.BTC_DECIMALS_COUNT));
-            }
-        }
-
-        @Override
-        public void onLoaderReset(Loader<Long> loader) {
-
+        if(mBtcAccountBalanceLoaderHelper != null){
+            mBtcAccountBalanceLoaderHelper.destory();
         }
     }
 

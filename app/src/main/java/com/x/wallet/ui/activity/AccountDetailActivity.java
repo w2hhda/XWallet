@@ -327,6 +327,9 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             mLoaderManager.destroyLoader(TX_TOKEN_LIST_LOADER);
             mLoaderManager = null;
         }
+        if(mBtcAccountDetailHelper != null){
+            mBtcAccountDetailHelper.destory();
+        }
         BalanceConversionUtils.clearListener();
         TokenUtils.setRateUpdateListener(null);
     }

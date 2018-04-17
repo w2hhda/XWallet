@@ -20,41 +20,38 @@ import android.widget.Toast;
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.XWalletApplication;
-import com.x.wallet.lib.eth.api.EtherscanAPI;
-import com.x.wallet.lib.eth.util.ExchangeCalUtil;
+import com.x.wallet.btc.BtcAccountBalanceLoaderHelper;
+import com.x.wallet.btc.BtcTransferHelper;
+import com.x.wallet.lib.common.LibUtils;
+import com.x.wallet.transaction.EthTransactionFeeHelper;
 import com.x.wallet.transaction.address.ConfirmPasswordAsyncTask;
 import com.x.wallet.transaction.address.ConfirmTransactionCallback;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.data.RawAccountItem;
 import com.x.wallet.ui.data.SerializableAccountItem;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 /**
  * Created by Nick on 26/3/2018.
  */
 
 public class TransferActivity extends WithBackAppCompatActivity {
-    private BigInteger defaultGasLimit = new BigInteger("91000");
     private EditText toAddress;
-    private TextView priceTv;
+
     private EditText transferAmount;
-    private BigDecimal defaultPrice = new BigDecimal(0);
-    private RawAccountItem mTokenItem;
     private TextView unitIndicator;
-    private SerializableAccountItem mAccountItem;
     private TextView availableBalance;
     private ProgressDialog mProgressDialog;
 
+    private TextView priceTv;
+    private TextView mGasPriceUnitTv;
+
+    private RawAccountItem mTokenItem;
+    private SerializableAccountItem mAccountItem;
+
+    private EthTransactionFeeHelper mEthTransactionFeeHelper;
+    private BtcTransferHelper mBtcTransferHelper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,6 +76,8 @@ public class TransferActivity extends WithBackAppCompatActivity {
         initAmountView();
         initFeeView();
         initSendBtn(address);
+
+        initData();
     }
 
     private void initToAddressView(){
@@ -99,25 +98,16 @@ public class TransferActivity extends WithBackAppCompatActivity {
         unitIndicator = findViewById(R.id.unit_indicator);
         if (mTokenItem != null){
             unitIndicator.setText(mTokenItem.getCoinName());
+        } else {
+            unitIndicator.setText(mAccountItem.getCoinName());
         }
         availableBalance = findViewById(R.id.available_balance);
-
-        StringBuilder indicator= new StringBuilder();
-        if (mTokenItem != null){
-            indicator.append(TokenUtils.getBalanceText(mTokenItem.getBalance(), mTokenItem.getDecimals()) );
-            indicator.append(" ");
-            indicator.append(mTokenItem.getCoinName());
-        }else {
-            indicator.append(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS));
-            indicator.append(" ");
-            indicator.append(mAccountItem.getCoinName());
-        }
-        availableBalance.setText(indicator);
     }
 
     private void initFeeView(){
         priceTv = findViewById(R.id.gas_price_tv);
-        getGasPrice();
+        mGasPriceUnitTv = findViewById(R.id.gas_price_item);
+        mGasPriceUnitTv.setText(mAccountItem.getCoinName());
 
         final SeekBar gasPriceSeekBar = findViewById(R.id.gas_price_seekbar);
         gasPriceSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -141,7 +131,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                updateGasPrice(TransferActivity.this, gasPriceSeekBar.getProgress());
+                updateGasPrice(gasPriceSeekBar.getProgress());
             }
         });
     }
@@ -243,8 +233,8 @@ public class TransferActivity extends WithBackAppCompatActivity {
         intent.putExtra(ConfirmPasswordAsyncTask.FROM_ADDRESS_TAG, address);
         intent.putExtra(ConfirmPasswordAsyncTask.TO_ADDRESS_TAG, toAddress.getText().toString());
         intent.putExtra(ConfirmPasswordAsyncTask.PASSWORD_TAG, password);
-        intent.putExtra(ConfirmPasswordAsyncTask.GAS_PRICE_TAG, getNowPrice().toBigInteger().toString());
-        intent.putExtra(ConfirmPasswordAsyncTask.GAS_LIMIT_TAG, defaultGasLimit);
+        intent.putExtra(ConfirmPasswordAsyncTask.GAS_PRICE_TAG, mEthTransactionFeeHelper.getNowPrice(priceTv.getText().toString()).toBigInteger().toString());
+        intent.putExtra(ConfirmPasswordAsyncTask.GAS_LIMIT_TAG, mEthTransactionFeeHelper.getDefaultGasLimit());
         intent.putExtra(ConfirmPasswordAsyncTask.AMOUNT_TAG, transferAmount.getText().toString());
         intent.putExtra(ConfirmPasswordAsyncTask.EXTRA_DATA_TAG, "");
         if (mAccountItem != null){
@@ -269,76 +259,12 @@ public class TransferActivity extends WithBackAppCompatActivity {
         }
     }
 
-    private void getGasPrice(){
-        try {
-            EtherscanAPI.getInstance().getGasPrice(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    try {
-                        JSONObject object = new JSONObject(response.body().string());
-                        final String result = object.getString("result").substring(2);
-                        final BigInteger price = new BigInteger(result, 16);
-
-                        Log.i(AppUtils.APP_TAG,"gas price = " + price);
-                        TransferActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                BigDecimal nowPrice = ExchangeCalUtil.getInstance().weiToEther(price.multiply(defaultGasLimit));
-                                setDefaultPrice(nowPrice);
-                                priceTv.setText(nowPrice + "");
-                            }
-                        });
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }catch (IOException e){
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mBtcTransferHelper != null){
+            mBtcTransferHelper.destory();
         }
-    }
-
-    private void setDefaultPrice(BigDecimal number){
-        this.defaultPrice = number;
-    }
-
-    private BigDecimal getDefaultPrice(){
-        return defaultPrice;
-    }
-
-    private BigDecimal getNowPrice(){
-        BigDecimal ethTowei = new BigDecimal("1000000000000000000");
-        return new BigDecimal(priceTv.getText().toString()).multiply(ethTowei).divide(new BigDecimal(defaultGasLimit));
-    }
-
-    private void updateGasPrice(TransferActivity activity, final int progress){
-        final BigDecimal half = new BigDecimal(0.5);
-        final BigDecimal dec  = new BigDecimal(10);
-        final BigDecimal nowPrice = getDefaultPrice();
-
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (progress == 0){
-                    BigDecimal now = nowPrice.multiply(half);
-                    priceTv.setText(now.toString());
-                }else if (progress == 100){
-                    BigDecimal now = nowPrice.multiply(dec);
-
-                    priceTv.setText(now.toString());
-                }else {
-                    BigDecimal now = nowPrice;
-                    priceTv.setText(now.toString());
-                }
-
-
-            }
-        });
     }
 
     private ConfirmTransactionCallback<Boolean> createConfirmTransactionCallback(){
@@ -366,5 +292,60 @@ public class TransferActivity extends WithBackAppCompatActivity {
                 }
             }
         };
+    }
+
+    private void initData(){
+        if(mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_BTC){
+            initBtc();
+        } else {
+            String indicator = "";
+            if (mTokenItem != null){
+                indicator = TokenUtils.getBalanceText(mTokenItem.getBalance(), mTokenItem.getDecimals()) + " " + mTokenItem.getCoinName();
+            }else {
+                indicator = TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS) + " " + mAccountItem.getCoinName();
+            }
+            availableBalance.setText(indicator);
+
+            mEthTransactionFeeHelper = new EthTransactionFeeHelper(new EthTransactionFeeHelper.OnPriceChangedListener() {
+                @Override
+                public void onPriceChanged(final String newPriceText) {
+                    updatePriceText(newPriceText);
+                }
+            });
+            mEthTransactionFeeHelper.getGasPrice();
+        }
+    }
+
+    private void updateGasPrice(int progress) {
+        if(mEthTransactionFeeHelper != null){
+            mEthTransactionFeeHelper.updateGasPrice(progress);
+        } else if(mBtcTransferHelper != null){
+            mBtcTransferHelper.updateGasPrice(progress);
+        }
+    }
+
+    private void updatePriceText(final String priceText){
+        TransferActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                priceTv.setText(priceText);
+            }
+        });
+    }
+
+    private void initBtc(){
+        mBtcTransferHelper = new BtcTransferHelper(new BtcTransferHelper.OnTransactionFeeRequestFinishedListener() {
+            @Override
+            public void onFeeRequestFinished(final String priceText) {
+                updatePriceText(priceText);
+            }
+        });
+        mBtcTransferHelper.loadBalance(this, getLoaderManager(), mAccountItem.getAddress(), new BtcAccountBalanceLoaderHelper.OnDataLoadFinishedListener() {
+            @Override
+            public void onBalanceLoadFinished(String balance) {
+                availableBalance.setText(balance + " " + mAccountItem.getCoinName());
+            }
+        });
+        mBtcTransferHelper.getTransactionFee();
     }
 }
