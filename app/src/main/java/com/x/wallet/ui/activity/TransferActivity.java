@@ -107,8 +107,11 @@ public class TransferActivity extends WithBackAppCompatActivity {
     private void initFeeView(){
         priceTv = findViewById(R.id.gas_price_tv);
         mGasPriceUnitTv = findViewById(R.id.gas_price_item);
-        mGasPriceUnitTv.setText(mAccountItem.getCoinName());
-
+        if(mTokenItem != null){
+            mGasPriceUnitTv.setText(R.string.coin_unit_eth);
+        } else {
+            mGasPriceUnitTv.setText(mAccountItem.getCoinName());
+        }
         final SeekBar gasPriceSeekBar = findViewById(R.id.gas_price_seekbar);
         gasPriceSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
