@@ -1,13 +1,10 @@
 package com.x.wallet.lib.btc;
 
-import net.bither.bitherj.core.Coin;
 import net.bither.bitherj.core.Tx;
-import net.bither.bitherj.core.TxBuilder;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.TransactionSignature;
 import net.bither.bitherj.db.AbstractDb;
 import net.bither.bitherj.exception.PasswordException;
-import net.bither.bitherj.exception.TxBuilderException;
 import net.bither.bitherj.script.ScriptBuilder;
 import net.bither.bitherj.utils.PrivateKeyUtil;
 import net.bither.bitherj.utils.Utils;
@@ -28,23 +25,28 @@ public class CustomeAddress {
         return true;
     }
 
-    public static TxBuildResult buildTx2(long amount, String fromAddress, String toAddress, String changeAddress) throws TxBuilderException {
+    public static TxBuildResult buildTx(long amount, String fromAddress, String toAddress, String changeAddress, int feeBase) {
+        /*Log.i("test", "CustomeAddress buildTx amount = " + amount );
+        Log.i("test", "CustomeAddress buildTx fromAddress = " + fromAddress);
+        Log.i("test", "CustomeAddress buildTx toAddress = " + toAddress);
+        Log.i("test", "CustomeAddress buildTx changeAddress = " + changeAddress);
+        Log.i("test", "CustomeAddress buildTx feeBase = " + feeBase);*/
         List<Long> amounts = new ArrayList<Long>();
         amounts.add(amount);
         List<String> addresses = new ArrayList<String>();
         addresses.add(toAddress);
-        return buildTx2(fromAddress, changeAddress, amounts, addresses);
+        return buildTx(fromAddress, changeAddress, amounts, addresses, feeBase);
     }
 
-    public static TxBuildResult buildTx2(String fromAddress, String changeAddress, List<Long> amounts, List<String> addresses) throws TxBuilderException {
-        return TxBuilder.getInstance().buildTx(fromAddress, changeAddress, amounts, addresses, Coin.BTC);
+    public static TxBuildResult buildTx(String fromAddress, String changeAddress, List<Long> amounts, List<String> addresses, int feeBase){
+        return CustomeTxBuilder.buildTx(fromAddress, changeAddress, amounts, addresses, feeBase);
     }
 
-    public static void signTx2(String address, Tx tx, String passphrase) {
-        tx.signWithSignatures(signHashes2(address, tx.getUnsignedInHashes(), passphrase, TransactionSignature.SigHash.ALL));
+    public static void signTx(String address, Tx tx, String passphrase) {
+        tx.signWithSignatures(signHashes(address, tx.getUnsignedInHashes(), passphrase, TransactionSignature.SigHash.ALL));
     }
 
-    public static List<byte[]> signHashes2(String address, List<byte[]> unsignedInHashes, CharSequence passphrase, TransactionSignature.SigHash sigHash) throws
+    public static List<byte[]> signHashes(String address, List<byte[]> unsignedInHashes, CharSequence passphrase, TransactionSignature.SigHash sigHash) throws
             PasswordException {
         ECKey key = PrivateKeyUtil.getECKeyFromSingleString(getFullEncryptPrivKey2(address), passphrase);
         if (key == null) {

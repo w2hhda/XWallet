@@ -87,6 +87,12 @@ public class TokenUtils {
         return balance.divide(BigDecimal.TEN.pow(decimals));
     }
 
+    public static BigDecimal translate(long rawBalance, int decimals){
+        if(rawBalance == 0) return BigDecimal.ZERO;
+        BigDecimal balance = new BigDecimal(rawBalance);
+        return balance.divide(BigDecimal.TEN.pow(decimals));
+    }
+
     private static BigDecimal translate(BigDecimal rawBalance, int decimals){
         return rawBalance.divide(BigDecimal.TEN.pow(decimals));
     }
@@ -101,5 +107,11 @@ public class TokenUtils {
 
     public static String getStrFromBigDecimal(BigDecimal bigDecimal) {
         return bigDecimal.stripTrailingZeros().toPlainString();
+    }
+
+    public static BigDecimal translateToRaw(String translateBalance, int decimals){
+        if (TextUtils.isEmpty(translateBalance) || translateBalance.equals(ZERO)) return BigDecimal.ZERO;
+        BigDecimal balance = new BigDecimal(translateBalance);
+        return balance.multiply(BigDecimal.TEN.pow(decimals));
     }
 }

@@ -1,6 +1,5 @@
 package com.x.wallet.ui.dialog;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -23,10 +22,10 @@ public class PasswordCheckDialogHelper {
     private Dialog mDialog;
     private Context mContext;
 
-    public void showPasswordDialog(Activity activity, final ConfirmBtnClickListener confirmBtnClickListener, final int strId){
-        mContext = activity;
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        final LayoutInflater inflater = activity.getLayoutInflater();
+    public void showPasswordDialog(Context context, final ConfirmBtnClickListener confirmBtnClickListener, final int strId){
+        mContext = context;
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        final LayoutInflater inflater = LayoutInflater.from(mContext);
         final View contentView = inflater.inflate(R.layout.password_confirm_dialog, null);
         builder.setView(contentView);
         mDialog = builder.create();

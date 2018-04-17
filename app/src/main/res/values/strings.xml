@@ -139,4 +139,7 @@
     <string name="transaction_fee_level_slow">慢</string>
     <string name="transaction_fee_level_middle">标准</string>
     <string name="transaction_fee_level_quick">快</string>
+    <string name="tx_build_unknown_error">交易创建失败</string>
+    <string name="sign_btc_tx_failed">签名交易失败</string>
+    <string name="send_out_btc_transaction_success">交易提交成功</string>
 </resources>

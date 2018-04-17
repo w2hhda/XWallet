@@ -22,6 +22,8 @@ import com.x.wallet.R;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.btc.BtcAccountBalanceLoaderHelper;
 import com.x.wallet.btc.BtcTransferHelper;
+import com.x.wallet.btc.BtcUtils;
+import com.x.wallet.btc.BuildBtcTxAsycTask;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.EthTransactionFeeHelper;
 import com.x.wallet.transaction.address.ConfirmPasswordAsyncTask;
@@ -29,6 +31,9 @@ import com.x.wallet.transaction.address.ConfirmTransactionCallback;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.data.RawAccountItem;
 import com.x.wallet.ui.data.SerializableAccountItem;
+
+import net.bither.bitherj.core.Tx;
+import net.bither.bitherj.utils.Utils;
 
 import java.math.BigDecimal;
 
@@ -49,6 +54,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
 
     private RawAccountItem mTokenItem;
     private SerializableAccountItem mAccountItem;
+    private String mAddress;
 
     private EthTransactionFeeHelper mEthTransactionFeeHelper;
     private BtcTransferHelper mBtcTransferHelper;
@@ -57,25 +63,24 @@ public class TransferActivity extends WithBackAppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.transfer_activity);
-        String address = "";
 
         if (getIntent().hasExtra(AppUtils.ACCOUNT_DATA)){
             mAccountItem = (SerializableAccountItem) getIntent().getSerializableExtra(AppUtils.ACCOUNT_DATA);
-            address = mAccountItem.getAddress();
+            mAddress = mAccountItem.getAddress();
         }
 
         if (getIntent().hasExtra(AppUtils.TOKEN_DATA)){
             mTokenItem = (RawAccountItem) getIntent().getSerializableExtra(AppUtils.TOKEN_DATA);
         }
 
-        initView(address);
+        initView();
     }
 
-    private void initView(final String address){
+    private void initView(){
         initToAddressView();
         initAmountView();
         initFeeView();
-        initSendBtn(address);
+        initSendBtn();
 
         initData();
     }
@@ -139,94 +144,97 @@ public class TransferActivity extends WithBackAppCompatActivity {
         });
     }
 
-    private void initSendBtn(final String address){
+    private void initSendBtn(){
         Button sendBtn = findViewById(R.id.send_transfer);
-
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (toAddress.getText() == null || toAddress.getText().length() < 40){
-                    Toast.makeText(TransferActivity.this, getResources().getString(R.string.check_address_error), Toast.LENGTH_SHORT).show();
-                    return;
+                if(mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_BTC){
+                    handleBtcTransaction();
+                } else {
+                    handleTransaction();
                 }
+            }
+        });
+    }
 
-                if (TextUtils.isEmpty(transferAmount.getText())
-                        || !AppUtils.isValideNumber(transferAmount.getText().toString())
-                        || new BigDecimal(transferAmount.getText().toString()).equals(BigDecimal.ZERO)){
-                    Log.i(AppUtils.APP_TAG,"invalid amount = " + transferAmount.getText().toString());
-                    Toast.makeText(TransferActivity.this, getResources().getString(R.string.invalidate_balance), Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                BigDecimal amount;
-                BigDecimal tokenFee = new BigDecimal(priceTv.getText().toString());
-                if (mTokenItem == null){
-                    amount = new BigDecimal(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS));
-                    amount = amount.subtract(tokenFee);
-                }else {
-                    amount = new BigDecimal(TokenUtils.getBalanceText(mTokenItem.getBalance(), mTokenItem.getDecimals()));
-                    //one condition: have enough Token, but insufficient ETH to pay for transfer fee...
-                    if (new BigDecimal(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS)).compareTo(tokenFee) < 0){
-                        Toast.makeText(TransferActivity.this, getResources().getString(R.string.insufficient_token_fee), Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                }
+    private void handleTransaction(){
+        if (toAddress.getText() == null || toAddress.getText().length() < 40){
+            responseForErrorResult(ERROR_TO_ADDRESS);
+            return;
+        }
 
-                if (new BigDecimal(transferAmount.getText().toString()).compareTo(amount) > 0){
-                    Toast.makeText(TransferActivity.this, getResources().getString(R.string.insufficient_balance), Toast.LENGTH_SHORT).show();
-                    return;
-                }
+        if (!checkSendOutAmount()){
+            return;
+        }
 
-                //need to get gas price first
-                if (new BigDecimal(priceTv.getText().toString()).equals(BigDecimal.ZERO)){
-                    Toast.makeText(TransferActivity.this,getResources().getString(R.string.wait_to_get_gas_price), Toast.LENGTH_SHORT).show();
-                    return;
-                }
+        BigDecimal amount;
+        BigDecimal tokenFee = new BigDecimal(priceTv.getText().toString());
+        if (mTokenItem == null){
+            amount = new BigDecimal(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS));
+            amount = amount.subtract(tokenFee);
+        }else {
+            amount = new BigDecimal(TokenUtils.getBalanceText(mTokenItem.getBalance(), mTokenItem.getDecimals()));
+            //one condition: have enough Token, but insufficient ETH to pay for transfer fee...
+            if (new BigDecimal(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS)).compareTo(tokenFee) < 0){
+                responseForErrorResult(ERROR_INSUFFICIENT_ETH_FOR_FEE);
+                return;
+            }
+        }
 
-                final AlertDialog dialog = new AlertDialog.Builder(TransferActivity.this).create();
-                final View dialogView = TransferActivity.this.getLayoutInflater().inflate(R.layout.password_confirm_dialog, null);
-                dialog.setView(dialogView);
-                dialog.show();
+        if(!checkBalanceEnough(amount)){
+            return;
+        }
 
-                Button cancelbtn = dialogView.findViewById(R.id.cancel_btn);
-                final Button confirmBtn = dialogView.findViewById(R.id.confirm_btn);
-                TextView dialogTitle = dialogView.findViewById(R.id.tv);
-                dialogTitle.setText(getResources().getString(R.string.confirm_password));
-                final EditText passwordEdit = dialogView.findViewById(R.id.password_et);
+        //need to get gas price first
+        if (new BigDecimal(priceTv.getText().toString()).equals(BigDecimal.ZERO)){
+            Toast.makeText(TransferActivity.this,getResources().getString(R.string.wait_to_get_gas_price), Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-                passwordEdit.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        final AlertDialog dialog = new AlertDialog.Builder(TransferActivity.this).create();
+        final View dialogView = TransferActivity.this.getLayoutInflater().inflate(R.layout.password_confirm_dialog, null);
+        dialog.setView(dialogView);
+        dialog.show();
 
-                    }
+        Button cancelbtn = dialogView.findViewById(R.id.cancel_btn);
+        final Button confirmBtn = dialogView.findViewById(R.id.confirm_btn);
+        TextView dialogTitle = dialogView.findViewById(R.id.tv);
+        dialogTitle.setText(getResources().getString(R.string.confirm_password));
+        final EditText passwordEdit = dialogView.findViewById(R.id.password_et);
 
-                    @Override
-                    public void onTextChanged(CharSequence c, int i, int i1, int i2) {
-                        confirmBtn.setEnabled(c != null && c.length() > 0);
-                    }
+        passwordEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                    @Override
-                    public void afterTextChanged(Editable editable) {
+            }
 
-                    }
-                });
+            @Override
+            public void onTextChanged(CharSequence c, int i, int i1, int i2) {
+                confirmBtn.setEnabled(c != null && c.length() > 0);
+            }
 
-                cancelbtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
+            @Override
+            public void afterTextChanged(Editable editable) {
 
-                confirmBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        String password = passwordEdit.getText().toString();
-                        Intent intent = getIntentForSend(address, password);
-                        new ConfirmPasswordAsyncTask(intent, password, address).execute(createConfirmTransactionCallback());
-                        dialog.dismiss();
-                        mProgressDialog.show();
-                    }
-                });
+            }
+        });
+
+        cancelbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        confirmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String password = passwordEdit.getText().toString();
+                Intent intent = getIntentForSend(mAddress, password);
+                new ConfirmPasswordAsyncTask(intent, password, mAddress).execute(createConfirmTransactionCallback());
+                dialog.dismiss();
+                mProgressDialog.show();
             }
         });
     }
@@ -336,6 +344,52 @@ public class TransferActivity extends WithBackAppCompatActivity {
         });
     }
 
+    private static final int ERROR_TO_ADDRESS = 0;
+    private static final int ERROR_TO_AMOUNT = 1;
+    private static final int ERROR_INSUFFICIENT_BALANCE = 2;
+    private static final int ERROR_INSUFFICIENT_ETH_FOR_FEE = 3;
+    private static final int ERROR_UNKNOWN = 4;
+
+    private void responseForErrorResult(int errorCode){
+        switch (errorCode){
+            case ERROR_TO_ADDRESS:
+                Toast.makeText(TransferActivity.this, getResources().getString(R.string.check_address_error), Toast.LENGTH_SHORT).show();
+                break;
+            case ERROR_TO_AMOUNT:
+                Toast.makeText(TransferActivity.this, getResources().getString(R.string.invalidate_balance), Toast.LENGTH_SHORT).show();
+                break;
+            case ERROR_INSUFFICIENT_BALANCE:
+                Toast.makeText(TransferActivity.this, getResources().getString(R.string.insufficient_balance), Toast.LENGTH_SHORT).show();
+                break;
+            case ERROR_INSUFFICIENT_ETH_FOR_FEE:
+                Toast.makeText(TransferActivity.this, getResources().getString(R.string.insufficient_token_fee), Toast.LENGTH_SHORT).show();
+                break;
+            case ERROR_UNKNOWN:
+                Toast.makeText(TransferActivity.this, getResources().getString(R.string.insufficient_token_fee), Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    private boolean checkSendOutAmount(){
+        if (TextUtils.isEmpty(transferAmount.getText())
+                || !AppUtils.isValideNumber(transferAmount.getText().toString())
+                || new BigDecimal(transferAmount.getText().toString()).equals(BigDecimal.ZERO)){
+            Log.i(AppUtils.APP_TAG,"TransferActivity checkAmount invalid amount = " + transferAmount.getText().toString());
+            responseForErrorResult(ERROR_TO_AMOUNT);
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean checkBalanceEnough(BigDecimal amount){
+        if (new BigDecimal(transferAmount.getText().toString()).compareTo(amount) > 0){
+            responseForErrorResult(ERROR_INSUFFICIENT_BALANCE);
+            return false;
+        }
+        return true;
+    }
+
     private void initBtc(){
         mBtcTransferHelper = new BtcTransferHelper(new BtcTransferHelper.OnTransactionFeeRequestFinishedListener() {
             @Override
@@ -350,5 +404,32 @@ public class TransferActivity extends WithBackAppCompatActivity {
             }
         });
         mBtcTransferHelper.getTransactionFee();
+    }
+
+    private void handleBtcTransaction(){
+        if(!Utils.validBicoinAddress(toAddress.getText().toString())){
+            responseForErrorResult(ERROR_TO_ADDRESS);
+            return;
+        }
+
+        if (!checkSendOutAmount()){
+            return;
+        }
+        /*Log.i("test", "TransferActivity handleBtcTransaction out = " + transferAmount.getText().toString());
+        Log.i("test", "TransferActivity handleBtcTransaction balance = " + mBtcTransferHelper.getBalance());*/
+        if(!checkBalanceEnough(mBtcTransferHelper.getBalance())){
+            return;
+        }
+        BigDecimal amount = new BigDecimal(transferAmount.getText().toString());
+        long sendOutAmount = TokenUtils.translateToRaw(transferAmount.getText().toString(), BtcUtils.BTC_DECIMALS_COUNT).longValue();
+        new BuildBtcTxAsycTask(this, sendOutAmount, mAddress,
+                toAddress.getText().toString(), mAddress, mBtcTransferHelper.getCurrentFeeBase(),
+                new BuildBtcTxAsycTask.OnTxBuildFinishedListener() {
+                    @Override
+                    public void onTxBuildFinished(Tx tx) {
+                        responseForErrorResult(ERROR_UNKNOWN);
+                    }
+                }).execute();
+
     }
 }

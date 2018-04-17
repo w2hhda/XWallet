@@ -66,6 +66,10 @@ public class BtcAccountBalanceLoaderHelper {
         }
     }
 
+    public long getBalance() {
+        return mBalance;
+    }
+
     public interface OnDataLoadFinishedListener{
         void onBalanceLoadFinished(String balance);
     }
