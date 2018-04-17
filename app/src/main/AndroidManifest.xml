@@ -161,9 +161,6 @@
             android:exported="false" />
 
         <service
-            android:name=".service.SendTransactionService"
-            android:exported="false" />
-        <service
             android:name="com.x.wallet.btc.BlockchainService"
             android:exported="false"/>
     </application>

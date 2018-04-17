@@ -19,6 +19,8 @@ import net.bither.bitherj.exception.ScriptException;
 import net.bither.bitherj.utils.Utils;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by wuliang on 18-3-16.
@@ -66,37 +68,83 @@ public class TransactionListItem extends RelativeLayout{
         if (item == null) return;
         mTransactionItem = item;
 
-        mTimeStamp.setText(AppUtils.formatDate(Long.parseLong(item.getTimeStamp())));
+        boolean isPending = item.getBlockNumber().equals("0");
+        boolean isReceive = item.getTransactionType().equals(TransactionItem.TRANSACTION_TYPE_RECEIVE);
+        mTimeStamp.setText(getTime(item.getTimeStamp()));
 
         if (item.getError() && !item.getToken()){
-            mTransactionStatus.setImageResource(R.drawable.is_error);
+            if (!isPending) {
+                mTransactionStatus.setImageResource(R.drawable.is_error);
+            }
         }else {
             if (item.getTxReceiptStatus() == 1){
                 mTransactionStatus.setImageResource(R.drawable.is_ok);
             }
         }
         BigDecimal rawAmount = new BigDecimal(item.getAmount());
-        String amount = rawAmount.divide(BigDecimal.TEN.pow(Integer.parseInt(item.getTokenDecimals()))).setScale(6,BigDecimal.ROUND_HALF_UP).stripTrailingZeros().toPlainString();
-        mCoinUnitTv.setText(item.getTokenSymbols());
-        
-        if (item.getTransactionType().equalsIgnoreCase(TransactionItem.TRANSACTION_TYPE_RECEIVE)){
+        String amount;
+        if (isTokenAccount) {
+            amount = rawAmount.divide(BigDecimal.TEN.pow(Integer.parseInt(item.getTokenDecimals()))).setScale(6, BigDecimal.ROUND_HALF_UP).stripTrailingZeros().toPlainString();
+        }else {
+            amount = rawAmount.divide(BigDecimal.TEN.pow(item.getDecimals())).setScale(6, BigDecimal.ROUND_HALF_UP).stripTrailingZeros().toPlainString();
+        }
+
+        BigDecimal rawTransferFee = new BigDecimal(item.getTransactionFee());
+        String transferFee = rawTransferFee.divide(BigDecimal.TEN.pow(18)).setScale(6,BigDecimal.ROUND_HALF_UP).stripTrailingZeros().toPlainString();
+
+
+        if (isReceive){
             mAmount.setText(getResources().getString(R.string.receive_amount_prefix, amount));
             mAmount.setTextColor(getResources().getColor(R.color.manage_account_textColor));
             mTransactionName.setText(getResources().getString(R.string.receipt_transaction_prefix, item.getFromAddress()));
-        }else {
-            mAmount.setText(getResources().getString(R.string.send_amount_prefix, amount));
-            mAmount.setTextColor(getResources().getColor(R.color.colorRed));
-            if (isTokenAccount){
-                mTransactionName.setText(getResources().getString(R.string.send_out_transaction_prefix, item.getToAddress()));
+            if (isTokenAccount) {
                 mCoinUnitTv.setText(item.getTokenSymbols());
             }else {
+                mCoinUnitTv.setText(item.getmCoinType());
+            }
+        }else {
+            mAmount.setTextColor(getResources().getColor(R.color.colorRed));
+            if (isTokenAccount){
+                bindTokenView(item, isPending);
+                mAmount.setText(getResources().getString(R.string.send_amount_prefix, amount));
+            }else {
+                mCoinUnitTv.setText(item.getmCoinType());
+                bindEthView(item, isPending);
                 if (item.getToken() || item.getError()) {
-                    mTransactionName.setText(getResources().getString(R.string.transfer_fee_prefix, item.getToAddress()));
-                } else {
-                    mTransactionName.setText(getResources().getString(R.string.send_out_transaction_prefix, item.getToAddress()));
+                    mAmount.setText(getResources().getString(R.string.send_amount_prefix, transferFee));
+                }else {
+                    mAmount.setText(getResources().getString(R.string.send_amount_prefix, amount));                    
                 }
             }
+
         }
+
+    }
+
+    private void bindTokenView(TransactionItem item, boolean isPending ){
+        if (isPending){
+            mTransactionName.setText(getResources().getString(R.string.tx_is_pending, item.getToAddress()));
+        }else {
+            mTransactionName.setText(getResources().getString(R.string.send_out_transaction_prefix, item.getToAddress()));
+        }
+        mCoinUnitTv.setText(item.getTokenSymbols());
+    }
+
+    private void bindEthView(TransactionItem item, boolean isPending){
+        if (isPending){
+            mTransactionName.setText(getResources().getString(R.string.tx_is_pending, item.getToAddress()));
+        }else if (item.getToken() || item.getError()){
+            mTransactionName.setText(getResources().getString(R.string.transfer_fee_prefix, item.getToAddress()));
+        }else {
+            mTransactionName.setText(getResources().getString(R.string.send_out_transaction_prefix, item.getToAddress()));
+        }
+
+    }
+
+    private String getTime(String timeStamp){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date date = new Date(Long.parseLong(timeStamp) * 1000L);
+        return sdf.format(date);
     }
 
     public TransactionItem getTransactionItem() {

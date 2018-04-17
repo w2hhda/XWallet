@@ -135,4 +135,5 @@
     <string name="receive_amount_prefix">"+<xliff:g id="amount">%s</xliff:g>"</string>
     <string name="send_amount_prefix">"-<xliff:g id="amount">%s</xliff:g>"</string>
     <string name="transfer_fee_prefix">"手续费: <xliff:g id="address">%s</xliff:g>"</string>
+    <string name="tx_is_pending">"待确认:  <xliff:g id="address">%s</xliff:g>"</string>
 </resources>

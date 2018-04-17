@@ -139,7 +139,7 @@ public class EtherscanAPI {
     }
 
     public void forwardTransaction(String raw, Callback b) throws IOException {
-        get("http://api.etherscan.io/api?module=proxy&action=eth_sendRawTransaction&hex=" + raw + "&apikey=" + token, b);
+        get("https://api.etherscan.io/api?module=proxy&action=eth_sendRawTransaction&hex=" + raw + "&apikey=" + token, b);
     }
 
     public void getTokenTxHistory(String address, Callback b) throws  IOException {

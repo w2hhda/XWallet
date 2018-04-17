@@ -1,6 +1,7 @@
 package com.x.wallet.ui.activity;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,10 +19,11 @@ import android.widget.Toast;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
+import com.x.wallet.XWalletApplication;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.util.ExchangeCalUtil;
-import com.x.wallet.service.SendTransactionService;
 import com.x.wallet.transaction.address.ConfirmPasswordAsyncTask;
+import com.x.wallet.transaction.address.ConfirmTransactionCallback;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.data.RawAccountItem;
 import com.x.wallet.ui.data.SerializableAccountItem;
@@ -51,6 +53,8 @@ public class TransferActivity extends WithBackAppCompatActivity {
     private TextView unitIndicator;
     private SerializableAccountItem mAccountItem;
     private TextView availableBalance;
+    private ProgressDialog mProgressDialog;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,6 +82,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
     }
 
     private void initToAddressView(){
+        mProgressDialog = new ProgressDialog(this);
         toAddress = findViewById(R.id.transfer_to_address);
         ImageButton scanBtn = findViewById(R.id.wallet_scan);
         scanBtn.setOnClickListener(new View.OnClickListener() {
@@ -224,8 +229,9 @@ public class TransferActivity extends WithBackAppCompatActivity {
                     public void onClick(View view) {
                         String password = passwordEdit.getText().toString();
                         Intent intent = getIntentForSend(address, password);
-                        new ConfirmPasswordAsyncTask(TransferActivity.this, intent, password, address).execute();
+                        new ConfirmPasswordAsyncTask(intent, password, address).execute(createConfirmTransactionCallback());
                         dialog.dismiss();
+                        mProgressDialog.show();
                     }
                 });
             }
@@ -233,14 +239,14 @@ public class TransferActivity extends WithBackAppCompatActivity {
     }
 
     private Intent getIntentForSend(String address, String password){
-        Intent intent = new Intent(TransferActivity.this, SendTransactionService.class);
-        intent.putExtra(SendTransactionService.FROM_ADDRESS_TAG, address);
-        intent.putExtra(SendTransactionService.TO_ADDRESS_TAG, toAddress.getText().toString());
-        intent.putExtra(SendTransactionService.PASSWORD_TAG, password);
-        intent.putExtra(SendTransactionService.GAS_PRICE_TAG, getNowPrice().toBigInteger().toString());
-        intent.putExtra(SendTransactionService.GAS_LIMIT_TAG, defaultGasLimit);
-        intent.putExtra(SendTransactionService.AMOUNT_TAG, transferAmount.getText().toString());
-        intent.putExtra(SendTransactionService.EXTRA_DATA_TAG, "");
+        Intent intent = new Intent();
+        intent.putExtra(ConfirmPasswordAsyncTask.FROM_ADDRESS_TAG, address);
+        intent.putExtra(ConfirmPasswordAsyncTask.TO_ADDRESS_TAG, toAddress.getText().toString());
+        intent.putExtra(ConfirmPasswordAsyncTask.PASSWORD_TAG, password);
+        intent.putExtra(ConfirmPasswordAsyncTask.GAS_PRICE_TAG, getNowPrice().toBigInteger().toString());
+        intent.putExtra(ConfirmPasswordAsyncTask.GAS_LIMIT_TAG, defaultGasLimit);
+        intent.putExtra(ConfirmPasswordAsyncTask.AMOUNT_TAG, transferAmount.getText().toString());
+        intent.putExtra(ConfirmPasswordAsyncTask.EXTRA_DATA_TAG, "");
         if (mAccountItem != null){
             intent.putExtra(AppUtils.ACCOUNT_DATA, mAccountItem);
         }
@@ -333,5 +339,32 @@ public class TransferActivity extends WithBackAppCompatActivity {
 
             }
         });
+    }
+
+    private ConfirmTransactionCallback<Boolean> createConfirmTransactionCallback(){
+        return new ConfirmTransactionCallback<Boolean>() {
+            @Override
+            public void onTransactionConfirmed(Boolean result, final Throwable e) {
+                mProgressDialog.dismiss();
+                if (result){
+                    XWalletApplication.getApplication().getBalanceLoaderManager().getAllBalance(null);
+                    Intent newIntent = new Intent("com.x.wallet.action.SEE_ACCOUNT_DETAIL_ACTION");
+                    newIntent.putExtra(AppUtils.ACCOUNT_DATA, mAccountItem);
+                    if (mTokenItem != null){
+                        //RawAccountItem mTokenItem = (RawAccountItem)intent.getSerializableExtra(AppUtils.TOKEN_DATA);
+                        newIntent.putExtra(AppUtils.TOKEN_DATA, mTokenItem);
+                    }
+                    newIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    TransferActivity.this.startActivity(newIntent);
+                }else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(TransferActivity.this, "error" + e.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        };
     }
 }
