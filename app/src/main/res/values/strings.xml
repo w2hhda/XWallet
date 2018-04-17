@@ -136,4 +136,7 @@
     <string name="send_amount_prefix">"-<xliff:g id="amount">%s</xliff:g>"</string>
     <string name="transfer_fee_prefix">"手续费: <xliff:g id="address">%s</xliff:g>"</string>
     <string name="tx_is_pending">"待确认:  <xliff:g id="address">%s</xliff:g>"</string>
+    <string name="transaction_fee_level_slow">慢</string>
+    <string name="transaction_fee_level_middle">标准</string>
+    <string name="transaction_fee_level_quick">快</string>
 </resources>
