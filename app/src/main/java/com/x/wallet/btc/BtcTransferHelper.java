@@ -6,10 +6,14 @@ import android.util.Log;
 
 import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.transaction.token.TokenUtils;
+
+import net.bither.bitherj.utils.Utils;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -45,6 +49,7 @@ public class BtcTransferHelper {
     private int mLowFee = 0;
     private int mMiddleFee = 0;
     private int mHighFee = 0;
+    private int mCurrentFee = 0;
     private int mTransactionSize = 226;
     private BtcAccountBalanceLoaderHelper mBtcAccountBalanceLoaderHelper;
     private OnTransactionFeeRequestFinishedListener mOnTransactionFeeRequestFinishedListener;
@@ -73,6 +78,7 @@ public class BtcTransferHelper {
                             mLowFee = object.getInt("hourFee");
                             mMiddleFee = object.getInt("halfHourFee");
                             mHighFee = object.getInt("fastestFee");
+                            mCurrentFee = mMiddleFee;
                             if(mOnTransactionFeeRequestFinishedListener != null){
                                 mOnTransactionFeeRequestFinishedListener.onFeeRequestFinished(TokenUtils.getBalanceText(mMiddleFee * mTransactionSize, BtcUtils.BTC_DECIMALS_COUNT));
                             }
@@ -98,21 +104,34 @@ public class BtcTransferHelper {
         String price;
         if (progress == 0) {
             price = TokenUtils.getBalanceText(mLowFee * mTransactionSize, BtcUtils.BTC_DECIMALS_COUNT);
+            mCurrentFee = mLowFee;
         } else if (progress == 100) {
             price = TokenUtils.getBalanceText(mHighFee * mTransactionSize, BtcUtils.BTC_DECIMALS_COUNT);
+            mCurrentFee = mHighFee;
         } else {
             price = TokenUtils.getBalanceText(mMiddleFee * mTransactionSize, BtcUtils.BTC_DECIMALS_COUNT);
+            mCurrentFee = mMiddleFee;
         }
         if (mOnTransactionFeeRequestFinishedListener != null) {
             mOnTransactionFeeRequestFinishedListener.onFeeRequestFinished(price);
         }
     }
 
-
     public void destory(){
         if(mBtcAccountBalanceLoaderHelper != null){
             mBtcAccountBalanceLoaderHelper.destory();
         }
+    }
+
+    public BigDecimal getBalance() {
+        if(mBtcAccountBalanceLoaderHelper != null){
+            return TokenUtils.translate(mBtcAccountBalanceLoaderHelper.getBalance(), BtcUtils.BTC_DECIMALS_COUNT);
+        }
+        return BigDecimal.ZERO;
+    }
+
+    public int getCurrentFeeBase(){
+        return mCurrentFee;
     }
 
     public interface OnTransactionFeeRequestFinishedListener{
