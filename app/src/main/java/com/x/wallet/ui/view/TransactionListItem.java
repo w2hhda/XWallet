@@ -19,8 +19,6 @@ import net.bither.bitherj.exception.ScriptException;
 import net.bither.bitherj.utils.Utils;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created by wuliang on 18-3-16.
@@ -70,7 +68,7 @@ public class TransactionListItem extends RelativeLayout{
 
         boolean isPending = item.getBlockNumber().equals("0");
         boolean isReceive = item.getTransactionType().equals(TransactionItem.TRANSACTION_TYPE_RECEIVE);
-        mTimeStamp.setText(getTime(item.getTimeStamp()));
+        mTimeStamp.setText(AppUtils.formatDate(item.getTimeStamp()));
 
         if (item.getError() && !item.getToken()){
             if (!isPending) {
@@ -139,12 +137,6 @@ public class TransactionListItem extends RelativeLayout{
             mTransactionName.setText(getResources().getString(R.string.send_out_transaction_prefix, item.getToAddress()));
         }
 
-    }
-
-    private String getTime(String timeStamp){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date date = new Date(Long.parseLong(timeStamp) * 1000L);
-        return sdf.format(date);
     }
 
     public TransactionItem getTransactionItem() {

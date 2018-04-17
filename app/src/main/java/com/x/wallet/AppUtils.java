@@ -270,6 +270,13 @@ public class AppUtils {
         return sdf.format(date);
     }
 
+    public static String formatDate(String timeStamp){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date date = new Date(Long.parseLong(timeStamp) * 1000L);
+        return sdf.format(date);
+    }
+
+
     public static Boolean isValideNumber(String str){
         Pattern pattern = Pattern.compile("([1-9]\\d*\\.?\\d*)|(0\\.\\d*[1-9])");
         Matcher isNum = pattern.matcher(str);
