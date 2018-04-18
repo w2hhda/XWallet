@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.x.wallet.AppUtils;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
@@ -74,8 +75,8 @@ public class RetrofitClient {
         return RetrofitClient.getTokenClient(TOKEN_BASE_URL).create(RetrofitTokenService.class);
     }
 
-    public static void requestBalance(final OnRequestFinishedListener listener) {
-        String addresses = queryAllEthAddress();
+    public static void requestBalance(final OnRequestFinishedListener listener, final boolean isNeedAddTokenAutomatic) {
+        String addresses = DbUtils.queryAllEthAddress();
         if (TextUtils.isEmpty(addresses)) {
             handleListener(listener);
             Log.i(TAG, "RetrofitClient requestBalance addresses is blank.");
@@ -84,7 +85,7 @@ public class RetrofitClient {
 
         Observable<ResponseBody> ethPriceObservable = createPriceResultBeanObservable();
         Observable<ResponseBody> balanceResultBeanObservable = createBalanceResultBeanObservable(addresses);
-        ArrayList<Observable<ResponseBody>> tokenBalanceObservableList = createTokenObservableList();
+        ArrayList<Observable<ResponseBody>> tokenBalanceObservableList = createTokenObservableList(isNeedAddTokenAutomatic);
 
         List<Observable<ResponseBody>> list = new ArrayList<>();
         list.add(ethPriceObservable);
@@ -106,7 +107,7 @@ public class RetrofitClient {
                 handleObject1(args);
                 handleObject2(args, rawOperations);
                 if (args.length >= 3) {
-                    handleObject3(args, rawOperations);
+                    handleObject3(args, rawOperations, isNeedAddTokenAutomatic);
                 }
                 Log.i(TAG, "RetrofitClient requestBalance rawOperations.size = " + rawOperations.size());
                 try {
@@ -166,7 +167,7 @@ public class RetrofitClient {
         }
     }
 
-    private static void handleObject3(Object[] args, ArrayList<ContentProviderOperation> rawOperations) {
+    private static void handleObject3(Object[] args, ArrayList<ContentProviderOperation> rawOperations, boolean isNeedAddTokenAutomatic) {
         try {
             int length = args.length;
             for (int i = 2; i < length; i++) {
@@ -174,7 +175,7 @@ public class RetrofitClient {
                 if (object instanceof ResponseBody) {
                     ResponseBody responseBody = (ResponseBody) object;
                     TokenListBean tokenListBean = parseTokenJson(responseBody.string());
-                    handleTokenListBean(rawOperations, tokenListBean);
+                    handleTokenListBean(rawOperations, tokenListBean, isNeedAddTokenAutomatic);
                 }
             }
         } catch (Exception e) {
@@ -182,12 +183,17 @@ public class RetrofitClient {
         }
     }
 
-    private static ArrayList<Observable<ResponseBody>> createTokenObservableList() {
+    private static ArrayList<Observable<ResponseBody>> createTokenObservableList(boolean isNeedAddTokenAutomatic) {
         ArrayList<Observable<ResponseBody>> list = new ArrayList();
         Cursor cursor = null;
         try {
-            //1.query from db
-            cursor = DbUtils.queryAllTokenAddress();
+            if (isNeedAddTokenAutomatic) {
+                cursor = DbUtils.queryAllEthAddressToCursor();
+            } else {
+                //1.query from db
+                cursor = DbUtils.queryAllTokenAddress();
+
+            }
             if (cursor != null && cursor.getCount() > 0) {
                 while (cursor.moveToNext()) {
                     String accountAddress = cursor.getString(0);
@@ -242,36 +248,83 @@ public class RetrofitClient {
         }
     }
 
-    private static void handleTokenListBean(ArrayList<ContentProviderOperation> rawOperations, TokenListBean tokenListBean) {
+    private static void handleTokenListBean(ArrayList<ContentProviderOperation> rawOperations, TokenListBean tokenListBean, boolean isNeedAddTokenAutomatic) {
         List<TokenListBean.TokenBean> tokens = tokenListBean.getTokens();
         if (tokens == null || tokens.size() <= 0) {
             Log.i(TAG, "RetrofitClient handleTokenListBean tokens is blank.");
             return;
         }
-        String address = tokenListBean.getAddress();
-        for (TokenListBean.TokenBean tokenBean : tokens) {
-            Log.i(TAG, "RetrofitClient handleTokenListBean address = " + address + ", balance = " + tokenBean.getBalance());
+        if(isNeedAddTokenAutomatic){
+            handleAutoAddToken(rawOperations, tokens, tokenListBean.getAddress());
+        } else {
+            String address = tokenListBean.getAddress();
+            for (TokenListBean.TokenBean tokenBean : tokens) {
+                Log.i(TAG, "RetrofitClient handleTokenListBean address = " + address + ", balance = " + tokenBean.getBalance());
 
-            TokenListBean.TokenInfo tokenInfo = tokenBean.getTokenInfo();
-            String symbol = null;
-            int decimals = 1;
-            double rate = 0;
-            if(tokenInfo != null){
-                symbol = tokenInfo.getSymbol();
-                decimals = tokenInfo.getDecimals();
-                if(tokenInfo.getPrice() != null){
-                    rate = tokenInfo.getPrice().getRate();
+                TokenListBean.TokenInfo tokenInfo = tokenBean.getTokenInfo();
+                String symbol = null;
+                int decimals = 1;
+                double rate = 0;
+                if (tokenInfo != null) {
+                    symbol = tokenInfo.getSymbol();
+                    decimals = tokenInfo.getDecimals();
+                    if (tokenInfo.getPrice() != null) {
+                        rate = tokenInfo.getPrice().getRate();
+                    }
+                }
+
+                rawOperations.add(buildUpdateTokenOperation(address, symbol, tokenBean.getBalance(), rate, decimals));
+            }
+        }
+    }
+
+    private static void handleAutoAddToken(ArrayList<ContentProviderOperation> rawOperations, List<TokenListBean.TokenBean> tokens, String address) {
+        Cursor cursor = null;
+        try{
+            cursor = DbUtils.queryEthAccountIdToCursor(address);
+            if(cursor != null && cursor.getCount() > 0){
+                cursor.moveToFirst();
+                long accountId = cursor.getLong(0);
+                int hasToken = cursor.getInt(1);
+
+                for (TokenListBean.TokenBean tokenBean : tokens) {
+                    boolean isExist = false;
+                    TokenListBean.TokenInfo tokenInfo = tokenBean.getTokenInfo();
+                    String symbol = null;
+                    int decimals = 1;
+                    double rate = 0;
+                    String tokeName= "";
+                    String contractAddress = "";
+                    if (tokenInfo != null) {
+                        contractAddress = tokenInfo.getAddress();
+                        symbol = tokenInfo.getSymbol();
+                        decimals = tokenInfo.getDecimals();
+                        if (tokenInfo.getPrice() != null) {
+                            rate = tokenInfo.getPrice().getRate();
+                        }
+                        tokeName = tokenInfo.getName();
+                        isExist = DbUtils.isAlreadyExistToken(DbUtils.UPDATE_TOKEN_SELECTION, new String[]{address, symbol});
+                    }
+                    if(isExist){
+                        rawOperations.add(buildUpdateTokenOperation(address, symbol, tokenBean.getBalance(), rate, decimals));
+                    } else {
+                        boolean hasDeleted = AppUtils.hasDeleted(address, tokeName);
+                        if(!hasDeleted){
+                            rawOperations.add(buildInsertTokenOperation(accountId, address, tokens.indexOf(tokenBean),
+                                    tokeName, symbol, decimals,
+                                    contractAddress, tokenBean.getBalance(), String.valueOf(rate)));
+                            if (hasToken == AppUtils.HAS_TOKEN) {
+                                int count = DbUtils.updateHasTokenFlag(String.valueOf(accountId));
+                                Log.i(AppUtils.APP_TAG, "Loader InsertTokenIntoDb  count = " + count + ", mAccountId = " + accountId);
+                            }
+                        }
+                    }
                 }
             }
-
-            String rawBalance = tokenBean.getBalance();
-            final ContentProviderOperation.Builder updateBuilder = ContentProviderOperation
-                    .newUpdate(XWalletProvider.CONTENT_URI_TOKEN);
-            updateBuilder.withSelection(DbUtils.UPDATE_TOKEN_SELECTION, new String[]{address, symbol});
-            updateBuilder.withValue(DbUtils.TokenTableColumns.BALANCE, rawBalance);
-            updateBuilder.withValue(DbUtils.TokenTableColumns.RATE, rate);
-            updateBuilder.withValue(DbUtils.TokenTableColumns.DECIMALS, decimals);
-            rawOperations.add(updateBuilder.build());
+        } finally {
+            if(cursor != null){
+                cursor.close();
+            }
         }
     }
 
@@ -281,11 +334,39 @@ public class RetrofitClient {
         }
     }
 
-    public static TokenListBean parseTokenJson(String responseResult){
+    public static TokenListBean parseTokenJson(String responseResult) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(TokenListBean.class, new TokenDeserializer());
         Gson gson = gsonBuilder.create();
         return gson.fromJson(responseResult, TokenListBean.class);
+    }
+
+    private static ContentProviderOperation buildInsertTokenOperation(long accountId, String accountAddress, int idInAll,
+                                                                      String name, String symbol, int decimals,
+                                                                      String contractAddress, String rawBalance, String rate) {
+        final ContentProviderOperation.Builder insertBuilder = ContentProviderOperation
+                .newInsert(XWalletProvider.CONTENT_URI_TOKEN);
+        insertBuilder.withValue(DbUtils.TokenTableColumns.ACCOUNT_ID, accountId);
+        insertBuilder.withValue(DbUtils.TokenTableColumns.ACCOUNT_ADDRESS, accountAddress);
+        insertBuilder.withValue(DbUtils.TokenTableColumns.ID_IN_ALL, idInAll);
+        insertBuilder.withValue(DbUtils.TokenTableColumns.NAME, name);
+        insertBuilder.withValue(DbUtils.TokenTableColumns.SYMBOL, symbol);
+        insertBuilder.withValue(DbUtils.TokenTableColumns.DECIMALS, decimals);
+        insertBuilder.withValue(DbUtils.TokenTableColumns.CONTRACT_ADDRESS, contractAddress);
+        insertBuilder.withValue(DbUtils.TokenTableColumns.BALANCE, rawBalance);
+        insertBuilder.withValue(DbUtils.TokenTableColumns.RATE, rate);
+        return insertBuilder.build();
+    }
+
+    private static ContentProviderOperation buildUpdateTokenOperation(String address, String symbol,
+                                                                      String rawBalance, double rate, int decimals) {
+        final ContentProviderOperation.Builder updateBuilder = ContentProviderOperation
+                .newUpdate(XWalletProvider.CONTENT_URI_TOKEN);
+        updateBuilder.withSelection(DbUtils.UPDATE_TOKEN_SELECTION, new String[]{address, symbol});
+        updateBuilder.withValue(DbUtils.TokenTableColumns.BALANCE, rawBalance);
+        updateBuilder.withValue(DbUtils.TokenTableColumns.RATE, rate);
+        updateBuilder.withValue(DbUtils.TokenTableColumns.DECIMALS, decimals);
+        return updateBuilder.build();
     }
 
     public interface OnRequestFinishedListener {

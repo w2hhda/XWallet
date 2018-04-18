@@ -152,44 +152,6 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Integer>{
         mKey = key;
     }
 
-    private void insertTokenIntoDb(String address, List<TokenListBean.TokenBean> tokens, String accountId) {
-        for (TokenListBean.TokenBean token : tokens) {
-            String mHasToken = "0";
-            TokenListBean.TokenInfo tokenInfo = token.getTokenInfo();
-            boolean isExist = DbUtils.isAlreadyExistToken(DbUtils.UPDATE_TOKEN_SELECTION, new String[]{address, tokenInfo.getSymbol()});
-            Log.i(AppUtils.APP_TAG, "insertTokenIntoDb when import isExist = " + isExist);
-            if (isExist) {
-                continue;
-            }
-            String symbol = null;
-            int decimals = 1;
-            double rate = 0;
-            try {
-                if (tokenInfo != null){
-                    symbol = tokenInfo.getSymbol();
-                    decimals = tokenInfo.getDecimals();
-                    if (tokenInfo.getPrice() != null){
-                        rate = tokenInfo.getPrice().getRate();
-                    }
-                }
-            }catch (JsonSyntaxException | IllegalStateException e){
-                Log.e(AppUtils.APP_TAG, "try to insert illegal token, just ignore");
-                continue;
-            }
-
-            Uri uri = DbUtils.insertTokenIntoDb(Long.parseLong(accountId), address, tokens.indexOf(token),
-                    tokenInfo.getName(), symbol, decimals,
-                    tokenInfo.getAddress(), token.getBalance(), String.valueOf(rate));
-
-            if (mHasToken.equals(0)) {
-                int count = DbUtils.updateHasTokenFlag(accountId);
-                Log.i(AppUtils.APP_TAG, "InsertTokenIntoDb when import count = " + count + ", mAccountId = " + accountId);
-            }
-            Log.i(AppUtils.APP_TAG, "InsertTokenIntoDb when import uri = " + uri);
-
-        }
-    }
-
     private void requestBalanceForToken(final AccountData data, final long accountId){
         final String address = data.getAddress();
         Log.i(AppUtils.APP_TAG, "ImportAddressAsyncTask requestBalanceForToken address = " + address);
@@ -231,5 +193,38 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Integer>{
         } catch (Exception e){
             Log.e(AppUtils.APP_TAG, "BalanceLoaderManager requestBalanceForToken exception2", e);
         }
+    }
+
+    private void insertTokenIntoDb(String address, List<TokenListBean.TokenBean> tokens, String accountId) {
+        for (TokenListBean.TokenBean token : tokens) {
+            TokenListBean.TokenInfo tokenInfo = token.getTokenInfo();
+            boolean isExist = DbUtils.isAlreadyExistToken(DbUtils.UPDATE_TOKEN_SELECTION, new String[]{address, tokenInfo.getSymbol()});
+            Log.i(AppUtils.APP_TAG, "insertTokenIntoDb when import isExist = " + isExist);
+            if (isExist) {
+                continue;
+            }
+            String symbol = null;
+            int decimals = 1;
+            double rate = 0;
+            try {
+                if (tokenInfo != null){
+                    symbol = tokenInfo.getSymbol();
+                    decimals = tokenInfo.getDecimals();
+                    if (tokenInfo.getPrice() != null){
+                        rate = tokenInfo.getPrice().getRate();
+                    }
+                }
+            }catch (JsonSyntaxException | IllegalStateException e){
+                Log.e(AppUtils.APP_TAG, "try to insert illegal token, just ignore");
+                continue;
+            }
+
+            Uri uri = DbUtils.insertTokenIntoDb(Long.parseLong(accountId), address, tokens.indexOf(token),
+                    tokenInfo.getName(), symbol, decimals,
+                    tokenInfo.getAddress(), token.getBalance(), String.valueOf(rate));
+            Log.i(AppUtils.APP_TAG, "InsertTokenIntoDb when import uri = " + uri);
+        }
+        int count = DbUtils.updateHasTokenFlag(accountId);
+        Log.i(AppUtils.APP_TAG, "InsertTokenIntoDb when import count = " + count + ", mAccountId = " + accountId);
     }
 }

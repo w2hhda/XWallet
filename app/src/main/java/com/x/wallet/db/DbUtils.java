@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import com.x.wallet.AppUtils;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.lib.common.AccountData;
+import com.x.wallet.lib.common.LibUtils;
 
 /**
  * Created by wuliang on 18-3-14.
@@ -152,12 +153,15 @@ public class DbUtils {
                 .delete(XWalletProvider.CONTENT_URI_TOKEN, selection, new String[]{Long.toString(accountId)});
     }
 
+    private static final String COINTYPE_SELECTION = DbColumns.COIN_TYPE + " = ?";
+    private static final String[] COINTYPE_SELECTION_ETH = new String[]{String.valueOf(LibUtils.COINTYPE.COIN_ETH)};
     public static String queryAllEthAddress(){
         Cursor cursor = null;
         try{
             //1.query from db
             cursor = XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
-                    XWalletProvider.CONTENT_URI, new String[]{DbUtils.DbColumns.ADDRESS}, null, null, null);
+                    XWalletProvider.CONTENT_URI, new String[]{DbUtils.DbColumns.ADDRESS},
+                    COINTYPE_SELECTION, COINTYPE_SELECTION_ETH, null);
             if(cursor != null && cursor.getCount() > 0){
                 StringBuilder builder = new StringBuilder("");
                 while (cursor.moveToNext()){
@@ -173,6 +177,11 @@ public class DbUtils {
             }
         }
         return null;
+    }
+
+    public static Cursor queryAllEthAddressToCursor(){
+        return XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
+                XWalletProvider.CONTENT_URI, new String[]{DbUtils.DbColumns.ADDRESS}, COINTYPE_SELECTION, COINTYPE_SELECTION_ETH, null);
     }
 
     public static Cursor queryAllTokenAddress(){
@@ -199,6 +208,14 @@ public class DbUtils {
             }
         }
         return -1;
+    }
+
+    public static Cursor queryEthAccountIdToCursor(String address){
+        return XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
+                XWalletProvider.CONTENT_URI,
+                new String[]{DbColumns._ID, DbColumns.HAS_TOKEN},
+                DbColumns.ADDRESS + " = ?",
+                new String[]{address}, null);
     }
 
     public static boolean isTxExist(String txHash){

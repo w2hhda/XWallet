@@ -171,7 +171,7 @@ public class AccountListFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                requestBalance(createItemLoadedCallback(), null);
+                requestBalance(createItemLoadedCallback(), true);
             }
         });
         mSwipeRefreshLayout.setEnabled(false);
@@ -195,7 +195,7 @@ public class AccountListFragment extends Fragment {
                 mAllBalanceViewContainer.setVisibility(View.VISIBLE);
                 updateMenuVisibility(true);
                 mSwipeRefreshLayout.setEnabled(true);
-                requestBalance(null, null);
+                requestBalance(null, false);
             } else {
                 mAddAccountViewContainer.setVisibility(View.VISIBLE);
                 mEmptyAccountViewContainer.setVisibility(View.VISIBLE);
@@ -271,12 +271,7 @@ public class AccountListFragment extends Fragment {
         };
     }
 
-    private void requestBalance(ItemLoadedCallback<BalanceLoaderManager.BalanceLoaded> callback1,
-                                ItemLoadedCallback<BalanceLoaderManager.BalanceLoaded> callback2){
-        //XWalletApplication.getApplication().getBalanceLoaderManager().getBalance(callback1);
-        if (callback1 != null) {
-            XWalletApplication.getApplication().getBalanceLoaderManager().getAllTokenBalance(callback2);
-        }
-        XWalletApplication.getApplication().getBalanceLoaderManager().getAllBalance(callback1);
+    private void requestBalance(ItemLoadedCallback<BalanceLoaderManager.BalanceLoaded> callback, boolean isNeedAutoAddToken){
+        XWalletApplication.getApplication().getBalanceLoaderManager().getAllBalance(callback, isNeedAutoAddToken);
     }
 }

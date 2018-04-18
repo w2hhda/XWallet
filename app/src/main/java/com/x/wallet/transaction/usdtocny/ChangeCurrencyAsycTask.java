@@ -35,7 +35,7 @@ public class ChangeCurrencyAsycTask extends AsyncTask<Void, Void, Double>{
         double result = UsdToCnyHelper.requestCurrencyToUsd(mChooseCurrency);
         if(result > 0){
             UsdToCnyHelper.write(result);
-            RetrofitClient.requestBalance(null);
+            RetrofitClient.requestBalance(null, false);
         }
         return result;
     }

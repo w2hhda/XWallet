@@ -45,20 +45,20 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
         mContext = context;
     }
 
-    public ItemLoadedFuture getAllBalance(final ItemLoadedCallback<BalanceLoaded> callback) {
-        return getBalance(Uri.parse(ALL_BALANCE), callback);
+    public ItemLoadedFuture getAllBalance(final ItemLoadedCallback<BalanceLoaded> callback, boolean isNeedAutoAddToken) {
+        return getBalance(Uri.parse(ALL_BALANCE), callback, isNeedAutoAddToken);
     }
 
     public ItemLoadedFuture getBalance(final ItemLoadedCallback<BalanceLoaded> callback) {
-        return getBalance(Uri.parse(ALL_ADDRESS_BALANCE), callback);
+        return getBalance(Uri.parse(ALL_ADDRESS_BALANCE), callback, false);
     }
 
     public ItemLoadedFuture getAllTokenBalance(final ItemLoadedCallback<BalanceLoaded> callback){
         Log.i("@@@@","ItemLoadedFuture getAllTokenBalance,callback = " + callback);
-        return getBalance(Uri.parse(ALL_TOKEN_BALANCE), callback);
+        return getBalance(Uri.parse(ALL_TOKEN_BALANCE), callback, false);
     }
 
-    public ItemLoadedFuture getBalance(Uri uri, final ItemLoadedCallback<BalanceLoaded> callback) {
+    public ItemLoadedFuture getBalance(Uri uri, final ItemLoadedCallback<BalanceLoaded> callback, boolean isNeedAutoAddToken) {
         Log.i(AppUtils.APP_TAG, "BalanceLoaderManager getBalance uri = " + uri);
         if (uri == null) {
             return null;
@@ -74,7 +74,7 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
         if (!taskExists) {
             mPendingTaskUris.add(uri);
             Log.i(AppUtils.APP_TAG, "BalanceLoaderManager getBalance start task.");
-            Runnable task = new BalanceTask(uri);
+            Runnable task = new BalanceTask(uri, isNeedAutoAddToken);
             mExecutor.execute(task);
         }
         return new ItemLoadedFuture() {
@@ -96,9 +96,11 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
 
     public class BalanceTask implements Runnable {
         private final Uri mUri;
+        private final boolean mIsNeedAutoAddToken;
 
-        public BalanceTask(Uri address) {
+        public BalanceTask(Uri address, boolean isNeedAutoAddToken) {
             mUri = address;
+            mIsNeedAutoAddToken = isNeedAutoAddToken;
         }
 
         /** {@inheritDoc} */
@@ -110,9 +112,9 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                     public void onRequestFinished() {
                         handleCallback();
                     }
-                });
+                }, mIsNeedAutoAddToken);
             }else if(ALL_ADDRESS_BALANCE.equals(mUri.toString())){
-                String allEthAddress = queryAllEthAddress();
+                String allEthAddress = DbUtils.queryAllEthAddress();
                 if(TextUtils.isEmpty(allEthAddress)){
                     handleCallback();
                     return;
@@ -126,29 +128,6 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                     requestBalanceForToken(address);
                 }
             }
-        }
-
-        private String queryAllEthAddress(){
-            Cursor cursor = null;
-            try{
-                //1.query from db
-                cursor = mContext.getContentResolver().query(
-                        XWalletProvider.CONTENT_URI, new String[]{DbUtils.DbColumns.ADDRESS}, null, null, null);
-                if(cursor != null && cursor.getCount() > 0){
-                    StringBuilder builder = new StringBuilder("");
-                    while (cursor.moveToNext()){
-                        builder.append(cursor.getString(0));
-                        builder.append(",");
-                    }
-                    String address = builder.toString();
-                    return address.substring(0, address.length() -1);
-                }
-            } finally {
-                if(cursor != null){
-                    cursor.close();
-                }
-            }
-            return null;
         }
 
         private void removeCallback(){
@@ -275,8 +254,7 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
             Cursor cursor = null;
             try{
                 //1.query from db
-                cursor = mContext.getContentResolver().query(
-                        XWalletProvider.CONTENT_URI, new String[]{DbUtils.DbColumns.ADDRESS}, null, null, null);
+                cursor = DbUtils.queryAllEthAddressToCursor();
                 if(cursor != null && cursor.getCount() > 0){
                     while (cursor.moveToNext()){
                         String accountAddress = cursor.getString(0);

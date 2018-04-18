@@ -312,7 +312,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             XWalletApplication.getApplication().getmHistoryLoaderManager().getTokenHistory(mAccountItem.getAddress(), contractAddress, callback1);
             XWalletApplication.getApplication().getmHistoryLoaderManager().getNormalHistory(mAccountItem.getAddress(), callback1);
         }
-        XWalletApplication.getApplication().getBalanceLoaderManager().getAllBalance(null);
+        XWalletApplication.getApplication().getBalanceLoaderManager().getAllBalance(null, false);
     }
 
     @Override
