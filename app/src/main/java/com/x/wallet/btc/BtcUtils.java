@@ -3,14 +3,18 @@ package com.x.wallet.btc;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.balance.RetrofitBtcService;
 import com.x.wallet.transaction.balance.RetrofitClient;
+import com.x.wallet.transaction.token.TokenUtils;
 
 import org.json.JSONObject;
+
+import java.math.BigDecimal;
 
 import okhttp3.ResponseBody;
 
@@ -99,5 +103,11 @@ public class BtcUtils {
         } catch (Exception e) {
             Log.i(TAG, "BtcUtils handleBtcPriceJson exception", e);
         }
+    }
+
+    public static String getBalanceConversionText(String balance) {
+        if (TextUtils.isEmpty(balance) || balance.equals(TokenUtils.ZERO)) return TokenUtils.ZERO;
+        BigDecimal bigDecimal = new BigDecimal(balance);
+        return TokenUtils.formatConversion(bigDecimal.multiply(new BigDecimal(mCurrentBtcPrice)));
     }
 }

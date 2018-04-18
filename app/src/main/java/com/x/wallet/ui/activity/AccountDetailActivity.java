@@ -20,7 +20,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +28,7 @@ import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.btc.BtcAccountDetailHelper;
+import com.x.wallet.btc.BtcUtils;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.common.LibUtils;
@@ -372,6 +372,8 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             @Override
             public void onBalanceLoadFinished(String balance) {
                 mBalanceTv.setText(balance + " " + mAccountItem.getCoinName());
+                mBalanceTranslateTv.setText(getResources().getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
+                        BtcUtils.getBalanceConversionText(balance)));
             }
 
             @Override
