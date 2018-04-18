@@ -9,12 +9,17 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.x.wallet.AppUtils;
 import com.x.wallet.XWalletApplication;
+import com.x.wallet.btc.BtcUtils;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.data.BalanceResultBean;
 import com.x.wallet.lib.eth.data.PriceResultBean;
 import com.x.wallet.transaction.token.TokenDeserializer;
+import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +33,6 @@ import rx.Subscriber;
 import rx.functions.FuncN;
 import rx.schedulers.Schedulers;
 
-import static com.x.wallet.db.DbUtils.queryAllEthAddress;
-
 /**
  * Created by wuliang on 18-4-4.
  */
@@ -38,6 +41,7 @@ public class RetrofitClient {
     private static final String TAG = "RetrofitClient";
     private static Retrofit retrofitEth = null;
     private static Retrofit retrofitToken = null;
+    private static Retrofit mRetrofitBtc = null;
 
     private static Retrofit getEthClient(String baseUrl) {
         if (retrofitEth == null) {
@@ -64,8 +68,20 @@ public class RetrofitClient {
         return retrofitToken;
     }
 
+    private static Retrofit getRetrofitBtc(String baseUrl) {
+        if (mRetrofitBtc == null) {
+            mRetrofitBtc = new Retrofit.Builder()
+                    .baseUrl(baseUrl)
+                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        return mRetrofitBtc;
+    }
+
     private static final String BALANCE_BASE_URL = "http://api.etherscan.io/";
     private static final String TOKEN_BASE_URL = "https://api.ethplorer.io/";
+    private static final String BTC_BASE_URL = "https://blockchain.info/";
 
     private static RetrofitEthService getEthService() {
         return RetrofitClient.getEthClient(BALANCE_BASE_URL).create(RetrofitEthService.class);
@@ -75,25 +91,37 @@ public class RetrofitClient {
         return RetrofitClient.getTokenClient(TOKEN_BASE_URL).create(RetrofitTokenService.class);
     }
 
+    public static RetrofitBtcService getBtcService(){
+        return RetrofitClient.getRetrofitBtc(BTC_BASE_URL).create(RetrofitBtcService.class);
+    }
+
     public static void requestBalance(final OnRequestFinishedListener listener, final boolean isNeedAddTokenAutomatic) {
         String addresses = DbUtils.queryAllEthAddress();
-        if (TextUtils.isEmpty(addresses)) {
+        boolean noEthAccount = TextUtils.isEmpty(addresses);
+        boolean hasBtcAccount = DbUtils.hasBtcAccount();
+        if (noEthAccount && !hasBtcAccount) {
             handleListener(listener);
             Log.i(TAG, "RetrofitClient requestBalance addresses is blank.");
             return;
         }
-
-        Observable<ResponseBody> ethPriceObservable = createPriceResultBeanObservable();
-        Observable<ResponseBody> balanceResultBeanObservable = createBalanceResultBeanObservable(addresses);
-        ArrayList<Observable<ResponseBody>> tokenBalanceObservableList = createTokenObservableList(isNeedAddTokenAutomatic);
-
         List<Observable<ResponseBody>> list = new ArrayList<>();
-        list.add(ethPriceObservable);
-        list.add(balanceResultBeanObservable);
-        Log.i(TAG, "RetrofitClient requestBalance tokenBalanceObservableList.size = " + tokenBalanceObservableList.size());
-        if (tokenBalanceObservableList.size() > 0) {
-            list.addAll(tokenBalanceObservableList);
+        if(!noEthAccount){
+            Observable<ResponseBody> ethPriceObservable = createPriceResultBeanObservable();
+            Observable<ResponseBody> balanceResultBeanObservable = createBalanceResultBeanObservable(addresses);
+            ArrayList<Observable<ResponseBody>> tokenBalanceObservableList = createTokenObservableList(isNeedAddTokenAutomatic);
+            list.add(ethPriceObservable);
+            list.add(balanceResultBeanObservable);
+            Log.i(TAG, "RetrofitClient requestBalance tokenBalanceObservableList.size = " + tokenBalanceObservableList.size());
+            if (tokenBalanceObservableList.size() > 0) {
+                list.addAll(tokenBalanceObservableList);
+            }
         }
+
+        if(hasBtcAccount){
+            Observable<ResponseBody> btcPriceObservable = createBtcPriceResultBeanObservable();
+            list.add(btcPriceObservable);
+        }
+
         Log.i(TAG, "RetrofitClient requestBalance size =" + list.size());
 
         Observable combind = Observable.zip(list, new FuncN<Object>() {
@@ -104,10 +132,8 @@ public class RetrofitClient {
                 Log.i(TAG, "RetrofitClient requestBalance args.lenght =" + args.length);
 
                 ArrayList<ContentProviderOperation> rawOperations = new ArrayList<ContentProviderOperation>();
-                handleObject1(args);
-                handleObject2(args, rawOperations);
-                if (args.length >= 3) {
-                    handleObject3(args, rawOperations, isNeedAddTokenAutomatic);
+                for(Object object : args){
+                    handleObject(object, rawOperations, isNeedAddTokenAutomatic);
                 }
                 Log.i(TAG, "RetrofitClient requestBalance rawOperations.size = " + rawOperations.size());
                 try {
@@ -140,46 +166,61 @@ public class RetrofitClient {
         });
     }
 
-    private static void handleObject1(Object[] args) {
+    private static void handleObject(Object object, ArrayList<ContentProviderOperation> rawOperations, boolean isNeedAddTokenAutomatic){
         try {
-            Object object = args[0];
             if (object instanceof ResponseBody) {
                 ResponseBody responseBody = (ResponseBody) object;
-                PriceResultBean priceResultBean = new Gson().fromJson(responseBody.string(), PriceResultBean.class);
-                handlePriceResultBean(priceResultBean);
-                Log.i(TAG, "RetrofitClient handleObject1 EthToUsd = " + priceResultBean.getResult().getEthusd());
-            }
-        } catch (Exception e) {
-            Log.i(TAG, "RetrofitClient handleObject1 exception", e);
-        }
-    }
+                String result = responseBody.string();
+                JSONObject jsonObject = new JSONObject(result);
+                if(jsonObject.has("status")){
+                    if(jsonObject.has("result")){
+                        Object resultObject = jsonObject.get("result");
+                        if(resultObject instanceof JSONObject){
+                            JSONObject resultJsonObject = (JSONObject)resultObject;
+                            if(resultJsonObject.has("ethusd")){
+                                handleEthPriceJson(result);
+                            }
+                        } else if(resultObject instanceof JSONArray){
+                            handleEthBalanceJson(result, rawOperations);
+                        }
+                    }
 
-    private static void handleObject2(Object[] args, ArrayList<ContentProviderOperation> rawOperations) {
-        try {
-            Object object = args[1];
-            if (object instanceof ResponseBody) {
-                ResponseBody responseBody = (ResponseBody) object;
-                BalanceResultBean balanceResultBean = new Gson().fromJson(responseBody.string(), BalanceResultBean.class);
-                handleBalanceResultBean(rawOperations, balanceResultBean);
-            }
-        } catch (Exception e) {
-            Log.i(TAG, "RetrofitClient handleObject2 exception", e);
-        }
-    }
-
-    private static void handleObject3(Object[] args, ArrayList<ContentProviderOperation> rawOperations, boolean isNeedAddTokenAutomatic) {
-        try {
-            int length = args.length;
-            for (int i = 2; i < length; i++) {
-                Object object = args[i];
-                if (object instanceof ResponseBody) {
-                    ResponseBody responseBody = (ResponseBody) object;
-                    TokenListBean tokenListBean = parseTokenJson(responseBody.string());
-                    handleTokenListBean(rawOperations, tokenListBean, isNeedAddTokenAutomatic);
+                } else if(jsonObject.has("address")){
+                    handleTokenBalanceJson(result, rawOperations, isNeedAddTokenAutomatic);
+                } else if(jsonObject.has("USD")){
+                    BtcUtils.handleBtcPriceJson(jsonObject, UsdToCnyHelper.mCurrentCurrency);
                 }
             }
         } catch (Exception e) {
-            Log.i(TAG, "RetrofitClient handleObject3 exception", e);
+            Log.i(TAG, "RetrofitClient handleObject exception", e);
+        }
+    }
+
+    private static void handleEthPriceJson(String result) {
+        try {
+            PriceResultBean priceResultBean = new Gson().fromJson(result, PriceResultBean.class);
+            handlePriceResultBean(priceResultBean);
+            Log.i(TAG, "RetrofitClient handleEthPriceJson EthToUsd = " + priceResultBean.getResult().getEthusd());
+        } catch (Exception e) {
+            Log.i(TAG, "RetrofitClient handleEthPriceJson exception", e);
+        }
+    }
+
+    private static void handleEthBalanceJson(String result, ArrayList<ContentProviderOperation> rawOperations) {
+        try {
+            BalanceResultBean balanceResultBean = new Gson().fromJson(result, BalanceResultBean.class);
+            handleBalanceResultBean(rawOperations, balanceResultBean);
+        } catch (Exception e) {
+            Log.i(TAG, "RetrofitClient handleEthBalanceJson exception", e);
+        }
+    }
+
+    private static void handleTokenBalanceJson(String result, ArrayList<ContentProviderOperation> rawOperations, boolean isNeedAddTokenAutomatic) {
+        try {
+            TokenListBean tokenListBean = parseTokenJson(result);
+            handleTokenListBean(rawOperations, tokenListBean, isNeedAddTokenAutomatic);
+        } catch (Exception e) {
+            Log.i(TAG, "RetrofitClient handleTokenBalanceJson exception", e);
         }
     }
 
@@ -192,7 +233,6 @@ public class RetrofitClient {
             } else {
                 //1.query from db
                 cursor = DbUtils.queryAllTokenAddress();
-
             }
             if (cursor != null && cursor.getCount() > 0) {
                 while (cursor.moveToNext()) {
@@ -224,6 +264,10 @@ public class RetrofitClient {
 
     private static Observable<ResponseBody> createBalanceResultBeanObservable(String addresses) {
         return getEthService().getListBalance("account", "balancemulti", addresses, "latest", EtherscanAPI.API_KEY).subscribeOn(Schedulers.newThread());
+    }
+
+    private static Observable<ResponseBody> createBtcPriceResultBeanObservable(){
+        return getBtcService().getBtcPrice().subscribeOn(Schedulers.newThread());
     }
 
     private static void handlePriceResultBean(PriceResultBean priceResultBean) {

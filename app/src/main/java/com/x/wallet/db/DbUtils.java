@@ -70,6 +70,9 @@ public class DbUtils {
     }
 
     public static final String UPDATE_TOKEN_SELECTION = DbUtils.TokenTableColumns.ACCOUNT_ADDRESS + " = ? AND " + DbUtils.TokenTableColumns.SYMBOL + " = ?";
+    private static final String COINTYPE_SELECTION = DbColumns.COIN_TYPE + " = ?";
+    private static final String[] COINTYPE_SELECTION_ETH = new String[]{String.valueOf(LibUtils.COINTYPE.COIN_ETH)};
+    private static final String[] COINTYPE_SELECTION_BTC = new String[]{String.valueOf(LibUtils.COINTYPE.COIN_BTC)};
 
     public static ContentValues createContentValues(AccountData accountData) {
         ContentValues values = new ContentValues();
@@ -153,8 +156,6 @@ public class DbUtils {
                 .delete(XWalletProvider.CONTENT_URI_TOKEN, selection, new String[]{Long.toString(accountId)});
     }
 
-    private static final String COINTYPE_SELECTION = DbColumns.COIN_TYPE + " = ?";
-    private static final String[] COINTYPE_SELECTION_ETH = new String[]{String.valueOf(LibUtils.COINTYPE.COIN_ETH)};
     public static String queryAllEthAddress(){
         Cursor cursor = null;
         try{
@@ -326,5 +327,23 @@ public class DbUtils {
                 .update(XWalletProvider.CONTENT_URI, updateValues,
                         DbUtils.DbColumns._ID + " = ?",
                         new String[]{accountId});
+    }
+
+    public static boolean hasBtcAccount(){
+        Cursor cursor = null;
+        try{
+            //1.query from db
+            cursor = XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
+                    XWalletProvider.CONTENT_URI, new String[]{DbUtils.DbColumns.ADDRESS},
+                    COINTYPE_SELECTION, COINTYPE_SELECTION_BTC, null);
+            if(cursor != null && cursor.getCount() > 0){
+                return true;
+            }
+        } finally {
+            if(cursor != null){
+                cursor.close();
+            }
+        }
+        return false;
     }
 }

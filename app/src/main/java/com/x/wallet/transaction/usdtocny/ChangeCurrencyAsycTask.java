@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.x.wallet.btc.BtcUtils;
 import com.x.wallet.transaction.balance.RetrofitClient;
 
 /**
@@ -37,6 +38,7 @@ public class ChangeCurrencyAsycTask extends AsyncTask<Void, Void, Double>{
             UsdToCnyHelper.write(result);
             RetrofitClient.requestBalance(null, false);
         }
+        BtcUtils.requestCurrencyBtcPrice(mChooseCurrency);
         return result;
     }
 
