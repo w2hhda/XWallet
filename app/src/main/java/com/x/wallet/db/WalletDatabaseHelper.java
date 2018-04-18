@@ -75,7 +75,7 @@ public class WalletDatabaseHelper extends SQLiteOpenHelper {
                 DbUtils.TxTableColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 DbUtils.TxTableColumns.TX_HASH + " TEXT," +
                 DbUtils.TxTableColumns.TIME_STAMP + " TEXT," +
-                DbUtils.TxTableColumns.NONCE + " TEXT," +
+                DbUtils.TxTableColumns.NONCE + " INTEGER DEFAULT 0," +
                 DbUtils.TxTableColumns.FROM_ADDRESS + " TEXT," +
                 DbUtils.TxTableColumns.TO_ADDRESS + " TEXT," +
                 DbUtils.TxTableColumns.VALUE + " TEXT," +

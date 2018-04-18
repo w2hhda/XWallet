@@ -279,7 +279,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             AppUtils.log("AccountDetailActivity onLoadFinished cursor.count = " + data.getCount());
             updateVisibility(data.getCount());
-            requestHistory(createItemLoadedCallback(), ALL_REQUEST);
+            //requestHistory(createItemLoadedCallback(), ALL_REQUEST);
             mAdapter.swapCursor(data);
         }
 
@@ -303,12 +303,13 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
 
     private void requestHistory(ItemLoadedCallback<HistoryLoaderManager.HistoryLoaded> callback1,
                                 String requestType){
+        final String contractAddress = isTokenAccount ? mTokenItem.getContractAddress() : null;
         if (requestType.equals(NORMAL_REQUEST)) {
             XWalletApplication.getApplication().getmHistoryLoaderManager().getNormalHistory(mAccountItem.getAddress(), callback1);
         }else if (requestType.equals(TOKEN_REQUEST)) {
-            XWalletApplication.getApplication().getmHistoryLoaderManager().getTokenHistory(mAccountItem.getAddress(), callback1);
+            XWalletApplication.getApplication().getmHistoryLoaderManager().getTokenHistory(mAccountItem.getAddress(), contractAddress, callback1);
         }else{
-            XWalletApplication.getApplication().getmHistoryLoaderManager().getTokenHistory(mAccountItem.getAddress(), callback1);
+            XWalletApplication.getApplication().getmHistoryLoaderManager().getTokenHistory(mAccountItem.getAddress(), contractAddress, callback1);
             XWalletApplication.getApplication().getmHistoryLoaderManager().getNormalHistory(mAccountItem.getAddress(), callback1);
         }
         XWalletApplication.getApplication().getBalanceLoaderManager().getAllBalance(null);

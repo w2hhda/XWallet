@@ -147,6 +147,22 @@ public class EtherscanAPI {
         url = url + address + "&startblock=0&endblock=999999999&sort=desc&apikey=" + token;
         get(url, b);
     }
+
+    public void getLastTxHistory(String address, long fromBlockNumber, Callback b) throws  IOException{
+        String url = "https://api.etherscan.io/api?module=account&action=txlist&address=" + address +
+                "&startblock=" + fromBlockNumber +
+                "&endblock=99999999&page=1&offset=50&sort=desc&apikey=" + token;
+        get(url, b);
+    }
+
+    public void getLastTokenTxHistory(String address, String contractAddress, Callback b) throws IOException {
+        String url = "https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=" +
+                contractAddress +
+                "&address=" +
+                address +
+                "&page=1&offset=50&sort=desc&apikey=" + token;
+        get(url, b);
+    }
     
 
     public void get(String url, Callback b) throws IOException {

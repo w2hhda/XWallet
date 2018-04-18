@@ -37,14 +37,14 @@ public class HistoryLoaderManager extends BackgroundLoaderManager {
         mContext = context;
     }
     public ItemLoadedFuture getNormalHistory(final String address, final ItemLoadedCallback<HistoryLoaded> callback) {
-        return getHistory(Uri.parse(NORMAL_HISTORY),address, callback);
+        return getHistory(Uri.parse(NORMAL_HISTORY),address,null,  callback);
     }
 
-    public ItemLoadedFuture getTokenHistory(final String address, final ItemLoadedCallback<HistoryLoaded> callback) {
-        return getHistory(Uri.parse(TOKEN_HISTORY), address, callback);
+    public ItemLoadedFuture getTokenHistory(final String address,final String contractAddress, final ItemLoadedCallback<HistoryLoaded> callback) {
+        return getHistory(Uri.parse(TOKEN_HISTORY), address,contractAddress,  callback);
     }
 
-    public ItemLoadedFuture getHistory(Uri uri, String address, final ItemLoadedCallback<HistoryLoaderManager.HistoryLoaded> callback) {
+    public ItemLoadedFuture getHistory(Uri uri, String address,final String contractAddress, final ItemLoadedCallback<HistoryLoaderManager.HistoryLoaded> callback) {
         Log.i(AppUtils.APP_TAG, "HistoryLoaderManager getHistory uri = " + uri);
         if (uri == null) {
             return null;
@@ -60,7 +60,7 @@ public class HistoryLoaderManager extends BackgroundLoaderManager {
         if (!taskExists) {
             mPendingTaskUris.add(uri);
             Log.i(AppUtils.APP_TAG, "HistoryLoaderManager getHistory start task.");
-            Runnable task = new HistoryTask(uri, address);
+            Runnable task = new HistoryTask(uri, address, contractAddress);
             mExecutor.execute(task);
         }
         return new ItemLoadedFuture() {
@@ -84,10 +84,12 @@ public class HistoryLoaderManager extends BackgroundLoaderManager {
     public class HistoryTask implements Runnable{
         private final Uri mUri;
         private final String address;
+        private final String contractAddress;
 
-        public HistoryTask(Uri mUri, String address) {
+        public HistoryTask(Uri mUri, String address, String contractAddress) {
             this.mUri = mUri;
             this.address = address;
+            this.contractAddress = contractAddress;
         }
 
         @Override
@@ -97,7 +99,7 @@ public class HistoryLoaderManager extends BackgroundLoaderManager {
                     getNormalHistory(address);
                     break;
                 case TOKEN_HISTORY:
-                    getTokenHistory(address);
+                    getTokenHistory(address, contractAddress);
                     break;
                     default:
                         break;
@@ -105,87 +107,155 @@ public class HistoryLoaderManager extends BackgroundLoaderManager {
         }
 
         private void getNormalHistory(String address){
-            try {
-                EtherscanAPI.getInstance().getNormalTransactions(address, new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        AppUtils.log("get normal history fail exception" + e);
-                        removeCallback();
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        try {
-                            ResponseBody body = response.body();
-                            if(body != null){
-                                String result = body.string();
-                                if (result == null){
-                                    handleCallback();
-                                    return;
-                                }
-
-                                TransactionsResultBean bean = new Gson().fromJson(result, TransactionsResultBean.class);
-                                if (!bean.getMessage().equalsIgnoreCase("OK")){
-                                    AppUtils.log("get normal history fail for wrong response" + result);
-                                    handleCallback();
-                                    return;
-                                }
-                                //1.phrase
-                                List<TransactionsResultBean.ReceiptBean> receiptBeans = bean.getResult();
-
-                                //insert db
-                                insertNormalTx(receiptBeans);
-                            }
-                        } finally {
-                            handleCallback();
+            if (AppUtils.isFirstTimeToSyncTxList(address, address)){ //get all normal tx list
+                try {
+                    AppUtils.log("get all normal tx list");
+                    EtherscanAPI.getInstance().getNormalTransactions(address, new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            AppUtils.log("get normal history fail exception" + e);
+                            removeCallback();
                         }
-                    }
-                },true);
-            }catch (IOException e){
-                handleCallback();
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            try {
+                                ResponseBody body = response.body();
+                                if(body != null){
+                                    handleNormalHistory(body.string());
+                                }
+                            } finally {
+                                handleCallback();
+                            }
+                        }
+                    },true);
+                }catch (IOException e){
+                    handleCallback();
+                }finally {
+                    AppUtils.updateSyncAddress(address, address);
+                }
+            }else {                 //get last 50 normal tx list
+                try {
+                    AppUtils.log("get last 50 normal tx list");
+                    EtherscanAPI.getInstance().getLastTxHistory(address, 0, new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            AppUtils.log("get normal history fail exception" + e);
+                            removeCallback();
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            try {
+                                ResponseBody body = response.body();
+                                if(body != null){
+                                    handleNormalHistory(body.string());
+                                }
+                            } finally {
+                                handleCallback();
+                            }
+                        }
+                    });
+                }catch (IOException e){
+                    handleCallback();
+                }
             }
         }
 
-        private void getTokenHistory(String address){
-            try {
-                EtherscanAPI.getInstance().getTokenTxHistory(address, new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        AppUtils.log("get token history fail exception" + e);
-                        removeCallback();
-                    }
+        private void getTokenHistory(String address, String contractAddress){
+            if (AppUtils.isFirstTimeToSyncTxList(address, contractAddress)){  //get all token tx list
+                AppUtils.log("get all token tx list");
 
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        try {
-                            ResponseBody body = response.body();
-                            if(body != null){
-                                String result = body.string();
-                                if (result == null){
-                                    handleCallback();
-                                    return;
-                                }
-
-                                TokenResultBean bean = new Gson().fromJson(result, TokenResultBean.class);
-                                if (!bean.getMessage().equalsIgnoreCase("OK")){
-                                    AppUtils.log("get normal history fail for wrong response" + result);
-                                    handleCallback();
-                                    return;
-                                }
-                                //1.phrase
-                                List<TokenResultBean.ResultBean> receiptBeans = bean.getResult();
-
-                                //insert db
-                                insertTokenTx(receiptBeans);
-                            }
-                        } finally {
-                            handleCallback();
+                try {
+                    EtherscanAPI.getInstance().getTokenTxHistory(address, new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            AppUtils.log("get all token history fail exception" + e);
+                            removeCallback();
                         }
-                    }
-                });
-            }catch (IOException e){
-                removeCallback();
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            try {
+                                ResponseBody body = response.body();
+                                if(body != null){
+                                    handleTokenHistory(body.string());
+                                }
+                            } finally {
+                                handleCallback();
+                            }
+                        }
+                    });
+                }catch (IOException e){
+                    removeCallback();
+                } finally {
+                    AppUtils.updateSyncAddress(address, contractAddress);
+                }
+            }else {  //get last 50 token tx list
+                try {
+                    AppUtils.log("get last 50 token tx list");
+                    EtherscanAPI.getInstance().getLastTokenTxHistory(address, contractAddress, new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            AppUtils.log("get last token history fail exception" + e);
+                            removeCallback();
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            try {
+                                ResponseBody body = response.body();
+                                if(body != null){
+                                    handleTokenHistory(body.string());
+                                }
+                            } finally {
+                                handleCallback();
+                            }
+                        }
+                    });
+                }catch (IOException e){
+                    removeCallback();
+                }
             }
+
+        }
+
+        private void handleNormalHistory(String result){
+            if (result == null){
+                handleCallback();
+                return;
+            }
+
+            TransactionsResultBean bean = new Gson().fromJson(result, TransactionsResultBean.class);
+            if (!bean.getMessage().equalsIgnoreCase("OK")){
+                AppUtils.log("get normal history fail for wrong response" + result);
+                handleCallback();
+                return;
+            }
+            //1.phrase
+            List<TransactionsResultBean.ReceiptBean> receiptBeans = bean.getResult();
+
+            //insert db
+            insertNormalTx(receiptBeans);
+        }
+
+        private void handleTokenHistory(String result){
+            if (result == null){
+                handleCallback();
+                return;
+            }
+
+            TokenResultBean bean = new Gson().fromJson(result, TokenResultBean.class);
+            if (!bean.getMessage().equalsIgnoreCase("OK")){
+                AppUtils.log("get normal history fail for wrong response" + result);
+                handleCallback();
+                return;
+            }
+            //1.phrase
+            List<TokenResultBean.ResultBean> receiptBeans = bean.getResult();
+
+            //insert db
+            insertTokenTx(receiptBeans);
         }
 
         private void insertNormalTx(List<TransactionsResultBean.ReceiptBean> beans){

@@ -8,12 +8,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
@@ -69,6 +67,7 @@ public class AppUtils {
     public static final String HAS_TOKEN_KEY ="has_token";
     public static final String TOKEN_DATA ="token_data";
     public static final String ACCOUNT_TYPE = "account_type";
+    public static final String TX_LIST_SYNCED = "tx_list_synced:";
 
     public static final String APP_TAG = "XWallet";
 
@@ -284,5 +283,21 @@ public class AppUtils {
             return false;
         }
         return true;
+    }
+
+    public static boolean isFirstTimeToSyncTxList(String address, String syncAddress){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(XWalletApplication.getApplication().getApplicationContext());
+        String syncNames = preferences.getString(TX_LIST_SYNCED + address, "");
+        return !syncNames.contains(syncAddress);
+    }
+
+    public static void updateSyncAddress(String address, String syncAddress){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(XWalletApplication.getApplication().getApplicationContext());
+        String syncNames = preferences.getString(TX_LIST_SYNCED + address, "");
+        if (!syncNames.contains(syncAddress)){
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(TX_LIST_SYNCED + address, syncNames + " " + syncAddress);
+            editor.apply();
+        }
     }
 }
