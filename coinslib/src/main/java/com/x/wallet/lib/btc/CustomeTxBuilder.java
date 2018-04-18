@@ -104,8 +104,8 @@ public class CustomeTxBuilder {
             spendOutValue += out.getOutValue();
         }
         int outCount = tx.getOuts().size();
-        //Log.i("test", "CustomeTxBuilder buildTx spendOutValue = " + spendOutValue);
-        //Log.i("test", "CustomeTxBuilder buildTx allout = " + getAmount(outs));
+        //Log.i("testBtcTx", "CustomeTxBuilder buildTx spendOutValue = " + spendOutValue);
+        //Log.i("testBtcTx", "CustomeTxBuilder buildTx allBalance = " + getAmount(outs));
         return buildTx(outs, spendOutValue, outCount, tx, changeAddress, feeBase);
     }
 
@@ -123,7 +123,7 @@ public class CustomeTxBuilder {
                 if(change == 0) {
                     addInput(tx, result);
                     tx.setSource(Tx.SourceType.self.getValue());
-                    //Log.i("test", "CustomeAddress buildTx 1 result.size = " + result.size());
+                    //Log.i("testBtcTx", "CustomeAddress buildTx 1 result.size = " + result.size() + ", outCount = " + outCount + ", feeBase");
                     return tx;
                 } else if(change < 0) {
                     if(result.size() == inSize) {
@@ -142,7 +142,7 @@ public class CustomeTxBuilder {
                     changeOutput.setOutValue(change);
                     changeOutput.setOutAddress(changeAddress);
                     tx.addOutput(changeOutput.getOutValue(), changeOutput.getOutAddress());
-                    //Log.i("test", "CustomeAddress buildTx 2 result.size = " + result.size());
+                    //Log.i("testBtcTx", "CustomeAddress buildTx 2 result.size = " + result.size() + ", outCount = " + outCount + ", feeBase");
                     return tx;
                 }
                 if(result.size() == inSize) {
@@ -205,6 +205,6 @@ public class CustomeTxBuilder {
     }
 
     private static long calculateTxSize(int inCount, int outCount){
-        return 181 * inCount + 34 * outCount + 10;
+        return 148 * inCount + 34 * outCount + 10;
     }
 }

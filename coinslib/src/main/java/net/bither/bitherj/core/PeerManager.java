@@ -810,8 +810,8 @@ public class PeerManager {
         if (!tx.isSigned()) {
             throw new PublishUnsignedTxException();
         }
-
-        AddressManager.getInstance().registerTx(tx, Tx.TxNotificationType.txSend, false);
+        HashSet<String> addressHashSet = AbstractDb.txProvider.getAllAddressToHashSet();
+        CustomeAddressManager.registerTx(addressHashSet, tx, Tx.TxNotificationType.txSend, false);
 
         publishedTx.put(new Sha256Hash(tx.getTxHash()), tx);
 
@@ -1193,6 +1193,7 @@ public class PeerManager {
     }
 
     public void relayedTransaction(final Peer fromPeer, final Tx tx, final boolean isConfirmed, final HashSet<String> addressHashSet) {
+        //Log.i("testBtcTx", "PeerManager relayedTransaction");
         if (!isRunning()) {
             return;
         }

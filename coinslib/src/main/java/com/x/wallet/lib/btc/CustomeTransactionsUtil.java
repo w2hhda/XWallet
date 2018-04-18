@@ -32,10 +32,10 @@ public class CustomeTransactionsUtil {
 
     public static void getMyTxFromBither(List<String> addressList) throws Exception {
         Log.i("testGetTx", "TransactionsUtil getMyTxFromBither");
-        getTxForAddress(1, addressList);
+        getTxForAddress(addressList);
     }
 
-    private static void getTxForAddress(final int webType, List<String> addressList) throws Exception {
+    private static void getTxForAddress(List<String> addressList) throws Exception {
         for (String address : addressList) {
             Block storedBlock = BlockChain.getInstance().getLastBlock();
             int storeBlockHeight = storedBlock.getBlockNo();
@@ -106,7 +106,7 @@ public class CustomeTransactionsUtil {
             HashMap<String, String> txIdMap = new HashMap<String, String>();
             for(RawaddrResultBean.Tx txBean : txBeanList){
                 String hash = txBean.getHash();
-                RawtxResultBean rawtxResultBean = queryTxByHash(hash);
+                /*RawtxResultBean rawtxResultBean = queryTxByHash(hash);
                 RawtxResultBean.Data data = rawtxResultBean.getData();
                 if(data != null){
                     List<RawtxResultBean.InputBean> inputBeanList = data.getInputs();
@@ -114,7 +114,17 @@ public class CustomeTransactionsUtil {
                         txIdMap.put(inputBean.getScript_hex(), inputBean.getReceived_from().getTxid());
                         System.out.println("testGetTx 2 script = " + inputBean.getScript_hex() + ", txId = " + inputBean.getReceived_from().getTxid());
                     }
+                }*/
+
+                RawtxResultBean2 rawtxResultBean = queryTxByHash2(hash);
+                if(rawtxResultBean != null){
+                    List<RawtxResultBean2.Inputs> inputBeanList = rawtxResultBean.getInputs();
+                    for(RawtxResultBean2.Inputs inputBean : inputBeanList){
+                        txIdMap.put(inputBean.getScript(), inputBean.getPrev_hash());
+                        System.out.println("testGetTx 2 script = " + inputBean.getScript() + ", txId = " + inputBean.getPrev_hash());
+                    }
                 }
+
                 Tx tx = new Tx();
                 tx.setTxHash(Utils.reverseBytes(Utils.hexStringToByteArray(hash)));
                 tx.setTxVer(txBean.getVer());
@@ -169,6 +179,18 @@ public class CustomeTransactionsUtil {
             soChainMytransactionsApi.handleHttpGet();
             String txResult = soChainMytransactionsApi.getResult();
             return txResult != null ? new Gson().fromJson(txResult, RawtxResultBean.class) : null;
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static RawtxResultBean2 queryTxByHash2(String hash){
+        try{
+            BlockcypherMytransactionsApi blockcypherMytransactionsApi = new BlockcypherMytransactionsApi("https://api.blockcypher.com/v1/btc/test3/txs/" + hash);
+            blockcypherMytransactionsApi.handleHttpGet();
+            String txResult = blockcypherMytransactionsApi.getResult();
+            return txResult != null ? new Gson().fromJson(txResult, RawtxResultBean2.class) : null;
         } catch (Exception e){
             e.printStackTrace();
         }

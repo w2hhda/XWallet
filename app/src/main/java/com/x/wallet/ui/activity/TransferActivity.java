@@ -24,6 +24,8 @@ import com.x.wallet.btc.BtcAccountBalanceLoaderHelper;
 import com.x.wallet.btc.BtcTransferHelper;
 import com.x.wallet.btc.BtcUtils;
 import com.x.wallet.btc.BuildBtcTxAsycTask;
+import com.x.wallet.btc.PushBtcAsyncTask;
+import com.x.wallet.lib.btc.TxBuildResult;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.EthTransactionFeeHelper;
 import com.x.wallet.transaction.address.ConfirmPasswordAsyncTask;
@@ -415,19 +417,26 @@ public class TransferActivity extends WithBackAppCompatActivity {
         if (!checkSendOutAmount()){
             return;
         }
-        /*Log.i("test", "TransferActivity handleBtcTransaction out = " + transferAmount.getText().toString());
-        Log.i("test", "TransferActivity handleBtcTransaction balance = " + mBtcTransferHelper.getBalance());*/
+        //Log.i("testBtcTx", "TransferActivity handleBtcTransaction out = " + transferAmount.getText().toString());
+        //Log.i("testBtcTx", "TransferActivity handleBtcTransaction balance = " + mBtcTransferHelper.getBalance());
+        //Log.i("testBtcTx", "TransferActivity handleBtcTransaction getCurrentFeeBase = " + mBtcTransferHelper.getCurrentFeeBase());
         if(!checkBalanceEnough(mBtcTransferHelper.getBalance())){
             return;
         }
-        BigDecimal amount = new BigDecimal(transferAmount.getText().toString());
         long sendOutAmount = TokenUtils.translateToRaw(transferAmount.getText().toString(), BtcUtils.BTC_DECIMALS_COUNT).longValue();
         new BuildBtcTxAsycTask(this, sendOutAmount, mAddress,
                 toAddress.getText().toString(), mAddress, mBtcTransferHelper.getCurrentFeeBase(),
                 new BuildBtcTxAsycTask.OnTxBuildFinishedListener() {
                     @Override
-                    public void onTxBuildFinished(Tx tx) {
+                    public void onTxBuildFinished(TxBuildResult txBuildResult) {
                         responseForErrorResult(ERROR_UNKNOWN);
+                    }
+
+                    @Override
+                    public void onTxPushFinished(int resultCode) {
+                        if(resultCode == PushBtcAsyncTask.PushOutTxResult.RESULT_OK){
+                            TransferActivity.this.finish();
+                        }
                     }
                 }).execute();
 

@@ -52,7 +52,6 @@ public class BlockchainService extends android.app.Service {
     public static final String ACTION_BEGIN_DOWLOAD_SPV_BLOCK = R.class
             .getPackage().getName() + ".dowload_block_api_begin";
     private WakeLock wakeLock;
-    private BitherTimer mBitherTimer;
     private SPVFinishedReceiver spvFinishedReceiver = null;
     private TickReceiver tickReceiver = null;
     private TxReceiver txReceiver = null;
@@ -85,7 +84,6 @@ public class BlockchainService extends android.app.Service {
                 Intent.ACTION_TIME_TICK));
         registerReceiver(txReceiver, new IntentFilter(NotificationAndroidImpl.ACTION_ADDRESS_BALANCE));
         BroadcastUtil.sendBroadcastStartPeer();
-        startMarkTimerTask();
     }
 
     private void receiverConnectivity() {
@@ -144,10 +142,6 @@ public class BlockchainService extends android.app.Service {
         scheduleStartBlockchainService(this);
         PeerManager.instance().stop();
         PeerManager.instance().onDestroy();
-        if (mBitherTimer != null) {
-            mBitherTimer.stopTimer();
-            mBitherTimer = null;
-        }
         if (wakeLock != null && wakeLock.isHeld()) {
             wakeLock.release();
             wakeLock = null;
@@ -370,14 +364,6 @@ public class BlockchainService extends android.app.Service {
             }
         }
     }
-
-    public void startMarkTimerTask() {
-        if (mBitherTimer == null) {
-            mBitherTimer = new BitherTimer(BlockchainService.this);
-            mBitherTimer.startTimer();
-        }
-    }
-
 
     public class SPVFinishedReceiver extends BroadcastReceiver {
         @Override

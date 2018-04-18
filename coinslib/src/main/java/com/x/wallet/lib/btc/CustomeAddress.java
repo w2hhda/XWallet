@@ -1,5 +1,7 @@
 package com.x.wallet.lib.btc;
 
+import android.util.Log;
+
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.TransactionSignature;
@@ -26,11 +28,11 @@ public class CustomeAddress {
     }
 
     public static TxBuildResult buildTx(long amount, String fromAddress, String toAddress, String changeAddress, int feeBase) {
-        /*Log.i("test", "CustomeAddress buildTx amount = " + amount );
-        Log.i("test", "CustomeAddress buildTx fromAddress = " + fromAddress);
-        Log.i("test", "CustomeAddress buildTx toAddress = " + toAddress);
-        Log.i("test", "CustomeAddress buildTx changeAddress = " + changeAddress);
-        Log.i("test", "CustomeAddress buildTx feeBase = " + feeBase);*/
+        //Log.i("testBtcTx", "CustomeAddress buildTx amount = " + amount );
+        //Log.i("testBtcTx", "CustomeAddress buildTx fromAddress = " + fromAddress);
+        //Log.i("testBtcTx", "CustomeAddress buildTx toAddress = " + toAddress);
+        //Log.i("testBtcTx", "CustomeAddress buildTx changeAddress = " + changeAddress);
+        //Log.i("testBtcTx", "CustomeAddress buildTx feeBase = " + feeBase);
         List<Long> amounts = new ArrayList<Long>();
         amounts.add(amount);
         List<String> addresses = new ArrayList<String>();

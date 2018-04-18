@@ -142,4 +142,9 @@
     <string name="tx_build_unknown_error">交易创建失败</string>
     <string name="sign_btc_tx_failed">签名交易失败</string>
     <string name="send_out_btc_transaction_success">交易提交成功</string>
+    <string name="send_out_btc_transaction_failed">交易提交失败</string>
+    <string name="confirm_transaction">转账确认</string>
+    <string name="send_confirm_address">"将要发送给: "</string>
+    <string name="send_confirm_amount">"金额: "</string>
+    <string name="send_confirm_fee">"手续费: "</string>
 </resources>

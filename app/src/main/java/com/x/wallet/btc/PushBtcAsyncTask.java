@@ -40,7 +40,7 @@ public class PushBtcAsyncTask extends AsyncTask<Void, Void, Integer>{
     @Override
     protected Integer doInBackground(Void... voids) {
         try{
-            PushTxThirdParty.getInstance().pushTx(mTx);
+            //PushTxThirdParty.getInstance().pushTx(mTx);
             PeerManager.instance().publishTransaction(mTx);
             TransactionsUtil.removeSignTx(new UnSignTransaction(mTx, mFromAddress));
         } catch (Exception e){

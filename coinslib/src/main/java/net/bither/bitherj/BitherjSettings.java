@@ -51,24 +51,36 @@ public class BitherjSettings {
      */
     public static final String ID_MAINNET = "org.bitcoin.production";
 
-
     public static final BigInteger proofOfWorkLimit = Utils.decodeCompactBits(0x1d00ffffL);
-    public static final int port = 8333;
-    public static final long packetMagic = 0xf9beb4d9L;
 
-    public static final int addressHeader = 0;
+
+    public static final int port = 18333; //83333
+    public static final int addressHeader = 111;
+    public static final int dumpedPrivateKeyHeader = 239;
+    public static final int p2shHeader = 196;//5;
+    public static final long packetMagic = 0x0b110907;
+    public static final byte[] GENESIS_BLOCK_HASH = Utils.reverseBytes(Hex.decode("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"));
+
+
+    //public static final int port = 8333;
+    //public static final int addressHeader = 0;
+    //public static final int dumpedPrivateKeyHeader = 128;
+    //public static final int p2shHeader = 5;
+    //public static final long packetMagic = 0xf9beb4d9L;
+    //public static final byte[] GENESIS_BLOCK_HASH = Utils.reverseBytes(Hex.decode("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
+
     public static final int btgAddressHeader = 38;
     public static final int btwAddressHeader = 73;
     public static final int btfAddressHeader = 36;
     public static final int btpAddressHeader = 56;
 
-    public static final int p2shHeader = 5;
+
     public static final int btgP2shHeader = 23;
     public static final int btwP2shHeader = 31;
     public static final int btfP2shHeader = 40;
     public static final int btpP2shHeader = 58;
 
-    public static final int dumpedPrivateKeyHeader = 128;
+
     public static final int TARGET_TIMESPAN = 14 * 24 * 60 * 60;  // 2 weeks per difficulty cycle, on average.
     public static final int TARGET_SPACING = 10 * 60;  // 10 minutes per block.
     public static final int INTERVAL = TARGET_TIMESPAN / TARGET_SPACING;
@@ -84,17 +96,21 @@ public class BitherjSettings {
      */
     public static final int spendableCoinbaseDepth = 100;
     public static final String[] dnsSeeds = new String[]{
-            "seed.bitcoin.sipa.be",        // Pieter Wuille
+            /*"seed.bitcoin.sipa.be",        // Pieter Wuille
             "dnsseed.bluematt.me",         // Matt Corallo
             "seed.bitcoinstats.com",       // Chris Decker
             "bitseed.xf2.org",
             "seed.bitcoinstats.com",
-            "seed.bitnodes.io"
+            "seed.bitnodes.io"*/
+            "testnet-seed.bitcoin.jonasschnelli.ch", // Jonas Schnelli
+            "testnet-seed.bluematt.me",              // Matt Corallo
+            "testnet-seed.bitcoin.petertodd.org",    // Peter Todd
+            "testnet-seed.bitcoin.schildbach.de",    // Andreas Schildbach
+            "bitcoin-testnet.bloqseeds.net"         // Bloq
     };
 
     public static final long MAX_MONEY = 21000000l * 100000000l;
 
-    public static final byte[] GENESIS_BLOCK_HASH = Utils.reverseBytes(Hex.decode("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
     public static final int BLOCK_DIFFICULTY_INTERVAL = 2016;
     public static final int BITCOIN_REFERENCE_BLOCK_HEIGHT = 250000;
     public static final int MaxPeerConnections = 6;

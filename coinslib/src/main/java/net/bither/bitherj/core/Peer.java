@@ -16,6 +16,8 @@
 
 package net.bither.bitherj.core;
 
+import android.util.Log;
+
 import com.google.common.util.concurrent.Service;
 import com.x.wallet.lib.btc.CustomeAddressManager;
 
@@ -191,7 +193,7 @@ public class Peer extends PeerSocketHandler {
         if (m == null) {
             return;
         }
-
+        //Log.i("testBtcTx", "Peer processMessage m = " + m);
         if (currentFilteredBlock != null && !(m instanceof Tx)) {
             currentFilteredBlock = null;
             currentTxHashes.clear();

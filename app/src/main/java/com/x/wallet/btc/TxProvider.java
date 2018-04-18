@@ -58,7 +58,7 @@ public class TxProvider extends AbstractTxProvider {
 
     @Override
     protected void insertTxToDb(IDb db, Tx tx) {
-        Log.i("testGetTx", "TxProvider insertTxToDb tx = " + tx);
+        //Log.i("testBtcTx", "TxProvider insertTxToDb tx = " + tx);
         AndroidDb mdb = (AndroidDb)db;
         ContentValues cv = new ContentValues();
         if (tx.getBlockNo() != Tx.TX_UNCONFIRMED) {
@@ -76,6 +76,7 @@ public class TxProvider extends AbstractTxProvider {
 
     @Override
     protected void insertInToDb(IDb db, In in) {
+        //Log.i("testBtcTx", "TxProvider insertInToDb ");
         AndroidDb mdb = (AndroidDb)db;
         ContentValues cv = new ContentValues();
         cv.put(AbstractDb.InsColumns.TX_HASH, Base58.encode(in.getTxHash()));
@@ -93,6 +94,7 @@ public class TxProvider extends AbstractTxProvider {
 
     @Override
     protected void insertOutToDb(IDb db, Out out) {
+        //Log.i("testBtcTx", "TxProvider insertOutToDb ");
         AndroidDb mdb = (AndroidDb)db;
         ContentValues cv = new ContentValues();
         cv.put(AbstractDb.OutsColumns.TX_HASH, Base58.encode(out.getTxHash()));

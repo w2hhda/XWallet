@@ -29,8 +29,8 @@ public class BitherUrl {
         public static final String BITHER_STATS_DOMAIN = "bs.getcai.com";
         public static final String BITHER_BC_DOMAIN = "bc.bither.net";
         public static final String BITHER_HDM_DOMAIN = "hdm.bither.net";
-        public static final String BLOCK_CHAIN_INFO = "blockChain.info";
-
+        //public static final String BLOCK_CHAIN_INFO = "blockChain.info";
+        public static final String BLOCK_CHAIN_INFO = "testnet.blockChain.info";
 
         public static final String BITHER_BITCOIN = Utils.format(FORMAT_HTTP, BITHER_BITCOIN_DOMAIN);
         public static final String BITHER_USER = Utils.format(FORMAT_HTTP, BITHER_USER_DOMAIN);
@@ -42,7 +42,8 @@ public class BitherUrl {
         public static final String BLOCK_CHAIN = Utils.format(FORMAT_HTTPS,BLOCK_CHAIN_INFO);
 
         // BlockChain.info
-        public static final String BITHER_BLOCKCHAIN_DOMAIN = "blockchain.info";
+        //public static final String BITHER_BLOCKCHAIN_DOMAIN = "blockchain.info";
+        public static final String BITHER_BLOCKCHAIN_DOMAIN = "testnet.blockchain.info";
         public static final String BITHER_BLOCKCHAIN = Utils.format(FORMAT_HTTPS, BITHER_BLOCKCHAIN_DOMAIN);
 
         // chain.btc.com
