@@ -1,16 +1,13 @@
 package com.x.wallet.transaction.token;
 
 import android.app.ProgressDialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.x.wallet.AppUtils;
-import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.DbUtils;
-import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.ui.data.TokenItemBean;
 
 /**
@@ -49,26 +46,12 @@ public class InsertTokenAsycTask extends AsyncTask<Void, Void, Uri> {
             return null;
         }
 
-        ContentValues values = new ContentValues();
-        values.put(DbUtils.TokenTableColumns.ACCOUNT_ID, mAccountId);
-        values.put(DbUtils.TokenTableColumns.ACCOUNT_ADDRESS, mAccountAddress);
-        values.put(DbUtils.TokenTableColumns.ID_IN_ALL, mTokenItem.getIdInAll());
-        values.put(DbUtils.TokenTableColumns.NAME, mTokenItem.getName());
-        values.put(DbUtils.TokenTableColumns.SYMBOL, mTokenItem.getSymbol());
-        values.put(DbUtils.TokenTableColumns.DECIMALS, mTokenItem.getDecimals());
-        values.put(DbUtils.TokenTableColumns.CONTRACT_ADDRESS, mTokenItem.getContractAddress());
-        values.put(DbUtils.TokenTableColumns.BALANCE, "0");
-        values.put(DbUtils.TokenTableColumns.RATE, "0");
-        Uri uri = XWalletApplication.getApplication().getApplicationContext().getContentResolver()
-                .insert(XWalletProvider.CONTENT_URI_TOKEN, values);
+        Uri uri = DbUtils.insertTokenIntoDb(mAccountId, mAccountAddress, mTokenItem.getIdInAll(),
+                mTokenItem.getName(), mTokenItem.getSymbol(), mTokenItem.getDecimals(),
+                mTokenItem.getContractAddress(), "0", "0");
 
         if (!mHasToken) {
-            ContentValues updateValues = new ContentValues();
-            updateValues.put(DbUtils.DbColumns.HAS_TOKEN, AppUtils.HAS_TOKEN);
-            int count = XWalletApplication.getApplication().getApplicationContext().getContentResolver()
-                    .update(XWalletProvider.CONTENT_URI, updateValues,
-                            DbUtils.DbColumns._ID + " = ?",
-                            new String[]{String.valueOf(mAccountId)});
+            int count = DbUtils.updateHasTokenFlag(String.valueOf(mAccountId));
             Log.i(AppUtils.APP_TAG, "InsertTokenAsycTask doInBackground count = " + count + ", mAccountId = " + mAccountId);
         }
         Log.i(AppUtils.APP_TAG, "InsertTokenAsycTask doInBackground uri = " + uri);

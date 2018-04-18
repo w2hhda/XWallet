@@ -2,8 +2,10 @@ package com.x.wallet.db;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.text.TextUtils;
 
+import com.x.wallet.AppUtils;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.lib.common.AccountData;
 
@@ -281,5 +283,31 @@ public class DbUtils {
             }
         }
         return false;
+    }
+
+    public static Uri insertTokenIntoDb(long accountId, String accountAddress, int idInAll,
+                                         String name, String symbol, int decimals,
+                                         String contractAddress, String balance, String rate) {
+        ContentValues values = new ContentValues();
+        values.put(DbUtils.TokenTableColumns.ACCOUNT_ID, accountId);
+        values.put(DbUtils.TokenTableColumns.ACCOUNT_ADDRESS, accountAddress);
+        values.put(DbUtils.TokenTableColumns.ID_IN_ALL, idInAll);
+        values.put(DbUtils.TokenTableColumns.NAME, name);
+        values.put(DbUtils.TokenTableColumns.SYMBOL, symbol);
+        values.put(DbUtils.TokenTableColumns.DECIMALS, decimals);
+        values.put(DbUtils.TokenTableColumns.CONTRACT_ADDRESS, contractAddress);
+        values.put(DbUtils.TokenTableColumns.BALANCE, balance);
+        values.put(DbUtils.TokenTableColumns.RATE, rate);
+        return XWalletApplication.getApplication().getApplicationContext().getContentResolver()
+                .insert(XWalletProvider.CONTENT_URI_TOKEN, values);
+    }
+
+    public static int updateHasTokenFlag(String accountId){
+        ContentValues updateValues = new ContentValues();
+        updateValues.put(DbUtils.DbColumns.HAS_TOKEN, AppUtils.HAS_TOKEN);
+        return XWalletApplication.getApplication().getApplicationContext().getContentResolver()
+                .update(XWalletProvider.CONTENT_URI, updateValues,
+                        DbUtils.DbColumns._ID + " = ?",
+                        new String[]{accountId});
     }
 }

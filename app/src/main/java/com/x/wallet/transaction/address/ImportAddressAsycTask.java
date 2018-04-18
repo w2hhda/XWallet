@@ -3,15 +3,12 @@ package com.x.wallet.transaction.address;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
@@ -24,7 +21,6 @@ import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.transaction.balance.RetrofitClient;
 import com.x.wallet.transaction.balance.TokenListBean;
-import com.x.wallet.transaction.token.TokenDeserializer;
 
 import java.io.IOException;
 import java.util.List;
@@ -181,26 +177,12 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Integer>{
                 continue;
             }
 
-            ContentValues values = new ContentValues();
-            values.put(DbUtils.TokenTableColumns.ACCOUNT_ID, accountId);
-            values.put(DbUtils.TokenTableColumns.ACCOUNT_ADDRESS, address);
-            values.put(DbUtils.TokenTableColumns.ID_IN_ALL, tokens.indexOf(token));
-            values.put(DbUtils.TokenTableColumns.NAME, tokenInfo.getName());
-            values.put(DbUtils.TokenTableColumns.SYMBOL, symbol);
-            values.put(DbUtils.TokenTableColumns.DECIMALS, decimals);
-            values.put(DbUtils.TokenTableColumns.CONTRACT_ADDRESS, tokenInfo.getAddress());
-            values.put(DbUtils.TokenTableColumns.BALANCE, token.getBalance());
-            values.put(DbUtils.TokenTableColumns.RATE, rate);
-            Uri uri = XWalletApplication.getApplication().getApplicationContext().getContentResolver()
-                    .insert(XWalletProvider.CONTENT_URI_TOKEN, values);
+            Uri uri = DbUtils.insertTokenIntoDb(Long.parseLong(accountId), address, tokens.indexOf(token),
+                    tokenInfo.getName(), symbol, decimals,
+                    tokenInfo.getAddress(), token.getBalance(), String.valueOf(rate));
 
             if (mHasToken.equals(0)) {
-                ContentValues updateValues = new ContentValues();
-                updateValues.put(DbUtils.DbColumns.HAS_TOKEN, AppUtils.HAS_TOKEN);
-                int count = XWalletApplication.getApplication().getApplicationContext().getContentResolver()
-                        .update(XWalletProvider.CONTENT_URI, updateValues,
-                                DbUtils.DbColumns._ID + " = ?",
-                                new String[]{String.valueOf(accountId)});
+                int count = DbUtils.updateHasTokenFlag(accountId);
                 Log.i(AppUtils.APP_TAG, "InsertTokenIntoDb when import count = " + count + ", mAccountId = " + accountId);
             }
             Log.i(AppUtils.APP_TAG, "InsertTokenIntoDb when import uri = " + uri);
