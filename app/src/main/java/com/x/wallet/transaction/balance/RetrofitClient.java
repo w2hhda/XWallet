@@ -173,11 +173,7 @@ public class RetrofitClient {
                 Object object = args[i];
                 if (object instanceof ResponseBody) {
                     ResponseBody responseBody = (ResponseBody) object;
-
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    gsonBuilder.registerTypeAdapter(TokenListBean.class, new TokenDeserializer());
-                    Gson gson = gsonBuilder.create();
-                    TokenListBean tokenListBean = gson.fromJson(responseBody.string(), TokenListBean.class);
+                    TokenListBean tokenListBean = parseTokenJson(responseBody.string());
                     handleTokenListBean(rawOperations, tokenListBean);
                 }
             }
@@ -283,6 +279,13 @@ public class RetrofitClient {
         if (listener != null) {
             listener.onRequestFinished();
         }
+    }
+
+    public static TokenListBean parseTokenJson(String responseResult){
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(TokenListBean.class, new TokenDeserializer());
+        Gson gson = gsonBuilder.create();
+        return gson.fromJson(responseResult, TokenListBean.class);
     }
 
     public interface OnRequestFinishedListener {

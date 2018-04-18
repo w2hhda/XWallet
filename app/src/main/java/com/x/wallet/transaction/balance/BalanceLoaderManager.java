@@ -9,10 +9,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.x.wallet.AppUtils;
-import com.x.wallet.R;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
@@ -20,8 +18,6 @@ import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.data.BalanceResultBean;
 import com.x.wallet.lib.eth.data.PriceResultBean;
 import com.x.wallet.transaction.token.BackgroundLoaderManager;
-import com.x.wallet.transaction.token.ReadFileUtils;
-import com.x.wallet.transaction.token.TokenDeserializer;
 import com.x.wallet.transaction.token.TokenUtils;
 
 import java.io.IOException;
@@ -322,7 +318,7 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                                 Log.i(AppUtils.APP_TAG, "BalanceLoaderManager requestBalanceForToken result = " + result);
 
                                 //1.parse
-                                List<TokenListBean.TokenBean> tokens = parseTokenJson(result);
+                                List<TokenListBean.TokenBean> tokens = RetrofitClient.parseTokenJson(result).getTokens();
                                 if(tokens == null || tokens.size() <= 0){
                                     Log.i(AppUtils.APP_TAG, "BalanceLoaderManager requestBalanceForToken no tokens");
                                     return;
@@ -352,18 +348,6 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                 Log.e(AppUtils.APP_TAG, "BalanceLoaderManager requestBalanceForToken exception2", e);
                 removeCallback();
             }
-        }
-
-        private List<TokenListBean.TokenBean> parseTokenJson(String result){
-
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            gsonBuilder.registerTypeAdapter(TokenListBean.class, new TokenDeserializer());
-            Gson gson = gsonBuilder.create();
-            TokenListBean tokenListBean = gson.fromJson(result, TokenListBean.class);
-
-
-            //TokenListBean tokenListBean = new Gson().fromJson(result, TokenListBean.class);
-            return tokenListBean.getTokens();
         }
 
         private void updateTokenBalanceIntoDb(String address, List<TokenListBean.TokenBean> tokens){

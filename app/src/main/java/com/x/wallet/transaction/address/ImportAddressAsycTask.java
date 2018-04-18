@@ -22,6 +22,7 @@ import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.common.AccountData;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
+import com.x.wallet.transaction.balance.RetrofitClient;
 import com.x.wallet.transaction.balance.TokenListBean;
 import com.x.wallet.transaction.token.TokenDeserializer;
 
@@ -226,7 +227,7 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Integer>{
                             Log.i(AppUtils.APP_TAG, "ImportAddressAsyncTask requestBalanceForToken result = " + result);
 
                             //1.parse
-                            List<TokenListBean.TokenBean> tokens = parseTokenJson(result);
+                            List<TokenListBean.TokenBean> tokens = RetrofitClient.parseTokenJson(result).getTokens();
                             if(tokens == null || tokens.size() <= 0){
                                 Log.i(AppUtils.APP_TAG, "ImportAddressAsyncTask requestBalanceForToken no tokens");
                                 return;
@@ -248,13 +249,5 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Integer>{
         } catch (Exception e){
             Log.e(AppUtils.APP_TAG, "BalanceLoaderManager requestBalanceForToken exception2", e);
         }
-    }
-
-    private List<TokenListBean.TokenBean> parseTokenJson(String result){
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(TokenListBean.class, new TokenDeserializer());
-        Gson gson = gsonBuilder.create();
-        TokenListBean tokenListBean = gson.fromJson(result, TokenListBean.class);
-        return tokenListBean.getTokens();
     }
 }
