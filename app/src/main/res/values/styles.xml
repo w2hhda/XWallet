@@ -134,6 +134,7 @@
         <item name="android:gravity">center</item>
         <item name="android:textSize">25sp</item>
         <item name="android:textColor">@color/textColor_3a</item>
+        <item name="android:background">@drawable/input_pin_bg_selector</item>
     </style>
 
     <style name="style_black_normal_text">
