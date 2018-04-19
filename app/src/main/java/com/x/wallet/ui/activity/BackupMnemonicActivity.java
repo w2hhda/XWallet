@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
@@ -29,6 +30,7 @@ public class BackupMnemonicActivity extends WithBackAppCompatActivity{
         setContentView(R.layout.backup_mnemonic_activity);
 
         initData();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
 
         mBackupMnemonicStepFirstView = findViewById(R.id.remind_backup_ll);
         mBackupMnemonicStepFirstView.init(new View.OnClickListener() {
