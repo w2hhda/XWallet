@@ -1,5 +1,6 @@
 package com.x.wallet;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
@@ -10,6 +11,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewStub;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -299,5 +302,15 @@ public class AppUtils {
             editor.putString(TX_LIST_SYNCED + address, syncNames + " " + syncAddress);
             editor.apply();
         }
+    }
+
+    public static View getStubView(Activity activity, int stubId, int viewId) {
+        View view = activity.findViewById(viewId);
+        if (view == null) {
+            ViewStub stub = (ViewStub) activity.findViewById(stubId);
+            view = stub.inflate();
+        }
+
+        return view;
     }
 }

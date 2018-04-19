@@ -119,21 +119,10 @@ public class AllAccountItem {
     @Override
     public String toString() {
         return "AllAccountItem{" +
-                "mId=" + mId +
-                ", mSelfId=" + mSelfId +
-                ", mAddress='" + mAddress + '\'' +
+                "mAddress='" + mAddress + '\'' +
                 ", mAccountName='" + mAccountName + '\'' +
                 ", mCoinName='" + mCoinName + '\'' +
                 ", mCoinType=" + mCoinType +
-                ", mEncrySeed='" + mEncrySeed + '\'' +
-                ", mEncryMnemonic='" + mEncryMnemonic + '\'' +
-                ", mKeyStore='" + mKeyStore + '\'' +
-                ", mBalance='" + mBalance + '\'' +
-                ", mHasToken=" + mHasToken +
-                ", mDecimals=" + mDecimals +
-                ", mRate=" + mRate +
-                ", mContractAddress='" + mContractAddress + '\'' +
-                ", mAllCoinType=" + mAllCoinType +
                 '}';
     }
 
@@ -166,6 +155,7 @@ public class AllAccountItem {
                 accountItem.getEncrySeed(),
                 accountItem.getEncryMnemonic(),
                 accountItem.getKeyStore(),
+                null,
                 accountItem.getBalance());
     }
 

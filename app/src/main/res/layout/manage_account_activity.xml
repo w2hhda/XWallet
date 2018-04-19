@@ -133,36 +133,11 @@
 
         <include layout="@layout/create_account_high_divider_view" />
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:id="@+id/manage_token_layout"
+        <ViewStub android:id="@+id/manage_account_token_related_view_stub"
+            android:layout="@layout/manage_account_token_related_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <RelativeLayout android:id="@+id/add_token_tv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingEnd="20dip"
-                android:paddingStart="20dip"
-                android:background="@drawable/item_bg_selector">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dip"
-                    android:layout_marginTop="15dip"
-                    android:text="@string/add_token"
-                    android:textColor="@color/gray_66"
-                    android:textSize="16sp" />
-
-                <include layout="@layout/into_view" />
-            </RelativeLayout>
-            <include layout="@layout/create_account_divider_view_without_padding" />
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerView_manage_token"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-            <include layout="@layout/create_account_high_divider_view" />
-        </LinearLayout>
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/delete_account_tv"

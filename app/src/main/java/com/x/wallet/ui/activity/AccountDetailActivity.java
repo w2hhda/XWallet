@@ -124,7 +124,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         if(mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_BTC){
             initBtcAccount();
         } else {
-            SwipeRefreshLayout view = (SwipeRefreshLayout)getStubView(R.id.transaction_list_view_stub, R.id.layout_swipe_refresh);
+            SwipeRefreshLayout view = (SwipeRefreshLayout)AppUtils.getStubView(this, R.id.transaction_list_view_stub, R.id.layout_swipe_refresh);
             view.setVisibility(View.VISIBLE);
             refreshLayout = view;
             initSwipeRefreshView();
@@ -192,16 +192,6 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             }
         };
         BalanceConversionUtils.registerListener(mRateUpdateListener);
-    }
-
-    private View getStubView(int stubId, int viewId) {
-        View view = findViewById(viewId);
-        if (view == null) {
-            ViewStub stub = (ViewStub) findViewById(stubId);
-            view = stub.inflate();
-        }
-
-        return view;
     }
 
     private void initSwipeRefreshView(){
@@ -366,7 +356,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     }
 
     private void initBtcAccount(){
-        ListView listView = (ListView)getStubView(R.id.transaction_list_btc_view_stub, R.id.listview);
+        ListView listView = (ListView)AppUtils.getStubView(this, R.id.transaction_list_btc_view_stub, R.id.listview);
         listView.setVisibility(View.VISIBLE);
         BtcAccountDetailHelper.OnDataLoadFinishedListener onDataLoadFinishedListener = new BtcAccountDetailHelper.OnDataLoadFinishedListener() {
             @Override

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/manage_token_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/add_token_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/item_bg_selector"
+        android:paddingEnd="20dip"
+        android:paddingStart="20dip">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dip"
+            android:layout_marginTop="15dip"
+            android:text="@string/add_token"
+            android:textColor="@color/gray_66"
+            android:textSize="16sp" />
+
+        <include layout="@layout/into_view" />
+    </RelativeLayout>
+
+    <include layout="@layout/create_account_divider_view_without_padding" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView_manage_token"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <include layout="@layout/create_account_high_divider_view" />
+</LinearLayout>

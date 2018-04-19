@@ -13,8 +13,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -75,12 +73,10 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
         mAccountItem = (SerializableAccountItem) getIntent().getSerializableExtra(AppUtils.ACCOUNT_DATA);
 
         initViews();
-        initRecyclerView();
-        initLoaderManager();
+        initTokenRelatedViews();
     }
 
     private void initViews(){
-        managerTokenLayout = findViewById(R.id.manage_token_layout);
         mAccountNameTv = findViewById(R.id.account_name_tv);
         mAccountNameTv.setText(mAccountItem.getAccountName());
 
@@ -153,18 +149,27 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                 showPasswordCheckDialogForDelete();
             }
         });
+    }
 
-        addTokenView = findViewById(R.id.add_token_tv);
-        addTokenView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent("com.x.wallet.action.ADD_TOKEN_ACTION");
-                intent.putExtra(AppUtils.ACCOUNT_ID, mAccountItem.getId());
-                intent.putExtra(AppUtils.ACCOUNT_ADDRESS, mAccountItem.getAddress());
-                intent.putExtra(AppUtils.HAS_TOKEN_KEY, false);
-                startActivity(intent);
-            }
-        });
+    private void initTokenRelatedViews(){
+        if(mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_ETH){
+            managerTokenLayout = AppUtils.getStubView(this, R.id.manage_account_token_related_view_stub, R.id.manage_token_layout);
+            managerTokenLayout.setVisibility(View.VISIBLE);
+            addTokenView = findViewById(R.id.add_token_tv);
+            addTokenView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent("com.x.wallet.action.ADD_TOKEN_ACTION");
+                    intent.putExtra(AppUtils.ACCOUNT_ID, mAccountItem.getId());
+                    intent.putExtra(AppUtils.ACCOUNT_ADDRESS, mAccountItem.getAddress());
+                    intent.putExtra(AppUtils.HAS_TOKEN_KEY, false);
+                    startActivity(intent);
+                }
+            });
+
+            initRecyclerView();
+            initLoaderManager();
+        }
     }
 
     private void initRecyclerView(){
@@ -172,7 +177,6 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
         final LinearLayoutManager manager = new LinearLayoutManager(this);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(manager);
-        //MyHandler handler = new MyHandler();
         mAdapter = new ManagerTokenListAdapter(this, null, R.layout.manager_token_list_item,
                 new View.OnClickListener() {
                     @Override
@@ -318,22 +322,6 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
             }
         }, R.string.change_password);
     }
-    public class MyHandler extends Handler {
-        public static final int MSG_UPDATE = 200;
-
-        @Override
-        public void handleMessage(Message msg) {
-            Log.i(AppUtils.APP_TAG, "ManagerAccountActivity.MyHandler: msg.what = " + msg.what);
-            super.handleMessage(msg);
-            switch (msg.what){
-                case MSG_UPDATE:
-                    updateTokenLayoutVisibility(mAdapter.getItemCount());
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
 
     @Override
     protected void onDestroy() {
@@ -351,10 +339,6 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                 new Bundle(),
                 new TokenListLoaderCallbacks());
         tokenListLoader.forceLoad();
-    }
-
-    private void updateTokenLayoutVisibility(int count){
-        //managerTokenLayout.setVisibility(count == 0 ? View.GONE : View.VISIBLE);
     }
 
     private class TokenListLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor> {
