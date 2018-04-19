@@ -42,4 +42,10 @@
     <dimen name="manage_all_account_paddingTB">20dp</dimen>
     <dimen name="create_account_input_paddingStart">5dp</dimen>
     <dimen name="tab_margin">10dp</dimen>
+    <dimen name="font_normal">15sp</dimen>
+    <dimen name="spacing_large">20dp</dimen>
+    <dimen name="spacing_tiny">4dp</dimen>
+    <dimen name="text_item_height">43dp</dimen>
+    <dimen name="input_method_spacing">2px</dimen>
+
 </resources>

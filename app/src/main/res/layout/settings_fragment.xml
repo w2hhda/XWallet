@@ -159,4 +159,44 @@
         android:id="@+id/change_currency_pref"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/settings_item_divider_height" />
+
+    <RelativeLayout
+        android:id="@+id/set_pin_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/item_bg_selector"
+        android:minHeight="@dimen/settings_item_height">
+
+        <ImageView
+            android:id="@+id/pin_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/settings_item_marginStart"
+            android:src="@drawable/about_us_icon" />
+
+        <TextView
+            style="@style/SettingItemTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/settings_item_tv_marginStart"
+            android:layout_toEndOf="@id/pin_iv"
+            android:text="@string/pin_code" />
+
+        <CheckBox
+            android:id="@+id/pin_cb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/settings_item_marginEnd"
+            android:src="@drawable/into_icon" />
+    </RelativeLayout>
+
 </LinearLayout>

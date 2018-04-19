@@ -1,6 +1,9 @@
 package com.x.wallet;
 
+import android.app.Activity;
 import android.app.Application;
+import android.app.LoaderManager;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.x.wallet.btc.BtcUtils;
@@ -16,7 +19,7 @@ import net.bither.bitherj.crypto.mnemonic.MnemonicHelper;
  * Created by wuliang on 18-3-15.
  */
 
-public class XWalletApplication extends Application{
+public class XWalletApplication extends Application implements Application.ActivityLifecycleCallbacks{
     private static XWalletApplication mXWalletApplication = null;
     private BalanceLoaderManager mBalanceLoaderManager;
     private TokenLoaderManager mTokenLoaderManager;
@@ -31,6 +34,7 @@ public class XWalletApplication extends Application{
         mHistoryLoaderManager = new HistoryLoaderManager(getApplicationContext());
         initApp();
         BtcUtils.init();
+        registerActivityLifecycleCallbacks(this);
     }
 
     private void initApp() {
@@ -62,5 +66,48 @@ public class XWalletApplication extends Application{
 
     public HistoryLoaderManager getmHistoryLoaderManager() {
         return mHistoryLoaderManager;
+    }
+
+    private static int resumed;
+    private static int paused;
+    private static int started;
+    private static int stopped;
+    @Override
+    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+
+    }
+
+    @Override
+    public void onActivityStarted(Activity activity) {
+        ++started;
+    }
+
+    @Override
+    public void onActivityResumed(Activity activity) {
+        ++resumed;
+    }
+
+    @Override
+    public void onActivityPaused(Activity activity) {
+        ++paused;
+    }
+
+    @Override
+    public void onActivityStopped(Activity activity) {
+        ++stopped;
+        if (started <= stopped){
+            Log.i("@@@@", "leave to bg.");
+            AppUtils.setBackground(true);
+        }
+    }
+
+    @Override
+    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
+    }
+
+    @Override
+    public void onActivityDestroyed(Activity activity) {
+
     }
 }
