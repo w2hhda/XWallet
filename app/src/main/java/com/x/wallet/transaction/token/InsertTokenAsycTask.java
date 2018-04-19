@@ -17,16 +17,14 @@ import com.x.wallet.ui.data.TokenItemBean;
 public class InsertTokenAsycTask extends AsyncTask<Void, Void, Uri> {
     private long mAccountId;
     private String mAccountAddress;
-    private boolean mHasToken;
     private TokenItemBean mTokenItem;
     private ProgressDialog mProgressDialog;
     private OnInsertTokenFinishedListener mOnInsertTokenFinishedListener;
 
-    public InsertTokenAsycTask(Context context, long accountId, String accountAddress, boolean hasToken,
+    public InsertTokenAsycTask(Context context, long accountId, String accountAddress,
                                TokenItemBean tokenItem, OnInsertTokenFinishedListener listener) {
         mAccountId = accountId;
         mAccountAddress = accountAddress;
-        mHasToken = hasToken;
         mTokenItem = tokenItem;
         mProgressDialog = new ProgressDialog(context);
         mOnInsertTokenFinishedListener = listener;
@@ -50,10 +48,6 @@ public class InsertTokenAsycTask extends AsyncTask<Void, Void, Uri> {
                 mTokenItem.getName(), mTokenItem.getSymbol(), mTokenItem.getDecimals(),
                 mTokenItem.getContractAddress(), "0", "0");
 
-        if (!mHasToken) {
-            int count = DbUtils.updateHasTokenFlag(String.valueOf(mAccountId));
-            Log.i(AppUtils.APP_TAG, "InsertTokenAsycTask doInBackground count = " + count + ", mAccountId = " + mAccountId);
-        }
         Log.i(AppUtils.APP_TAG, "InsertTokenAsycTask doInBackground uri = " + uri);
         return uri;
     }

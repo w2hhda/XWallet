@@ -162,7 +162,6 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                     Intent intent = new Intent("com.x.wallet.action.ADD_TOKEN_ACTION");
                     intent.putExtra(AppUtils.ACCOUNT_ID, mAccountItem.getId());
                     intent.putExtra(AppUtils.ACCOUNT_ADDRESS, mAccountItem.getAddress());
-                    intent.putExtra(AppUtils.HAS_TOKEN_KEY, false);
                     startActivity(intent);
                 }
             });

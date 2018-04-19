@@ -1,7 +1,6 @@
 package com.x.wallet.ui.view;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
-import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.ui.data.AllAccountItem;
 
 /**
@@ -52,7 +50,6 @@ public class AccountListItem extends LinearLayout {
 //                Intent intent = new Intent("com.x.wallet.action.ADD_TOKEN_ACTION");
 //                intent.putExtra(AppUtils.ACCOUNT_ID, mAccountItem.getId());
 //                intent.putExtra(AppUtils.ACCOUNT_ADDRESS, mAccountItem.getAddress());
-//                intent.putExtra(AppUtils.HAS_TOKEN_KEY, mAccountItem.isHasToken());
 //                getContext().startActivity(intent);
 //            }
 //        });

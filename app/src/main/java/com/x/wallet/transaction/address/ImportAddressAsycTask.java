@@ -224,7 +224,5 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Integer>{
                     tokenInfo.getAddress(), token.getBalance(), String.valueOf(rate));
             Log.i(AppUtils.APP_TAG, "InsertTokenIntoDb when import uri = " + uri);
         }
-        int count = DbUtils.updateHasTokenFlag(accountId);
-        Log.i(AppUtils.APP_TAG, "InsertTokenIntoDb when import count = " + count + ", mAccountId = " + accountId);
     }
 }

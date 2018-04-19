@@ -17,11 +17,10 @@ public class AccountItem{
     private String mKeyStore;
     private String mPrivKey;
     private String mBalance;
-    private int mHasToken;
 
     public AccountItem(long id, String address, String accountName, String coinName,
                        int coinType, String encrySeed, String encryMnemonic, String keyStore, String privKey,
-                       String balance, int hasToken) {
+                       String balance) {
         mId = id;
         mAddress = address;
         mAccountName = accountName;
@@ -32,7 +31,6 @@ public class AccountItem{
         mKeyStore = keyStore;
         mPrivKey = privKey;
         mBalance = balance;
-        mHasToken = hasToken;
     }
 
     public long getId() {
@@ -110,8 +108,7 @@ public class AccountItem{
                 cursor.getString(COLUMN_COIN_MNEMONIC),
                 cursor.getString(COLUMN_KEYSTORE),
                 cursor.getString(COLUMN_RPIV_KEY),
-                cursor.getString(COLUMN_BALANCE),
-                cursor.getInt(COLUMN_HAS_TOKEN));
+                cursor.getString(COLUMN_BALANCE));
     }
 
     @Override
@@ -134,5 +131,4 @@ public class AccountItem{
     static final int COLUMN_RPIV_KEY                = 7;
     static final int COLUMN_KEYSTORE                = 8;
     static final int COLUMN_BALANCE                 = 9;
-    static final int COLUMN_HAS_TOKEN               = 10;
 }

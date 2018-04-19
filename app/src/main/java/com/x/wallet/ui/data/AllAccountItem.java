@@ -19,7 +19,6 @@ public class AllAccountItem {
     private String mEncryMnemonic;
     private String mKeyStore;
     private String mBalance;
-    private int mHasToken;
     private int mDecimals;
     private double mRate;
     private String mContractAddress;
@@ -28,7 +27,7 @@ public class AllAccountItem {
 
     public AllAccountItem(long id, long selfId, String address, String accountName, String coinName,
                           int coinType, String encrySeed, String encryMnemonic, String keyStore,
-                          String balance, int hasToken,
+                          String balance,
                           int decimals, double rate, String contractAddress, int idInAll, int allCoinType) {
         mId = id;
         mSelfId = selfId;
@@ -40,7 +39,6 @@ public class AllAccountItem {
         mEncryMnemonic = encryMnemonic;
         mKeyStore = keyStore;
         mBalance = balance;
-        mHasToken = hasToken;
         mDecimals = decimals;
         mRate = rate;
         mContractAddress = contractAddress;
@@ -88,10 +86,6 @@ public class AllAccountItem {
         return mBalance;
     }
 
-    public boolean isHasToken() {
-        return mHasToken == 1;
-    }
-
     public int getDecimals() {
         return mDecimals;
     }
@@ -137,7 +131,6 @@ public class AllAccountItem {
                 cursor.getString(COLUMN_COIN_MNEMONIC),
                 cursor.getString(COLUMN_KEYSTORE),
                 cursor.getString(COLUMN_BALANCE),
-                cursor.getInt(COLUMN_HAS_TOKEN),
                 cursor.getInt(COLUMN_DECIMALS),
                 cursor.getDouble(COLUMN_RATE),
                 cursor.getString(COLUMN_CONTRACT_ADDRESS),
@@ -191,10 +184,9 @@ public class AllAccountItem {
     static final int COLUMN_COIN_MNEMONIC           = 7;
     static final int COLUMN_KEYSTORE                = 8;
     static final int COLUMN_BALANCE                 = 9;
-    static final int COLUMN_HAS_TOKEN               = 10;
-    static final int COLUMN_DECIMALS                = 11;
-    static final int COLUMN_RATE                    = 12;
-    static final int COLUMN_CONTRACT_ADDRESS        = 13;
-    static final int COLUMN_ID_IN_ALL               = 14;
-    static final int COLUMN_ALL_COIN_TYPE           = 15;
+    static final int COLUMN_DECIMALS                = 10;
+    static final int COLUMN_RATE                    = 11;
+    static final int COLUMN_CONTRACT_ADDRESS        = 12;
+    static final int COLUMN_ID_IN_ALL               = 13;
+    static final int COLUMN_ALL_COIN_TYPE           = 14;
 }

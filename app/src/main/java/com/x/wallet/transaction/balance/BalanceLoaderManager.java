@@ -363,7 +363,6 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
 
     private void insertTokenIntoDb(String address, List<TokenListBean.TokenBean> tokens, String accountId) {
         for (TokenListBean.TokenBean token : tokens) {
-            String mHasToken = "0";
             TokenListBean.TokenInfo tokenInfo = token.getTokenInfo();
             boolean isExist = DbUtils.isAlreadyExistToken(DbUtils.UPDATE_TOKEN_SELECTION, new String[]{address, tokenInfo.getSymbol()});
             boolean hasDeleted = AppUtils.hasDeleted(address, tokenInfo.getName());
@@ -400,16 +399,6 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
             values.put(DbUtils.TokenTableColumns.RATE, rate);
             Uri uri = XWalletApplication.getApplication().getApplicationContext().getContentResolver()
                     .insert(XWalletProvider.CONTENT_URI_TOKEN, values);
-
-            if (mHasToken.equals(0)) {
-                ContentValues updateValues = new ContentValues();
-                updateValues.put(DbUtils.DbColumns.HAS_TOKEN, AppUtils.HAS_TOKEN);
-                int count = XWalletApplication.getApplication().getApplicationContext().getContentResolver()
-                        .update(XWalletProvider.CONTENT_URI, updateValues,
-                                DbUtils.DbColumns._ID + " = ?",
-                                new String[]{String.valueOf(accountId)});
-                Log.i(AppUtils.APP_TAG, "Loader InsertTokenIntoDb  count = " + count + ", mAccountId = " + accountId);
-            }
             Log.i(AppUtils.APP_TAG, "Loader InsertTokenIntoDb  uri = " + uri);
 
         }

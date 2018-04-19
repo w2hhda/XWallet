@@ -323,51 +323,35 @@ public class RetrofitClient {
     }
 
     private static void handleAutoAddToken(ArrayList<ContentProviderOperation> rawOperations, List<TokenListBean.TokenBean> tokens, String address) {
-        Cursor cursor = null;
-        try{
-            cursor = DbUtils.queryEthAccountIdToCursor(address);
-            if(cursor != null && cursor.getCount() > 0){
-                cursor.moveToFirst();
-                long accountId = cursor.getLong(0);
-                int hasToken = cursor.getInt(1);
+        long accountId = DbUtils.queryEthAccountId(address);
 
-                for (TokenListBean.TokenBean tokenBean : tokens) {
-                    boolean isExist = false;
-                    TokenListBean.TokenInfo tokenInfo = tokenBean.getTokenInfo();
-                    String symbol = null;
-                    int decimals = 1;
-                    double rate = 0;
-                    String tokeName= "";
-                    String contractAddress = "";
-                    if (tokenInfo != null) {
-                        contractAddress = tokenInfo.getAddress();
-                        symbol = tokenInfo.getSymbol();
-                        decimals = tokenInfo.getDecimals();
-                        if (tokenInfo.getPrice() != null) {
-                            rate = tokenInfo.getPrice().getRate();
-                        }
-                        tokeName = tokenInfo.getName();
-                        isExist = DbUtils.isAlreadyExistToken(DbUtils.UPDATE_TOKEN_SELECTION, new String[]{address, symbol});
-                    }
-                    if(isExist){
-                        rawOperations.add(buildUpdateTokenOperation(address, symbol, tokenBean.getBalance(), rate, decimals));
-                    } else {
-                        boolean hasDeleted = AppUtils.hasDeleted(address, tokeName);
-                        if(!hasDeleted){
-                            rawOperations.add(buildInsertTokenOperation(accountId, address, tokens.indexOf(tokenBean),
-                                    tokeName, symbol, decimals,
-                                    contractAddress, tokenBean.getBalance(), String.valueOf(rate)));
-                            if (hasToken == AppUtils.HAS_TOKEN) {
-                                int count = DbUtils.updateHasTokenFlag(String.valueOf(accountId));
-                                Log.i(AppUtils.APP_TAG, "Loader InsertTokenIntoDb  count = " + count + ", mAccountId = " + accountId);
-                            }
-                        }
-                    }
+        for (TokenListBean.TokenBean tokenBean : tokens) {
+            boolean isExist = false;
+            TokenListBean.TokenInfo tokenInfo = tokenBean.getTokenInfo();
+            String symbol = null;
+            int decimals = 1;
+            double rate = 0;
+            String tokeName= "";
+            String contractAddress = "";
+            if (tokenInfo != null) {
+                contractAddress = tokenInfo.getAddress();
+                symbol = tokenInfo.getSymbol();
+                decimals = tokenInfo.getDecimals();
+                if (tokenInfo.getPrice() != null) {
+                    rate = tokenInfo.getPrice().getRate();
                 }
+                tokeName = tokenInfo.getName();
+                isExist = DbUtils.isAlreadyExistToken(DbUtils.UPDATE_TOKEN_SELECTION, new String[]{address, symbol});
             }
-        } finally {
-            if(cursor != null){
-                cursor.close();
+            if(isExist){
+                rawOperations.add(buildUpdateTokenOperation(address, symbol, tokenBean.getBalance(), rate, decimals));
+            } else {
+                boolean hasDeleted = AppUtils.hasDeleted(address, tokeName);
+                if(!hasDeleted){
+                    rawOperations.add(buildInsertTokenOperation(accountId, address, tokens.indexOf(tokenBean),
+                            tokeName, symbol, decimals,
+                            contractAddress, tokenBean.getBalance(), String.valueOf(rate)));
+                }
             }
         }
     }

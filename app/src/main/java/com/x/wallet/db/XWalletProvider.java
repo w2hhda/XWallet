@@ -193,7 +193,6 @@ public class XWalletProvider extends ContentProvider {
                 "t1." + DbUtils.DbColumns.ENCRYPT_MNEMONIC + " as " + DbUtils.DbColumns.ENCRYPT_MNEMONIC + ", " +
                 "t1." + DbUtils.DbColumns.KEYSTORE + " as " + DbUtils.DbColumns.KEYSTORE + ", " +
                 "t1." + DbUtils.DbColumns.BALANCE + " as " + DbUtils.DbColumns.BALANCE + ", " +
-                "t1." + DbUtils.DbColumns.HAS_TOKEN + " as " + DbUtils.DbColumns.HAS_TOKEN + ", " +
                 "0 as " + DbUtils.TokenTableColumns.DECIMALS + ", " +
                 "0 as " + DbUtils.TokenTableColumns.RATE + ", " +
                 "null as " + DbUtils.TokenTableColumns.CONTRACT_ADDRESS + ", " +
@@ -212,7 +211,6 @@ public class XWalletProvider extends ContentProvider {
                 "null as " + DbUtils.DbColumns.ENCRYPT_MNEMONIC + ", " +
                 "null as " + DbUtils.DbColumns.KEYSTORE + ", " +
                 "t2." + DbUtils.TokenTableColumns.BALANCE + " as " + DbUtils.DbColumns.BALANCE + ", " +
-                "0 as " + DbUtils.DbColumns.HAS_TOKEN + ", " +
                 "t2." + DbUtils.TokenTableColumns.DECIMALS + " as " + DbUtils.TokenTableColumns.DECIMALS + ", " +
                 "t2." + DbUtils.TokenTableColumns.RATE + " as " + DbUtils.TokenTableColumns.RATE + ", " +
                 "t2." + DbUtils.TokenTableColumns.CONTRACT_ADDRESS + " as " + DbUtils.TokenTableColumns.CONTRACT_ADDRESS + ", " +

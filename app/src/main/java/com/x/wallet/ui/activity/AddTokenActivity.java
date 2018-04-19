@@ -43,9 +43,7 @@ public class AddTokenActivity extends WithBackAppCompatActivity {
         initLoaderManager();
 
         final long accountId = getIntent().getLongExtra(AppUtils.ACCOUNT_ID, -1);
-        final boolean hasToken = getIntent().getBooleanExtra(AppUtils.HAS_TOKEN_KEY, false);
-
-        initAddBtn(accountId, accountAddress, hasToken);
+        initAddBtn(accountId, accountAddress);
     }
 
     @Override
@@ -76,14 +74,14 @@ public class AddTokenActivity extends WithBackAppCompatActivity {
         tokenListLoader.forceLoad();
     }
 
-    private void initAddBtn(final long accountId, final String accountAddress, final boolean hasToken){
+    private void initAddBtn(final long accountId, final String accountAddress){
         mAddBtn = findViewById(R.id.finish_btn);
         mAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(accountId >= 0){
                     if(mAdapter.getSelectedTokenItem() != null){
-                        new InsertTokenAsycTask(AddTokenActivity.this, accountId, accountAddress, hasToken,
+                        new InsertTokenAsycTask(AddTokenActivity.this, accountId, accountAddress,
                                 mAdapter.getSelectedTokenItem(),
                                 new InsertTokenAsycTask.OnInsertTokenFinishedListener() {
                                     @Override

@@ -29,7 +29,6 @@ public class DbUtils {
         String ENCRYPT_PRIV_KEY = "encrypt_priv_key";
         String KEYSTORE = "keystore";
         String BALANCE = "balance";
-        String HAS_TOKEN = "has_token";
         String PUB_KEY = "pub_key";
         String IS_SYNCED = "is_synced";
     }
@@ -211,14 +210,6 @@ public class DbUtils {
         return -1;
     }
 
-    public static Cursor queryEthAccountIdToCursor(String address){
-        return XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
-                XWalletProvider.CONTENT_URI,
-                new String[]{DbColumns._ID, DbColumns.HAS_TOKEN},
-                DbColumns.ADDRESS + " = ?",
-                new String[]{address}, null);
-    }
-
     public static boolean isTxExist(String txHash){
         Cursor cursor = null;
         try{
@@ -318,15 +309,6 @@ public class DbUtils {
         values.put(DbUtils.TokenTableColumns.RATE, rate);
         return XWalletApplication.getApplication().getApplicationContext().getContentResolver()
                 .insert(XWalletProvider.CONTENT_URI_TOKEN, values);
-    }
-
-    public static int updateHasTokenFlag(String accountId){
-        ContentValues updateValues = new ContentValues();
-        updateValues.put(DbUtils.DbColumns.HAS_TOKEN, AppUtils.HAS_TOKEN);
-        return XWalletApplication.getApplication().getApplicationContext().getContentResolver()
-                .update(XWalletProvider.CONTENT_URI, updateValues,
-                        DbUtils.DbColumns._ID + " = ?",
-                        new String[]{accountId});
     }
 
     public static boolean hasBtcAccount(){
