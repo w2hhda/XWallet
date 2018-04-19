@@ -107,31 +107,41 @@ public class BtcCreateAddressHelper {
         return accountKey.deriveSoftened(pathType.getValue());
     }
 
-    public static String readPrivateKey(String encryptSeed, String password){
+    public static String readPrivateKey(String encryptKey, String encryptSeed, String password){
         try {
-            byte[] decryptSeed = decryptHDSeed(encryptSeed, password);
+            if(!TextUtils.isEmpty(encryptKey)){
+                SecureCharSequence str = PrivateKeyUtil.getDecryptPrivateKeyString(encryptKey, password);
+                String result = str.toString();
+                str.wipe();
+                return result;
+            } else {
+                byte[] decryptSeed = decryptHDSeed(encryptSeed, password);
 
-            if(decryptSeed == null){
-                Log.e("BtcCreateAddressHelper", "readPrivateKey decrypt failed for decrypting failed!");
-                return null;
-            }
-            DeterministicKey master = HDKeyDerivation.createMasterPrivateKey(decryptSeed);
-            wipeByteShuzu(decryptSeed);
+                if(decryptSeed == null){
+                    Log.e("BtcCreateAddressHelper", "readPrivateKey decrypt failed for decrypting failed!");
+                    return null;
+                }
+                DeterministicKey master = HDKeyDerivation.createMasterPrivateKey(decryptSeed);
+                wipeByteShuzu(decryptSeed);
 
-            if(master == null){
-                Log.e("BtcCreateAddressHelper", "readPrivateKey decrypt failed for master is null!");
-                return null;
-            }
+                if(master == null){
+                    Log.e("BtcCreateAddressHelper", "readPrivateKey decrypt failed for master is null!");
+                    return null;
+                }
 
-            DeterministicKey account = getAccount(master);
-            DeterministicKey externalKey = getChainRootKey(account, AbstractHD.PathType.EXTERNAL_ROOT_PATH);
-            account.wipe();
-            master.wipe();
+                DeterministicKey account = getAccount(master);
+                DeterministicKey externalKey = getChainRootKey(account, AbstractHD.PathType.EXTERNAL_ROOT_PATH);
+                account.wipe();
+                master.wipe();
 
-            DeterministicKey key = externalKey.deriveSoftened(0);
-            if(key != null){
-                final SecureCharSequence privateKey = new DumpedPrivateKey(key.getPrivKeyBytes(), true).toSecureCharSequence();
-                return privateKey != null ? privateKey.toString() : null;
+                DeterministicKey key = externalKey.deriveSoftened(0);
+                if(key != null){
+                    DumpedPrivateKey dumpedPrivateKey = new DumpedPrivateKey(key.getPrivKeyBytes(), true);
+                    final SecureCharSequence privateKey = dumpedPrivateKey.toSecureCharSequence();
+                    dumpedPrivateKey.clearPrivateKey();
+                    key.clearPrivateKey();
+                    return privateKey != null ? privateKey.toString() : null;
+                }
             }
         } catch (Exception e){
             Log.e("BtcCreateAddressHelper", "readPrivateKey", e);

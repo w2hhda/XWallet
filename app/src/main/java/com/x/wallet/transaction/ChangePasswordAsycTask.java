@@ -16,7 +16,9 @@ import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.lib.eth.api.EthAccountCreateHelper;
 import com.x.wallet.transaction.ChangePasswordAsycTask.ChangePasswordResult;
+
 import net.bither.bitherj.core.BtcCreateAddressHelper;
+import net.bither.bitherj.crypto.EncryptedData;
 
 
 /**
@@ -57,73 +59,113 @@ public class ChangePasswordAsycTask extends AsyncTask<Void, Void, ChangePassword
                     uri, PROJECTION, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
                 int coinType = cursor.getInt(COLUMN_COIN_TYPE);
+                String newEncryptHdSeed = null;
                 String newEncryptMnemonic = null;
                 String newPrivKey = null;
                 String newKeyStore = null;
 
+                String encryptHdSeed = cursor.getString(COLUMN_COIN_SEED);
                 String encryptMnemonic = cursor.getString(COLUMN_COIN_MNEMONIC);
                 String privKey = cursor.getString(COLUMN_RPIV_KEY);
                 String keystore = cursor.getString(COLUMN_KEYSTORE);
+                result.setEncryptHdSeed(encryptHdSeed);
                 result.setEncrptMnemonic(encryptMnemonic);
                 result.setEncryptPrivKey(privKey);
                 result.setKeyStore(keystore);
 
                 if (coinType == LibUtils.COINTYPE.COIN_ETH) {
+                    ContentValues values = new ContentValues();
+                    boolean isSeedDecryptOk = true;
+                    if (!TextUtils.isEmpty(encryptHdSeed)) {
+                        newEncryptHdSeed = EncryptedData.changePwd(encryptHdSeed, mOldPassword, mNewPassword);
+                        isSeedDecryptOk = !TextUtils.isEmpty(newEncryptHdSeed);
+                        values.put(DbUtils.DbColumns.ENCRYPT_SEED, newEncryptHdSeed);
+                        result.setEncryptHdSeed(newEncryptHdSeed);
+                    }
+                    if (!isSeedDecryptOk) {
+                        return result;
+                    }
+
                     boolean isMnemonicDecryptOk = true;
                     if (!TextUtils.isEmpty(encryptMnemonic)) {
                         byte[] mnemonicSeed = BtcCreateAddressHelper.decryptMnemonicSeed(encryptMnemonic, mOldPassword);
                         if (mnemonicSeed != null) {
                             newEncryptMnemonic = BtcCreateAddressHelper.encryptMnemonicSeed(mnemonicSeed, mNewPassword);
+                            values.put(DbUtils.DbColumns.ENCRYPT_MNEMONIC, newEncryptMnemonic);
+                            result.setEncrptMnemonic(newEncryptMnemonic);
                         } else {
                             isMnemonicDecryptOk = false;
                         }
                     }
 
-                    if (isMnemonicDecryptOk) {
-                        boolean isPrivKeyDecryptOk = true;
-                        if (!TextUtils.isEmpty(privKey)) {
-                            String rawPrivKey = EthAccountCreateHelper.decryptPrivKey(privKey, mOldPassword);
-                            if (!TextUtils.isEmpty(rawPrivKey)) {
-                                newPrivKey = EthAccountCreateHelper.encryptPrivKey(rawPrivKey, mNewPassword);
-                            } else {
-                                isPrivKeyDecryptOk = false;
-                            }
-                        }
+                    if (!isMnemonicDecryptOk) return result;
 
-                        if (isPrivKeyDecryptOk) {
-                            boolean isKeyStoreDecryptOk = true;
-                            if (!TextUtils.isEmpty(keystore)) {
-                                String oldKeyStore = EthAccountCreateHelper.checkPasswordForKeyStore(keystore, mOldPassword);
-                                if (!TextUtils.isEmpty(oldKeyStore)) {
-                                    newKeyStore = EthAccountCreateHelper.generateKeyStoreWithNewPassword(keystore, mOldPassword, mNewPassword);
-                                } else {
-                                    isKeyStoreDecryptOk = false;
-                                }
-                            }
-                            if (isKeyStoreDecryptOk) {
-                                if (!TextUtils.isEmpty(encryptMnemonic) && !TextUtils.isEmpty(newEncryptMnemonic)
-                                        || !TextUtils.isEmpty(newPrivKey) && !TextUtils.isEmpty(newPrivKey)
-                                        || !TextUtils.isEmpty(keystore) && !TextUtils.isEmpty(newKeyStore)) {
-                                    ContentValues values = new ContentValues();
-                                    if (!TextUtils.isEmpty(newEncryptMnemonic)) {
-                                        result.setEncrptMnemonic(newEncryptMnemonic);
-                                        values.put(DbUtils.DbColumns.ENCRYPT_MNEMONIC, newEncryptMnemonic);
-                                    }
-                                    if (!TextUtils.isEmpty(newPrivKey)) {
-                                        result.setEncryptPrivKey(newPrivKey);
-                                        values.put(DbUtils.DbColumns.ENCRYPT_PRIV_KEY, newPrivKey);
-                                    }
-                                    if (!TextUtils.isEmpty(newKeyStore)) {
-                                        result.setKeyStore(newKeyStore);
-                                        values.put(DbUtils.DbColumns.KEYSTORE, newKeyStore);
-                                    }
-                                    int count = XWalletApplication.getApplication().getApplicationContext().getContentResolver().update(uri, values, null, null);
-                                    result.setSuccess(count > 0);
-                                    return result;
-                                }
-                            }
+                    boolean isPrivKeyDecryptOk = true;
+                    if (!TextUtils.isEmpty(privKey)) {
+                        String rawPrivKey = EthAccountCreateHelper.decryptPrivKey(privKey, mOldPassword);
+                        if (!TextUtils.isEmpty(rawPrivKey)) {
+                            newPrivKey = EthAccountCreateHelper.encryptPrivKey(rawPrivKey, mNewPassword);
+                            values.put(DbUtils.DbColumns.ENCRYPT_PRIV_KEY, newPrivKey);
+                            result.setEncryptPrivKey(newPrivKey);
+                        } else {
+                            isPrivKeyDecryptOk = false;
                         }
                     }
+
+                    if (!isPrivKeyDecryptOk) return result;
+
+                    boolean isKeyStoreDecryptOk = true;
+                    if (!TextUtils.isEmpty(keystore)) {
+                        String oldKeyStore = EthAccountCreateHelper.checkPasswordForKeyStore(keystore, mOldPassword);
+                        if (!TextUtils.isEmpty(oldKeyStore)) {
+                            newKeyStore = EthAccountCreateHelper.generateKeyStoreWithNewPassword(keystore, mOldPassword, mNewPassword);
+                            values.put(DbUtils.DbColumns.ENCRYPT_PRIV_KEY, newKeyStore);
+                            result.setKeyStore(newKeyStore);
+                        } else {
+                            isKeyStoreDecryptOk = false;
+                        }
+                    }
+
+                    if (!isKeyStoreDecryptOk) return result;
+
+                    int count = XWalletApplication.getApplication().getApplicationContext().getContentResolver().update(uri, values, null, null);
+                    result.setSuccess(count > 0);
+                    return result;
+                } else if (coinType == LibUtils.COINTYPE.COIN_BTC) {
+                    ContentValues values = new ContentValues();
+                    boolean isSeedDecryptOk = true;
+                    if (!TextUtils.isEmpty(encryptHdSeed)) {
+                        newEncryptHdSeed = EncryptedData.changePwd(encryptHdSeed, mOldPassword, mNewPassword);
+                        isSeedDecryptOk = !TextUtils.isEmpty(newEncryptHdSeed);
+                        values.put(DbUtils.DbColumns.ENCRYPT_SEED, newEncryptHdSeed);
+                        result.setEncryptHdSeed(newEncryptHdSeed);
+                    }
+                    if (!isSeedDecryptOk) {
+                        return result;
+                    }
+
+                    boolean isMnemonicDecryptOk = true;
+                    if (!TextUtils.isEmpty(encryptMnemonic)) {
+                        newEncryptMnemonic = EncryptedData.changePwd(encryptMnemonic, mOldPassword, mNewPassword);
+                        isMnemonicDecryptOk = !TextUtils.isEmpty(newEncryptMnemonic);
+                        values.put(DbUtils.DbColumns.ENCRYPT_MNEMONIC, newEncryptMnemonic);
+                        result.setEncrptMnemonic(newEncryptMnemonic);
+                    }
+
+                    if (!isMnemonicDecryptOk) return result;
+
+                    boolean isPrivKeyDecryptOk = true;
+                    if (!TextUtils.isEmpty(privKey)) {
+                        newPrivKey = EncryptedData.changePwd(privKey, mOldPassword, mNewPassword);
+                        isPrivKeyDecryptOk = !TextUtils.isEmpty(newPrivKey);
+                        values.put(DbUtils.DbColumns.ENCRYPT_PRIV_KEY, newPrivKey);
+                        result.setEncryptPrivKey(newPrivKey);
+                    }
+
+                    if (!isPrivKeyDecryptOk) return result;
+
+                    int count = XWalletApplication.getApplication().getApplicationContext().getContentResolver().update(uri, values, null, null);
+                    result.setSuccess(count > 0);
                 }
             }
         } finally {
@@ -160,8 +202,9 @@ public class ChangePasswordAsycTask extends AsyncTask<Void, Void, ChangePassword
     static final int COLUMN_RPIV_KEY = 3;
     static final int COLUMN_KEYSTORE = 4;
 
-    public class ChangePasswordResult{
+    public class ChangePasswordResult {
         boolean isSuccess;
+        String mEncryptHdSeed;
         String mEncrptMnemonic;
         String mEncryptPrivKey;
         String mKeyStore;
@@ -176,6 +219,14 @@ public class ChangePasswordAsycTask extends AsyncTask<Void, Void, ChangePassword
 
         public void setSuccess(boolean success) {
             isSuccess = success;
+        }
+
+        public void setEncryptHdSeed(String encryptHdSeed) {
+            mEncryptHdSeed = encryptHdSeed;
+        }
+
+        public String getEncryptHdSeed() {
+            return mEncryptHdSeed;
         }
 
         public void setEncrptMnemonic(String encrptMnemonic) {

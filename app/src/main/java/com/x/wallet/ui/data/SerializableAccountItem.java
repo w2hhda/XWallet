@@ -63,6 +63,18 @@ public class SerializableAccountItem implements Serializable {
         mCoinType = coinType;
     }
 
+    public void setEncrySeed(String encrySeed) {
+        mEncrySeed = encrySeed;
+    }
+
+    public String getEncrySeed() {
+        return mEncrySeed;
+    }
+
+    public String getEncryMnemonic() {
+        return mEncryMnemonic;
+    }
+
     public void setEncryMnemonic(String encryMnemonic) {
         mEncryMnemonic = encryMnemonic;
     }
@@ -73,6 +85,10 @@ public class SerializableAccountItem implements Serializable {
 
     public void setKeyStore(String keyStore) {
         mKeyStore = keyStore;
+    }
+
+    public void setPrivKey(String privKey) {
+        mPrivKey = privKey;
     }
 
     public String getPrivKey() {

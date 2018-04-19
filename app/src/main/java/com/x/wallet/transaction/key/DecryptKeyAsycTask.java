@@ -7,6 +7,8 @@ import android.os.AsyncTask;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.lib.eth.api.EthAccountCreateHelper;
 
+import net.bither.bitherj.core.BtcCreateAddressHelper;
+
 /**
  * Created by wuliang on 18-3-15.
  */
@@ -14,21 +16,26 @@ import com.x.wallet.lib.eth.api.EthAccountCreateHelper;
 public class DecryptKeyAsycTask extends AsyncTask<Void, Void, String>{
     private int mCoinType;
     private String mPassword;
-    private String mKey;
+
     private String mKeyStore;
+
+    private String mEncryptHdSeed;
+    private String mPrivKey;
 
     private ProgressDialog mProgressDialog;
     private Context mContext;
 
     private OnDecryptKeyFinishedListener mOnDecryptKeyFinishedListener;
 
-    public DecryptKeyAsycTask(Context context, int coinType, String key, String keyStore, String password, OnDecryptKeyFinishedListener listener) {
-        mCoinType = coinType;
-        mKey = key;
-        mKeyStore = keyStore;
-        mPassword = password;
+    public DecryptKeyAsycTask(Context context, int coinType, String password, String keyStore,
+                              String encryptHdSeed, String privKey, OnDecryptKeyFinishedListener listener) {
         mProgressDialog = new ProgressDialog(context);
         mContext = context;
+        mCoinType = coinType;
+        mPassword = password;
+        mKeyStore = keyStore;
+        mEncryptHdSeed = encryptHdSeed;
+        mPrivKey = privKey;
         mOnDecryptKeyFinishedListener = listener;
     }
 
@@ -40,8 +47,11 @@ public class DecryptKeyAsycTask extends AsyncTask<Void, Void, String>{
 
     @Override
     protected String doInBackground(Void... voids) {
-        if(mCoinType == LibUtils.COINTYPE.COIN_ETH){
-            return EthAccountCreateHelper.restoreKeyFromKeyStore(mKeyStore, mPassword);
+        switch (mCoinType){
+            case LibUtils.COINTYPE.COIN_ETH:
+                return EthAccountCreateHelper.restoreKeyFromKeyStore(mKeyStore, mPassword);
+            case LibUtils.COINTYPE.COIN_BTC:
+                return BtcCreateAddressHelper.readPrivateKey(mPrivKey, mEncryptHdSeed, mPassword);
         }
         return "";
     }

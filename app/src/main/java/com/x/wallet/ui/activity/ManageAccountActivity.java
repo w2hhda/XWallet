@@ -130,7 +130,7 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                 mKeyStoreView.setVisibility(View.GONE);
             }
         } else {
-            mKeyView.setVisibility(mAccountItem.hasKey() ? View.VISIBLE : View.GONE);
+            mKeyView.setVisibility(mAccountItem.hasKey() || mAccountItem.hasMnemonic() ? View.VISIBLE : View.GONE);
             mKeyStoreView.setVisibility(View.GONE);
         }
 
@@ -218,8 +218,9 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
         mPasswordCheckDialogHelper.showPasswordDialog(this, new PasswordCheckDialogHelper.ConfirmBtnClickListener() {
             @Override
             public void onConfirmBtnClick(String password, Context context) {
-                new DecryptKeyAsycTask(context, mAccountItem.getCoinType(), "", mAccountItem.getKeyStore(),
-                        password, new DecryptKeyAsycTask.OnDecryptKeyFinishedListener() {
+                new DecryptKeyAsycTask(context, mAccountItem.getCoinType(), password, mAccountItem.getKeyStore(),
+                        mAccountItem.getEncrySeed(), mAccountItem.getPrivKey(),
+                        new DecryptKeyAsycTask.OnDecryptKeyFinishedListener() {
                     @Override
                     public void onDecryptKeyFinished(String key) {
                         if(!TextUtils.isEmpty(key)){
@@ -308,8 +309,10 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                     @Override
                     public void onChangePasswordFinished(ChangePasswordAsycTask.ChangePasswordResult result) {
                         if(result.isSuccess()){
+                            mAccountItem.setEncrySeed(result.getEncryptHdSeed());
                             mAccountItem.setEncryMnemonic(result.getEncrptMnemonic());
                             mAccountItem.setKeyStore(result.getKeyStore());
+                            mAccountItem.setPrivKey(result.getEncryptPrivKey());
                             Toast.makeText(mActivity, R.string.change_password_success, Toast.LENGTH_LONG).show();
                             changePasswordDialogHelper.dismissDialog();
                         } else {

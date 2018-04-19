@@ -12,11 +12,11 @@ import com.x.wallet.lib.common.LibUtils;
 
 public class ActionUtils {
     public static void handleAddAccountAction(Context context, int actionType){
-        /*Intent intent = new Intent("com.x.wallet.action.COINTYPE_CHOOSE_ACTION");
+        Intent intent = new Intent("com.x.wallet.action.COINTYPE_CHOOSE_ACTION");
         intent.putExtra(AppUtils.ACTION_TYPE, actionType);
-        context.startActivity(intent);*/
+        context.startActivity(intent);
 
-        if(actionType == AppUtils.ACCOUNT_ACTION_TYPE_NEW){
+        /*if(actionType == AppUtils.ACCOUNT_ACTION_TYPE_NEW){
             Intent intent = new Intent("com.x.wallet.action.CREATE_ACCOUNT_ACTION");
             intent.putExtra(AppUtils.COIN_TYPE, LibUtils.COINTYPE.COIN_ETH);
             context.startActivity(intent);
@@ -24,6 +24,6 @@ public class ActionUtils {
             Intent intent = new Intent("com.x.wallet.action.IMPORT_ACCOUNT_ACTION");
             intent.putExtra(AppUtils.COIN_TYPE, LibUtils.COINTYPE.COIN_ETH);
             context.startActivity(intent);
-        }
+        }*/
     }
 }
