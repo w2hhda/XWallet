@@ -147,4 +147,8 @@
     <string name="send_confirm_address">"将要发送给: "</string>
     <string name="send_confirm_amount">"金额: "</string>
     <string name="send_confirm_fee">"手续费: "</string>
+    <string name="pin_code">屏幕密码</string>
+    <string name="input_pin_code">请输入新密码</string>
+    <string name="confirm_pin_code">请确认密码</string>
+    <string name="wrong_pin_code">密码错误，请重新输入</string>
 </resources>
