@@ -91,12 +91,11 @@ public class ConfirmPasswordAsyncTask extends AsyncTask<ConfirmTransactionCallba
     @Override
     protected Void doInBackground(ConfirmTransactionCallback... params ) {
         String keyStore;
-        String selection = DbUtils.DbColumns.ADDRESS + " = ?";
         ConfirmTransactionCallback callback = params[0];
         Cursor cursor = null;
         try {
             cursor = XWalletApplication.getApplication().getContentResolver().query(XWalletProvider.CONTENT_URI,
-                    new String[]{DbUtils.DbColumns.KEYSTORE},selection, new String[]{address}, null);
+                    new String[]{DbUtils.DbColumns.KEYSTORE}, DbUtils.ADDRESS_SELECTION, new String[]{address}, null);
 
             if (cursor != null && cursor.moveToFirst()){
                 keyStore = cursor.getString(0);

@@ -72,6 +72,7 @@ public class DbUtils {
     private static final String COINTYPE_SELECTION = DbColumns.COIN_TYPE + " = ?";
     private static final String[] COINTYPE_SELECTION_ETH = new String[]{String.valueOf(LibUtils.COINTYPE.COIN_ETH)};
     private static final String[] COINTYPE_SELECTION_BTC = new String[]{String.valueOf(LibUtils.COINTYPE.COIN_BTC)};
+    public static final String ADDRESS_SELECTION = DbColumns.ADDRESS + " = ?";
 
     public static ContentValues createContentValues(AccountData accountData) {
         ContentValues values = new ContentValues();
@@ -108,7 +109,7 @@ public class DbUtils {
     }
 
     public static boolean isAddressExist(String address){
-        return isAlreadyExist(DbColumns.ADDRESS + " = ?", new String[]{address});
+        return isAlreadyExist(ADDRESS_SELECTION, new String[]{address});
     }
 
     private static boolean isAlreadyExist(String selection, String[] selectionArgs){
@@ -190,13 +191,12 @@ public class DbUtils {
     }
 
     public static long queryEthAccountId(String address){
-        String selection = DbColumns.ADDRESS + " = ?";
         Cursor cursor = null;
         try{
             cursor = XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
                     XWalletProvider.CONTENT_URI,
                     new String[]{DbColumns._ID},
-                    selection,
+                    ADDRESS_SELECTION,
                     new String[]{address}, null);
             if(cursor != null && cursor.getCount() > 0){
                 cursor.moveToFirst();

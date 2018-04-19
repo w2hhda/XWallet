@@ -401,7 +401,7 @@ public class BlockchainService extends android.app.Service {
                     while (cursor.moveToNext()){
                         addressList.add(cursor.getString(1));
                     }
-                    Log.i("testtx", "sendBroadcastSyncSPVFinished onReceive size = " + addressList.size());
+                    Log.i("testTx", "BlockchainService handleAddressSync size = " + addressList.size());
                     if(addressList.size() > 0){
                         CustomeTransactionsUtil.getMyTxFromBither(addressList);
                     }

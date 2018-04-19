@@ -193,7 +193,7 @@ public class Peer extends PeerSocketHandler {
         if (m == null) {
             return;
         }
-        //Log.i("testBtcTx", "Peer processMessage m = " + m);
+        Log.i("testTx", "Peer processMessage m = " + m);
         if (currentFilteredBlock != null && !(m instanceof Tx)) {
             currentFilteredBlock = null;
             currentTxHashes.clear();

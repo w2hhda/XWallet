@@ -29,9 +29,10 @@ import java.util.Map;
 public class CustomeTransactionsUtil {
     private static final String BLOCK_CHAIN_HEIGHT = "height";
     private static final String BLOCK_CHAIN_CNT = "n_tx";
+    private static final int MAX_TX_IN_PAGE = 50;
 
     public static void getMyTxFromBither(List<String> addressList) throws Exception {
-        Log.i("testGetTx", "TransactionsUtil getMyTxFromBither");
+        Log.i("testTx", "TransactionsUtil getMyTxFromBither");
         getTxForAddress(addressList);
     }
 
@@ -42,47 +43,47 @@ public class CustomeTransactionsUtil {
             int apiBlockCount = 0;
             int txSum = 0;
             boolean needGetTxs = true;
-            int page = 1;
-            // TODO
+            int page = 0;
             List<Tx> transactions = new ArrayList<Tx>();
-
             while (needGetTxs) {
-                BlockChainMytransactionsApi blockChainMytransactionsApi = new BlockChainMytransactionsApi(address);
+                BlockChainMytransactionsApi blockChainMytransactionsApi = new BlockChainMytransactionsApi(address, page * MAX_TX_IN_PAGE);
                 blockChainMytransactionsApi.handleHttpGet();
                 String txResult = blockChainMytransactionsApi.getResult();
                 JSONObject jsonObject = new JSONObject(txResult);
-                // TODO: get the latest block number from blockChain.info
-                JSONObject jsonObjectBlockChain = getLatestBlockNumberFromBlockchain();
-                if (!jsonObjectBlockChain.isNull(BLOCK_CHAIN_HEIGHT)) {
-                    apiBlockCount = jsonObjectBlockChain.getInt(BLOCK_CHAIN_HEIGHT);
-                }
-                int txCnt = jsonObject.getInt(BLOCK_CHAIN_CNT);
-                // TODO: get transactions from blockChain.info
+
+                apiBlockCount = getLatestBlockNumberFromBlockchain();
+
+                int txAllCount = jsonObject.getInt(BLOCK_CHAIN_CNT);
+
                 transactions = CustomeTransactionsUtil.getTransactionsFromBlockChain(txResult, storeBlockHeight);
                 transactions = CustomeAddressManager.compressTxsForApi(transactions, address);
 
                 Collections.sort(transactions, new TransactionsUtil.ComparatorTx());
-                if(transactions != null){
-                    Log.i("testGetTx", " transactions.size = " + transactions);
-                }
-                CustomeAddress.initTxs2(transactions);
-                //address.initTxs(transactions);
+                CustomeAddress.initTxs(transactions);
                 txSum = txSum + transactions.size();
-                needGetTxs = false;
+                needGetTxs = txSum < txAllCount;
+                page++;
             }
 
             if (apiBlockCount < storeBlockHeight && storeBlockHeight - apiBlockCount < 100) {
                 BlockChain.getInstance().rollbackBlock(apiBlockCount);
             }
             AbstractDb.txProvider.updateSyncComplete(address, true);
+            if(txSum > 0){
+                AbstractDb.txProvider.updateAccountBalance(address);
+            }
         }
     }
 
-    private static JSONObject getLatestBlockNumberFromBlockchain() throws Exception {
+    private static int getLatestBlockNumberFromBlockchain() throws Exception {
         BlockChainMytransactionsApi blockChainMytransactionsApi = new BlockChainMytransactionsApi();
         blockChainMytransactionsApi.handleHttpGet();
         String txResultBlockChain = blockChainMytransactionsApi.getResult();
-        return new JSONObject(txResultBlockChain);
+        JSONObject jsonObjectBlockChain = new JSONObject(txResultBlockChain);
+        if (!jsonObjectBlockChain.isNull(BLOCK_CHAIN_HEIGHT)) {
+            return jsonObjectBlockChain.getInt(BLOCK_CHAIN_HEIGHT);
+        }
+        return 0;
     }
 
     private  static List<Tx> getTransactionsFromBlockChain(

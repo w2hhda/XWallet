@@ -21,7 +21,7 @@ import java.util.List;
  */
 
 public class CustomeAddress {
-    public static boolean initTxs2(List<Tx> txs) {
+    public static boolean initTxs(List<Tx> txs) {
         AbstractDb.txProvider.addTxs(txs);
         //notificatTx(null, Tx.TxNotificationType.txFromApi);
         return true;

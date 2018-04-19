@@ -90,10 +90,10 @@ public class TokenUtils {
     public static BigDecimal translate(long rawBalance, int decimals){
         if(rawBalance == 0) return BigDecimal.ZERO;
         BigDecimal balance = new BigDecimal(rawBalance);
-        return balance.divide(BigDecimal.TEN.pow(decimals));
+        return translate(balance, decimals);
     }
 
-    private static BigDecimal translate(BigDecimal rawBalance, int decimals){
+    public static BigDecimal translate(BigDecimal rawBalance, int decimals){
         return rawBalance.divide(BigDecimal.TEN.pow(decimals));
     }
 

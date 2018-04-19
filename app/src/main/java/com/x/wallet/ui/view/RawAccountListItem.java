@@ -10,12 +10,11 @@ import android.widget.TextView;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
+import com.x.wallet.btc.BtcUtils;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 import com.x.wallet.ui.data.AllAccountItem;
-
-import java.io.IOException;
 
 /**
  * Created by wuliang on 18-3-30.
@@ -56,11 +55,18 @@ public class RawAccountListItem extends RelativeLayout {
         if (mAccountItem.getAllCoinType() == AllAccountItem.COIN_TYPE_MAIN) {
             if (mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_ETH) {
                 mImageView.setImageResource(R.drawable.eth);
-                mCoinBalanceUnitTv.setText(R.string.coin_unit_eth);
                 mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS));
                 mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
                         TokenUtils.getBalanceConversionText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS)));
+            } else if(mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_BTC){
+                mImageView.setImageResource(R.drawable.icon_coin_btc);
+                mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), BtcUtils.BTC_DECIMALS_COUNT));
+                mBalanceConversionTv.setText(
+                        getResources().getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
+                                BtcUtils.getBalanceConversionText(TokenUtils.getBalanceText(mAccountItem.getBalance(), BtcUtils.BTC_DECIMALS_COUNT)))
+                );
             }
+            mCoinBalanceUnitTv.setText(mAccountItem.getCoinName());
         } else {
             mCoinBalanceUnitTv.setText(accountItem.getCoinName());
             mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), accountItem.getDecimals()));

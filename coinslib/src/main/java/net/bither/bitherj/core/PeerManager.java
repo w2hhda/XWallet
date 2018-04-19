@@ -1193,7 +1193,7 @@ public class PeerManager {
     }
 
     public void relayedTransaction(final Peer fromPeer, final Tx tx, final boolean isConfirmed, final HashSet<String> addressHashSet) {
-        //Log.i("testBtcTx", "PeerManager relayedTransaction");
+        Log.i("testTx", "PeerManager relayedTransaction");
         if (!isRunning()) {
             return;
         }

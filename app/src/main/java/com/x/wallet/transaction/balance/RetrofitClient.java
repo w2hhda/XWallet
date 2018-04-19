@@ -286,7 +286,7 @@ public class RetrofitClient {
             Log.i(TAG, "RetrofitClient handleBalanceResultBean balance = " + resultBean.getBalance() + ", account = " + resultBean.getAccount());
             final ContentProviderOperation.Builder updateBuilder = ContentProviderOperation
                     .newUpdate(XWalletProvider.CONTENT_URI);
-            updateBuilder.withSelection(DbUtils.DbColumns.ADDRESS + " = ?", new String[]{resultBean.getAccount()});
+            updateBuilder.withSelection(DbUtils.ADDRESS_SELECTION, new String[]{resultBean.getAccount()});
             updateBuilder.withValue(DbUtils.DbColumns.BALANCE, resultBean.getBalance());
             rawOperations.add(updateBuilder.build());
         }

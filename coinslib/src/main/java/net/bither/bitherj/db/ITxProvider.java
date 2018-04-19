@@ -99,4 +99,6 @@ public interface ITxProvider {
     public List<String> getAllAddressPubToList();
 
     String getEncryptPrivateKey(String address);
+
+    void updateAccountBalance(String addr);
 }

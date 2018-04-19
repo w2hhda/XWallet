@@ -1,5 +1,7 @@
 package net.bither.bitherj.api;
 
+import android.util.Log;
+
 import net.bither.bitherj.api.http.BitherUrl;
 import net.bither.bitherj.api.http.HttpsGetResponse;
 import net.bither.bitherj.utils.Utils;
@@ -14,9 +16,9 @@ public class BlockChainMytransactionsApi extends HttpsGetResponse<String> {
         this.result = response;
     }
 
-    public BlockChainMytransactionsApi(String address) {
+    public BlockChainMytransactionsApi(String address, int offset) {
         String url = Utils.format(BitherUrl.BITHER_BC_GET_BY_ADDRESS, address);
-        setUrl(url);
+        setUrl(url + "?offset=" + offset);
     }
 
     public BlockChainMytransactionsApi() {

@@ -21,7 +21,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.x.wallet.XWalletApplication;
+import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.WalletDatabaseHelper;
+import com.x.wallet.db.XWalletProvider;
+import com.x.wallet.lib.btc.BtcLibHelper;
 
 import net.bither.bitherj.core.In;
 import net.bither.bitherj.core.Out;
@@ -115,5 +118,15 @@ public class TxProvider extends AbstractTxProvider {
             cv.putNull(AbstractDb.OutsColumns.HD_ACCOUNT_ID);
         }
         mdb.getSQLiteDatabase().insert(AbstractDb.Tables.OUTS, null, cv);
+    }
+
+    @Override
+    public void updateAccountBalance(String address) {
+        long balance = BtcLibHelper.updateBalance(address);
+        ContentValues values = new ContentValues(1);
+        values.put(DbUtils.DbColumns.BALANCE, Long.toString(balance));
+        int count = XWalletApplication.getApplication().getApplicationContext().getContentResolver().update(XWalletProvider.CONTENT_URI,
+                values, DbUtils.ADDRESS_SELECTION, new String[]{address});
+        Log.i("testTx", "TxProvider updateAccountBalance address = " + address + ", balance = " + balance + ", count = " + count);
     }
 }

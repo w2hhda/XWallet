@@ -1,7 +1,5 @@
 package com.x.wallet.lib.btc;
 
-import android.util.Log;
-
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.In;
 import net.bither.bitherj.core.Out;
@@ -23,11 +21,6 @@ import java.util.Set;
 
 public class CustomeAddressManager {
     public static boolean isTxRelated(HashSet<String> addressHashSet, Tx tx, List<String> inAddresses) {
-        if(inAddresses != null){
-            for(String address : inAddresses){
-                System.out.println("testTx CustomeAddressManager isTxRelated address = " + address);
-            }
-        }
         for (String address : addressHashSet) {
             if (isAddressContainsTx(address, tx)) {
                 return true;
@@ -39,7 +32,6 @@ public class CustomeAddressManager {
     private static boolean isAddressContainsTx(String address, Tx tx) {
         Set<String> outAddress = new HashSet<String>();
         for (Out out : tx.getOuts()) {
-            System.out.println("testTx CustomeAddressManager isAddressContainsTx address = " + out.getOutAddress());
             outAddress.add(out.getOutAddress());
         }
         if (outAddress.contains(address)) {
@@ -105,11 +97,10 @@ public class CustomeAddressManager {
 
         if (needNotifyAddressHashSet.size() > 0) {
             AbstractDb.txProvider.add(compressedTx);
-            Log.i("testTx", "CustomeAddressManager registerTx txHash = " + Utils.hashToString(tx.getTxHash()));
         }
         for (String addr : addressHashSet) {
             if (needNotifyAddressHashSet.contains(addr)) {
-                //Address.notificatTx(tx, txNotificationType);
+                AbstractDb.txProvider.updateAccountBalance(addr);
             }
         }
 
@@ -118,7 +109,7 @@ public class CustomeAddressManager {
 
     public static Tx compressTx(HashSet<String> addressHashSet, Tx tx, List<String> inAddresses) {
         if (tx.getOuts().size() > BitherjSettings.COMPRESS_OUT_NUM
-                && !isSendFromMe(addressHashSet, tx, inAddresses)) {
+                && !isSendFromMe(addressHashSet, inAddresses)) {
             List<Out> outList = new ArrayList<Out>();
             for (Out out : tx.getOuts()) {
                 String outAddress = out.getOutAddress();
@@ -131,8 +122,8 @@ public class CustomeAddressManager {
         return tx;
     }
 
-    private static boolean isSendFromMe(HashSet<String> addressHashSet, Tx tx, List<String> addresses) {
-        return addressHashSet.containsAll(addresses) || AbstractDb.hdAccountAddressProvider.getRelatedAddressCnt(addresses) > 0;
+    private static boolean isSendFromMe(HashSet<String> addressHashSet, List<String> addresses) {
+        return addressHashSet.containsAll(addresses);
     }
 
     public static List<Tx> compressTxsForApi(List<Tx> txList, String address) {

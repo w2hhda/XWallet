@@ -8,8 +8,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.x.wallet.R;
+import com.x.wallet.btc.BtcUtils;
 import com.x.wallet.lib.common.LibUtils;
-import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.data.AccountItem;
 
@@ -52,8 +52,12 @@ public class ManageAllAccountListItem extends CardView {
         mAccountItem = AccountItem.createFromCursor(cursor);
         mAccountNameTv.setText(mAccountItem.getAccountName());
         mAddressTv.setText(mAccountItem.getAddress());
-        mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS));
-        mCoinBalanceUnitTv.setText(mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_BTC ? R.string.coin_unit_btc : R.string.coin_unit_eth);
+        if(mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_BTC){
+            mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), BtcUtils.BTC_DECIMALS_COUNT));
+        } else {
+            mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS));
+        }
+        mCoinBalanceUnitTv.setText(mAccountItem.getCoinName());
     }
 
     public AccountItem getAccountItem() {
