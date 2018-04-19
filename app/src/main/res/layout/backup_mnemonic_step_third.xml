@@ -28,13 +28,13 @@
         android:numColumns="3"
         android:verticalSpacing="6dp" />
 
-    <TextView
+    <TextView android:id="@+id/clear_mnemonic_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="36dp"
         android:text="@string/clear_mnemonic"
-        android:textColor="@color/gray_b2"
+        android:textColor="@color/clickable_tv_textcolor_selector"
         android:textSize="14sp" />
 
     <Button

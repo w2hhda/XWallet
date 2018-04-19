@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.Toast;
 
 import com.x.wallet.R;
@@ -56,6 +57,22 @@ public class BackupMnemonicStepThirdView extends LinearLayout{
                     mCheckPositions.add(position);
                 }
                 updateOutGridView();
+            }
+        });
+
+        View clearView = findViewById(R.id.clear_mnemonic_tv);
+        clearView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mCheckPositions != null){
+                    mCheckPositions.clear();
+                    mInputGridView.clearChoices();
+                    ListAdapter listAdapter = mInputGridView.getAdapter();
+                    if(listAdapter != null && listAdapter instanceof GridViewAdapter){
+                        ((GridViewAdapter)listAdapter).notifyDataSetChanged();
+                    }
+                    updateOutGridView();
+                }
             }
         });
 
