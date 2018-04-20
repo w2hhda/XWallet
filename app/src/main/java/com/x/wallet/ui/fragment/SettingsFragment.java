@@ -8,7 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
+import android.widget.Switch;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
@@ -27,7 +27,9 @@ public class SettingsFragment extends Fragment{
     private static final int SET_PIN_REQUEST_CODE = 2;
     private static final int CONFIRM_PIN_REQUEST_CODE = 3;
     private ChangeCurrencyPrefView mChangeCurrencyPref;
-    private CheckBox checkBox;
+    private Switch mSwitch;
+
+    public static final String TO_CONFONFIRM_PIN = "SettingsFragment.to.confirm.pin";
 
     @Nullable
     @Override
@@ -67,7 +69,7 @@ public class SettingsFragment extends Fragment{
             mChangeCurrencyPref.updateCurrentCurrencyText(data.getStringExtra(CurrencyActivity.CHOOSE_CURRENCY));
         }
         if (SET_PIN_REQUEST_CODE == requestCode && resultCode == Activity.RESULT_OK){
-            checkBox.setChecked(true);
+            mSwitch.setChecked(true);
             String code = data.getStringExtra(AppUtils.PIN_TAG);
             String md5Value = AppUtils.getStringMD5(code);
             AppUtils.log("try to set pin");
@@ -75,22 +77,23 @@ public class SettingsFragment extends Fragment{
         }
         if (CONFIRM_PIN_REQUEST_CODE == requestCode && resultCode == Activity.RESULT_OK){
             AppUtils.log("confirm pin ok.");
-            checkBox.setChecked(false);
+            mSwitch.setChecked(false);
             AppUtils.setPin("");
         }
     }
 
     private void initPinView(View view){
-        checkBox = view.findViewById(R.id.pin_cb);
-        checkBox.setChecked(AppUtils.hasPin());
+        mSwitch = view.findViewById(R.id.pin_switch);
+        mSwitch.setChecked(AppUtils.hasPin());
         //View pinLayout = view.findViewById(R.id.set_pin_layout);
-        checkBox.setOnClickListener(new View.OnClickListener() {
+        mSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (AppUtils.hasPin()){
                     AppUtils.log("try to confirm pin code");
                     Intent intent = new Intent("com.x.wallet.action.CONFIRM_PIN_ACTION");
                     intent.putExtra(AppUtils.CONFIRM_PIN_CODE, AppUtils.getPin());
+                    intent.putExtra(TO_CONFONFIRM_PIN, true);
                     startActivityForResult(intent, CONFIRM_PIN_REQUEST_CODE);
                 }else {
                     AppUtils.log("try to set pin code");
@@ -104,6 +107,6 @@ public class SettingsFragment extends Fragment{
     @Override
     public void onResume() {
         super.onResume();
-        checkBox.setChecked(AppUtils.hasPin());
+        mSwitch.setChecked(AppUtils.hasPin());
     }
 }
