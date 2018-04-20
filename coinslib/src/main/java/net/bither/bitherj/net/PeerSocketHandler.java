@@ -17,6 +17,8 @@
 package net.bither.bitherj.net;
 
 
+import android.util.Log;
+
 import com.google.common.annotations.VisibleForTesting;
 
 import net.bither.bitherj.exception.ProtocolException;
@@ -88,6 +90,7 @@ public abstract class PeerSocketHandler extends AbstractTimeoutHandler implement
      * TODO: Maybe use something other than the unchecked NotYetConnectedException here
      */
     public void sendMessage(Message message) throws NotYetConnectedException {
+        //Log.i("test34", "PeerSocketHandler sendMessage message = " + message);
         lock.lock();
         try {
             if (writeTarget == null) {

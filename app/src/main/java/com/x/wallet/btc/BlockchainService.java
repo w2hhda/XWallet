@@ -63,7 +63,7 @@ public class BlockchainService extends android.app.Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i("BlockchainService", "BlockchainService onCreate");
+        //Log.i("test34", "BlockchainService onCreate");
         HandlerThread thread = new HandlerThread("BlockchainService");
         thread.start();
         mServiceLooper = thread.getLooper();
@@ -72,12 +72,13 @@ public class BlockchainService extends android.app.Service {
         final String lockName = getPackageName() + " blockchain sync";
         final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, lockName);
+
         tickReceiver = new TickReceiver(BlockchainService.this);
         txReceiver = new TxReceiver(BlockchainService.this, tickReceiver);
         receiverConnectivity();
-        registerReceiver(tickReceiver, new IntentFilter(
-                Intent.ACTION_TIME_TICK));
+        registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         registerReceiver(txReceiver, new IntentFilter(NotificationAndroidImpl.ACTION_ADDRESS_BALANCE));
+
         BroadcastUtil.sendBroadcastStartPeer();
     }
 
@@ -86,8 +87,7 @@ public class BlockchainService extends android.app.Service {
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         intentFilter.addAction(Intent.ACTION_DEVICE_STORAGE_LOW);
         intentFilter.addAction(Intent.ACTION_DEVICE_STORAGE_OK);
-        intentFilter
-                .addAction(BroadcastUtil.ACTION_START_PEER_MANAGER);
+        intentFilter.addAction(BroadcastUtil.ACTION_START_PEER_MANAGER);
         registerReceiver(connectivityReceiver, intentFilter);
         connectivityReceivered = true;
 
@@ -95,7 +95,7 @@ public class BlockchainService extends android.app.Service {
 
     @Override
     public void onDestroy() {
-        Log.i("BlockchainService", "BlockchainService onDestroy");
+        //Log.i("test34", "BlockchainService onDestroy");
         PeerManager.instance().stop();
         PeerManager.instance().onDestroy();
         if (wakeLock != null && wakeLock.isHeld()) {
@@ -131,7 +131,7 @@ public class BlockchainService extends android.app.Service {
     @Override
     public int onStartCommand(final Intent intent, final int flags,
                               final int startId) {
-        Log.i("BlockchainService", "BlockchainService onStartCommand intent = " + intent);
+        //Log.i("test34", "BlockchainService onStartCommand intent = " + intent);
         if (intent == null) {
             return START_NOT_STICKY;
         }
@@ -171,23 +171,20 @@ public class BlockchainService extends android.app.Service {
         private void onReceive(final Intent intent) throws BlockStoreException {
             final String action = intent.getAction();
             if (ConnectivityManager.CONNECTIVITY_ACTION.equals(action)) {
-                hasConnectivity = !intent.getBooleanExtra(
-                        ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
-                Log.i("BlockchainService", "BlockchainService onReceive network is " + (hasConnectivity ? "up" : "down"));
+                hasConnectivity = !intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
+                //Log.i("test34", "BlockchainService onReceive network is " + (hasConnectivity ? "up" : "down"));
                 check();
             } else if (Intent.ACTION_DEVICE_STORAGE_LOW.equals(action)) {
                 hasStorage = false;
-                Log.i("BlockchainService", "BlockchainService onReceive device storage low");
-
+                //Log.i("test34", "BlockchainService onReceive device storage low");
                 check();
             } else if (Intent.ACTION_DEVICE_STORAGE_OK.equals(action)) {
                 hasStorage = true;
-                Log.i("BlockchainService", "BlockchainService onReceive device storage ok");
-
+                //Log.i("test34", "BlockchainService onReceive device storage ok");
                 check();
-            } else if (BroadcastUtil.ACTION_START_PEER_MANAGER
-                    .equals(action)) {
+            } else if (BroadcastUtil.ACTION_START_PEER_MANAGER.equals(action)) {
                 hasStorage = true;
+                //Log.i("test34", "BlockchainService onReceive ACTION_START_PEER_MANAGER");
                 check();
             }
         }
@@ -197,24 +194,15 @@ public class BlockchainService extends android.app.Service {
             final boolean hasEverything = hasConnectivity && hasStorage;
             NetworkUtil.NetworkType networkType = NetworkUtil.isConnectedType();
             boolean networkIsAvailadble = (networkType == NetworkUtil.NetworkType.Wifi);
-
-            if (networkIsAvailadble) {
-                if (hasEverything) {
-                    Log.d("BlockchainService", "BlockchainService check acquiring wakelock");
-                    callWekelock();
-                    if (!PeerManager.instance().isRunning()) {
-                        startPeer();
-                    }
-                } else {
-
-                    PeerManager.instance().stop();
+            //Log.i("test34", "BlockchainService check networkType = " + networkType);
+            if (networkIsAvailadble && hasEverything) {
+                callWekelock();
+                if (!PeerManager.instance().isRunning()) {
+                    startPeer();
                 }
             } else {
-
                 PeerManager.instance().stop();
             }
-
-
         }
     };
 
@@ -258,23 +246,23 @@ public class BlockchainService extends android.app.Service {
     private boolean spvFinishedReceivered = false;
 
     private synchronized void startPeer() {
-        Log.i("testPeer", "BlockchainService startPeer 0");
+        //Log.i("test34", "BlockchainService startPeer 0");
         try {
             if (peerCanNotRun) {
                 return;
             }
-            Log.i("testPeer", "BlockchainService startPeer 1");
+            //Log.i("test34", "BlockchainService startPeer 1");
             if (!AppSharedPreference.getInstance().getDownloadSpvFinish()) {
-                Log.i("testPeer", "BlockchainService startPeer 2");
+                //Log.i("test34", "BlockchainService startPeer 2");
                 Block block = BlockUtil.dowloadSpvBlock();
                 if (block == null) {
                     return;
                 }
             }
-            Log.i("testPeer", "BlockchainService startPeer 3");
+            //Log.i("test34", "BlockchainService startPeer 3");
             if (!AppSharedPreference.getInstance().getBitherjDoneSyncFromSpv()) {
                 if (!PeerManager.instance().isConnected()) {
-                    Log.i("testPeer", "BlockchainService startPeer 4");
+                    //Log.i("test34", "BlockchainService startPeer 4");
                     PeerManager.instance().start();
                     if (!spvFinishedReceivered) {
                         final IntentFilter intentFilter = new IntentFilter();
@@ -285,7 +273,7 @@ public class BlockchainService extends android.app.Service {
                     }
                 }
             } else {
-                Log.i("testPeer", "BlockchainService startPeer 5");
+                //Log.i("test34", "BlockchainService startPeer 5");
                 handleAddressSync(true);
                 startPeerManager();
 
@@ -297,15 +285,15 @@ public class BlockchainService extends android.app.Service {
     }
 
     private void startPeerManager() {
-        Log.i("testPeer", "BlockchainService startPeerManager");
+        //Log.i("test34", "BlockchainService startPeerManager");
         if (handleAddressSync(false)
                 && AppSharedPreference.getInstance().getBitherjDoneSyncFromSpv()
                 && AppSharedPreference.getInstance().getDownloadSpvFinish()) {
-            Log.i("testPeer", "BlockchainService startPeerManager 1");
+            //Log.i("test34", "BlockchainService startPeerManager 1");
             NetworkUtil.NetworkType networkType = NetworkUtil.isConnectedType();
             boolean networkIsAvailadble =  (networkType == NetworkUtil.NetworkType.Wifi);
             if (networkIsAvailadble && !PeerManager.instance().isConnected()) {
-                Log.i("testPeer", "BlockchainService startPeerManager 2");
+                //Log.i("test34", "BlockchainService startPeerManager 2");
                 PeerManager.instance().start();
             }
         }
@@ -314,7 +302,7 @@ public class BlockchainService extends android.app.Service {
     public class SPVFinishedReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i("testPeer", "SPVFinishedReceiver onReceive intent= " + intent);
+            //Log.i("test34", "SPVFinishedReceiver onReceive intent= " + intent);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -346,7 +334,7 @@ public class BlockchainService extends android.app.Service {
                     while (cursor.moveToNext()){
                         addressList.add(cursor.getString(1));
                     }
-                    Log.i("testTx", "BlockchainService handleAddressSync size = " + addressList.size());
+                    //Log.i("test34", "BlockchainService handleAddressSync size = " + addressList.size());
                     if(addressList.size() > 0){
                         CustomeTransactionsUtil.getMyTxFromBither(addressList);
                     }
@@ -369,7 +357,7 @@ public class BlockchainService extends android.app.Service {
         }
         @Override
         public void handleMessage(Message msg) {
-            Log.i("testPeer", "BlockchainService handleMessage msg.what = " + decodeMessage(msg));
+            //Log.i("test34", "BlockchainService handleMessage msg.what = " + decodeMessage(msg));
             switch (msg.what) {
                 case BtcUtils.BLOCKCHAIN_SERVICE_ACTION_START_PEER:
                         startAndRegister();
@@ -387,7 +375,7 @@ public class BlockchainService extends android.app.Service {
                 case BtcUtils.BLOCKCHAIN_SERVICE_ACTION_STOP_PEER:
                     return "BLOCKCHAIN_SERVICE_ACTION_STOP_PEER";
             }
-            return "unknown message.what";
+            return String.valueOf(msg.what);
         }
     }
 }

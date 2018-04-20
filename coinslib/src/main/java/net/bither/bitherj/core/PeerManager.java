@@ -54,9 +54,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class PeerManager {
-
-    public static final String ConnectedChangeBroadcast = PeerManager.class.getPackage().getName
-            () + ".peer_manager_connected_change";
     private static final Logger log = LoggerFactory.getLogger(PeerManager.class);
     private static final int MAX_CONNECT_FAILURE_COUNT = 6;
 
@@ -136,7 +133,9 @@ public class PeerManager {
     }
 
     public void start() {
+        //Log.i("test34", "PeerManager start");
         if (!running.getAndSet(true)) {
+            //Log.i("test34", "PeerManager start 2");
             log.info("peer manager start");
             bloomFilter = null;
             if (this.connectFailure >= MAX_CONNECT_FAILURE_COUNT) {
@@ -157,12 +156,12 @@ public class PeerManager {
     }
 
     public void stop() {
+        //Log.i("test34", "PeerManager stop");
         if (running.getAndSet(false)) {
             log.info("peer manager stop");
             if (connected.getAndSet(false)) {
-                AbstractApp.notificationService.removeBroadcastPeerState();
+                //Log.i("test34", "PeerManager stop 2");
                 bloomFilter = null;
-                sendConnectedChangeBroadcast();
                 executor.getQueue().clear();
                 executor.submit(new Runnable() {
                     @Override
@@ -202,6 +201,7 @@ public class PeerManager {
         executor.submit(new Runnable() {
             @Override
             public void run() {
+                //Log.i("test34", "PeerManager reconnect");
                 Iterator<Peer> iterator = connectedPeers.iterator();
                 while (iterator.hasNext()) {
                     if (iterator.next().state == Peer.State.Disconnected) {
@@ -222,7 +222,6 @@ public class PeerManager {
                         p.connect();
                     }
                 }
-                sendPeerCountChangeNotification();
                 if (connectedPeers.size() == 0) {
                     stop();
                 }
@@ -321,9 +320,6 @@ public class PeerManager {
                     }
                 });
                 return;
-            }
-            if (!connected.getAndSet(true)) {
-                sendConnectedChangeBroadcast();
             }
             log.info("Peer {} connected", peer.getPeerAddress().getHostAddress());
             connectFailure = 0;
@@ -462,10 +458,7 @@ public class PeerManager {
                         .getPeerAddress().getHostAddress(), connectedPeers.size());
                 if (previousConnectedCount > 0 && connectedPeers.size() == 0) {
                     connected.set(false);
-                    sendConnectedChangeBroadcast();
                 }
-
-                sendPeerCountChangeNotification();
 
                 for (Sha256Hash txHash : txRelays.keySet()) {
                     txRelays.get(txHash).remove(peer);
@@ -927,16 +920,6 @@ public class PeerManager {
         return AbstractApp.bitherjSetting.getBitherjDoneSyncFromSpv();
     }
 
-    private void sendConnectedChangeBroadcast() {
-        AbstractApp.notificationService.sendConnectedChangeBroadcast(ConnectedChangeBroadcast,
-                isConnected());
-        log.info("peer manager connected changed to " + isConnected());
-    }
-
-    private void sendPeerCountChangeNotification() {
-        AbstractApp.notificationService.sendBroadcastPeerState(connectedPeers.size());
-    }
-
     public Peer getDownloadingPeer() {
         return downloadingPeer;
     }
@@ -1166,7 +1149,8 @@ public class PeerManager {
             try{
                 for (String address : addresses) { // add addresses to watch for any tx receiveing
                     // money to the wallet
-                    Log.i("test", "PeerManager getBloomFilter2 address = " + address);
+                    if(address == null) return bloomFilter;
+                    //Log.i("test", "PeerManager getBloomFilter2 address = " + address);
                     byte[] pub = Base58.decode(address);
                     if (pub != null && !filter.contains(pub)) {
                         filter.insert(pub);
@@ -1195,7 +1179,7 @@ public class PeerManager {
     }
 
     public void relayedTransaction(final Peer fromPeer, final Tx tx, final boolean isConfirmed, final HashSet<String> addressHashSet) {
-        Log.i("testTx", "PeerManager relayedTransaction");
+        //Log.i("test34", "PeerManager relayedTransaction");
         if (!isRunning()) {
             return;
         }

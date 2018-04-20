@@ -30,16 +30,6 @@ public interface NotificationService {
     void notificatTx(String address, Tx tx, Tx.TxNotificationType txNotificationType,
                      long deltaBalance);
 
-    void sendBroadcastPeerState(int numPeers);
-
-    void removeBroadcastPeerState();
-
-    void sendBroadcastAddressLoadCompleteState();
-
-    void removeAddressLoadCompleteState();
-
-    void sendConnectedChangeBroadcast(String connectedChangeBroadcast, boolean isConnected);
-
     void sendBroadcastProgressState(double value);
 
     void removeProgressState();

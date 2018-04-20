@@ -33,11 +33,6 @@ public class NotificationAndroidImpl implements NotificationService {
     public static final String ACTION_SYNC_FROM_SPV_FINISHED = "net.bither.bitherj.SPVFinishedNotification";
     public static final String ACTION_SYNC_LAST_BLOCK_CHANGE = "net.bither.bitherj.LastBlockChangedNotification";
     public static final String ACTION_ADDRESS_BALANCE = "net.bither.bitherj.balance";
-    public static final String ACTION_PEER_STATE = "net.bither.bitherj.peer_state";
-    public static final String ACTION_ADDRESS_LOAD_COMPLETE_STATE = "net.bither.bitherj.load_complete";
-
-    public static final String ACTION_PEER_STATE_NUM_PEERS = "num_peers";
-
     public static final String MESSAGE_DELTA_BALANCE = "delta_balance";
     public static final String MESSAGE_ADDRESS = "address";
     public static final String MESSAGE_TX = "tx";
@@ -81,45 +76,15 @@ public class NotificationAndroidImpl implements NotificationService {
         if (tx != null) {
             broadcast.putExtra(MESSAGE_TX, tx.getTxHash());
         }
-        broadcast.putExtra(MESSAGE_TX_NOTIFICATION_TYPE, txNotificationType.getValue());
+        if(txNotificationType != null){
+            broadcast.putExtra(MESSAGE_TX_NOTIFICATION_TYPE, txNotificationType.getValue());
+        }
         XWalletApplication.getApplication().sendBroadcast(broadcast);
         Log.d("","address " + address
                 + " balance updated " + deltaBalance
                 + (tx != null ? " tx " + Utils.hashToString(tx.getTxHash()) : "")
-                + " type:" + txNotificationType.getValue());
+                + " type:" + (txNotificationType != null ? txNotificationType.getValue() : ""));
 
-    }
-
-    @Override
-    public void sendBroadcastPeerState(final int numPeers) {
-        final Intent broadcast = new Intent(ACTION_PEER_STATE);
-
-        broadcast.putExtra(ACTION_PEER_STATE_NUM_PEERS, numPeers);
-        XWalletApplication.getApplication().sendStickyBroadcast(broadcast);
-    }
-
-    @Override
-    public void removeBroadcastPeerState() {
-        XWalletApplication.getApplication().removeStickyBroadcast(new Intent(
-                ACTION_PEER_STATE));
-    }
-
-    @Override
-    public void sendBroadcastAddressLoadCompleteState() {
-        final Intent broadcast = new Intent(ACTION_ADDRESS_LOAD_COMPLETE_STATE);
-        XWalletApplication.getApplication().sendStickyBroadcast(broadcast);
-    }
-
-    @Override
-    public void removeAddressLoadCompleteState() {
-        XWalletApplication.getApplication().removeStickyBroadcast(new Intent(ACTION_ADDRESS_LOAD_COMPLETE_STATE));
-    }
-
-    @Override
-    public void sendConnectedChangeBroadcast(String connectedChangeBroadcast, boolean isConnected) {
-        Intent intent = new Intent(connectedChangeBroadcast);
-        intent.putExtra(connectedChangeBroadcast, isConnected);
-        XWalletApplication.getApplication().sendBroadcast(intent);
     }
 
     @Override

@@ -14,6 +14,7 @@ public class BlockChainMytransactionsApi extends HttpsGetResponse<String> {
     @Override
     public void setResult(String response) throws Exception {
         this.result = response;
+        //Log.i("test34", "BlockChainMytransactionsApi result = " + result);
     }
 
     public BlockChainMytransactionsApi(String address, int offset) {

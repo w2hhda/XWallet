@@ -61,7 +61,6 @@ public class AddressManager implements HDMKeychain.HDMAddressChangeDelegate,
             initDesktopHDMKeychain();
             initAliasAndVanityLen();
             AbstractApp.addressIsReady = true;
-            AbstractApp.notificationService.sendBroadcastAddressLoadCompleteState();
         }
     }
 
