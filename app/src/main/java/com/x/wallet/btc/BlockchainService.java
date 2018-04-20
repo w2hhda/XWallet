@@ -30,6 +30,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.x.wallet.R;
@@ -119,6 +120,12 @@ public class BlockchainService extends android.app.Service {
     public void onLowMemory() {
         Log.w("BlockchainService","BlockchainService onLowMemory, stopping service");
         stopSelf();
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
     @Override
