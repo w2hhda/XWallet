@@ -40,15 +40,6 @@ public class BroadcastUtil {
         XWalletApplication.getApplication().sendBroadcast(broadcast);
     }
 
-
-    public static void sendBroadcastMarketState(List<Ticker> tickers) {
-        /*if (tickers != null && tickers.size() > 0) {
-            MarketUtil.setTickerList(tickers);
-            final Intent broadcast = new Intent(ACTION_MARKET);
-            BitherApplication.mContext.sendBroadcast(broadcast);
-        }*/
-    }
-
     public static void removeMarketState() {
         XWalletApplication.getApplication().removeStickyBroadcast(new Intent(
                 ACTION_MARKET));

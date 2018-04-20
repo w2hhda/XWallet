@@ -20,21 +20,14 @@ import net.bither.bitherj.core.Block;
 import net.bither.bitherj.utils.BlockUtil;
 
 
-public class DownloadSpvRunnable extends BaseRunnable {
+public class DownloadSpvRunnable implements Runnable {
 
 
     @Override
     public void run() {
-        obtainMessage(HandlerMessage.MSG_PREPARE);
         try {
-            Block block = BlockUtil.dowloadSpvBlock();
-            if (block != null) {
-                obtainMessage(HandlerMessage.MSG_SUCCESS);
-            } else {
-                obtainMessage(HandlerMessage.MSG_FAILURE);
-            }
+            BlockUtil.dowloadSpvBlock();
         } catch (Exception e) {
-            obtainMessage(HandlerMessage.MSG_FAILURE);
             e.printStackTrace();
         }
 
