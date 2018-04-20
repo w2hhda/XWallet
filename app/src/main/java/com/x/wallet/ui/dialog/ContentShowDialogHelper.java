@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +32,7 @@ public class ContentShowDialogHelper {
         TextView titleTv = contentView.findViewById(R.id.title_tv);
         titleTv.setText(titleId);
 
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         final TextView contentTv = contentView.findViewById(R.id.content_tv);
         contentTv.setText(content);
 
