@@ -44,9 +44,6 @@ import net.bither.bitherj.utils.BlockUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
-
 public class BlockchainService extends android.app.Service {
 
     public static final String ACTION_BEGIN_DOWLOAD_SPV_BLOCK = R.class
@@ -57,9 +54,6 @@ public class BlockchainService extends android.app.Service {
     private TxReceiver txReceiver = null;
 
     private boolean connectivityReceivered = false;
-
-    private final IBinder mBinder = new LocalBinder(BlockchainService.this);
-
     private boolean peerCanNotRun = false;
 
     private ServiceHandler mServiceHandler;
@@ -68,7 +62,7 @@ public class BlockchainService extends android.app.Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i("test", "BlockchainService onCreate");
+        Log.i("BlockchainService", "BlockchainService onCreate");
         HandlerThread thread = new HandlerThread("BlockchainService");
         thread.start();
         mServiceLooper = thread.getLooper();
@@ -98,48 +92,9 @@ public class BlockchainService extends android.app.Service {
 
     }
 
-    private void scheduleStartBlockchainService(@Nonnull final Context context) {
-        /*BitherSetting.SyncInterval syncInterval = AppSharedPreference.getInstance().getSyncInterval();
-        if (syncInterval == BitherSetting.SyncInterval.OnlyOpenApp ||
-                AddressManager.getInstance().getAllAddresses().size() == 0) {
-            return;
-        }
-        long interval = AlarmManager.INTERVAL_HOUR;
-        if (syncInterval == BitherSetting.SyncInterval.Normal) {
-            final long lastUsedAgo = AppSharedPreference.getInstance().getLastUsedAgo();
-            if (lastUsedAgo < BitherSetting.LAST_USAGE_THRESHOLD_JUST_MS) {
-                interval = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
-                log.info("start INTERVAL_FIFTEEN_MINUTES");
-            } else if (lastUsedAgo < BitherSetting.LAST_USAGE_THRESHOLD_RECENTLY_MS) {
-                interval = AlarmManager.INTERVAL_HALF_DAY;
-                log.info("start INTERVAL_HALF_DAY");
-            } else {
-                interval = AlarmManager.INTERVAL_DAY;
-                log.info("start INTERVAL_DAY");
-            }
-        }
-        final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context
-                .ALARM_SERVICE);
-        final PendingIntent alarmIntent = PendingIntent.getService(context, 0,
-                new Intent(context, BlockchainService.class), 0);
-        alarmManager.cancel(alarmIntent);
-        final long now = System.currentTimeMillis();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-        // as of KitKat, set() is inexact
-        {
-            alarmManager.set(AlarmManager.RTC_WAKEUP, now + interval, alarmIntent);
-        } else
-        // workaround for no inexact set() before KitKat
-        {
-            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, now + interval,
-                    AlarmManager.INTERVAL_HOUR, alarmIntent);
-        }*/
-    }
-
     @Override
     public void onDestroy() {
-        Log.i("test", "BlockchainService onDestroy");
-        scheduleStartBlockchainService(this);
+        Log.i("BlockchainService", "BlockchainService onDestroy");
         PeerManager.instance().stop();
         PeerManager.instance().onDestroy();
         if (wakeLock != null && wakeLock.isHeld()) {
@@ -162,21 +117,18 @@ public class BlockchainService extends android.app.Service {
 
     @Override
     public void onLowMemory() {
-        Log.w("","low memory detected, stopping service");
+        Log.w("BlockchainService","BlockchainService onLowMemory, stopping service");
         stopSelf();
     }
 
     @Override
     public int onStartCommand(final Intent intent, final int flags,
                               final int startId) {
-        Log.i("test", "BlockchainService onStartCommand intent = " + intent);
+        Log.i("BlockchainService", "BlockchainService onStartCommand intent = " + intent);
         if (intent == null) {
             return START_NOT_STICKY;
         }
         final String action = intent.getAction();
-        if (action != null) {
-            Log.i("onStartCommand", "onStartCommand Service:" + action);
-        }
         if (ACTION_BEGIN_DOWLOAD_SPV_BLOCK.equals(action)) {
             new Thread(new DownloadSpvRunnable()).start();
         } else if(intent.hasExtra(BtcUtils.BLOCKCHAIN_SERVICE_ACTION)){
@@ -186,19 +138,6 @@ public class BlockchainService extends android.app.Service {
             mServiceHandler.sendMessage(msg);
         }
         return START_NOT_STICKY;
-    }
-
-    @Override
-    public IBinder onBind(final Intent intent) {
-        Log.d("", ".onBind()");
-        return mBinder;
-    }
-
-    @Override
-    public boolean onUnbind(final Intent intent) {
-        Log.d("", ".onUnbind()");
-
-        return super.onUnbind(intent);
     }
 
     private final BroadcastReceiver connectivityReceiver = new BroadcastReceiver() {
@@ -227,16 +166,16 @@ public class BlockchainService extends android.app.Service {
             if (ConnectivityManager.CONNECTIVITY_ACTION.equals(action)) {
                 hasConnectivity = !intent.getBooleanExtra(
                         ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
-                Log.i("", "network is " + (hasConnectivity ? "up" : "down"));
+                Log.i("BlockchainService", "BlockchainService onReceive network is " + (hasConnectivity ? "up" : "down"));
                 check();
             } else if (Intent.ACTION_DEVICE_STORAGE_LOW.equals(action)) {
                 hasStorage = false;
-                Log.i("", "device storage low");
+                Log.i("BlockchainService", "BlockchainService onReceive device storage low");
 
                 check();
             } else if (Intent.ACTION_DEVICE_STORAGE_OK.equals(action)) {
                 hasStorage = true;
-                Log.i("", "device storage ok");
+                Log.i("BlockchainService", "BlockchainService onReceive device storage ok");
 
                 check();
             } else if (BroadcastUtil.ACTION_START_PEER_MANAGER
@@ -254,7 +193,7 @@ public class BlockchainService extends android.app.Service {
 
             if (networkIsAvailadble) {
                 if (hasEverything) {
-                    Log.d("", "acquiring wakelock");
+                    Log.d("BlockchainService", "BlockchainService check acquiring wakelock");
                     callWekelock();
                     if (!PeerManager.instance().isRunning()) {
                         startPeer();
@@ -312,23 +251,23 @@ public class BlockchainService extends android.app.Service {
     private boolean spvFinishedReceivered = false;
 
     private synchronized void startPeer() {
-        Log.i("test", "BlockchainService startPeer 0");
+        Log.i("testPeer", "BlockchainService startPeer 0");
         try {
             if (peerCanNotRun) {
                 return;
             }
-            Log.i("test", "BlockchainService startPeer 1");
+            Log.i("testPeer", "BlockchainService startPeer 1");
             if (!AppSharedPreference.getInstance().getDownloadSpvFinish()) {
-                Log.i("test", "BlockchainService startPeer 2");
+                Log.i("testPeer", "BlockchainService startPeer 2");
                 Block block = BlockUtil.dowloadSpvBlock();
                 if (block == null) {
                     return;
                 }
             }
-            Log.i("test", "BlockchainService startPeer 3");
+            Log.i("testPeer", "BlockchainService startPeer 3");
             if (!AppSharedPreference.getInstance().getBitherjDoneSyncFromSpv()) {
                 if (!PeerManager.instance().isConnected()) {
-                    Log.i("test", "BlockchainService startPeer 4");
+                    Log.i("testPeer", "BlockchainService startPeer 4");
                     PeerManager.instance().start();
                     if (!spvFinishedReceivered) {
                         final IntentFilter intentFilter = new IntentFilter();
@@ -339,7 +278,7 @@ public class BlockchainService extends android.app.Service {
                     }
                 }
             } else {
-                Log.i("test", "BlockchainService startPeer 5");
+                Log.i("testPeer", "BlockchainService startPeer 5");
                 handleAddressSync(true);
                 startPeerManager();
 
@@ -351,15 +290,15 @@ public class BlockchainService extends android.app.Service {
     }
 
     private void startPeerManager() {
-        Log.i("test", "BlockchainService startPeerManager");
+        Log.i("testPeer", "BlockchainService startPeerManager");
         if (handleAddressSync(false)
                 && AppSharedPreference.getInstance().getBitherjDoneSyncFromSpv()
                 && AppSharedPreference.getInstance().getDownloadSpvFinish()) {
-            Log.i("test", "BlockchainService startPeerManager 1");
+            Log.i("testPeer", "BlockchainService startPeerManager 1");
             NetworkUtil.NetworkType networkType = NetworkUtil.isConnectedType();
             boolean networkIsAvailadble =  (networkType == NetworkUtil.NetworkType.Wifi);
             if (networkIsAvailadble && !PeerManager.instance().isConnected()) {
-                Log.i("test", "BlockchainService startPeerManager 2");
+                Log.i("testPeer", "BlockchainService startPeerManager 2");
                 PeerManager.instance().start();
             }
         }
@@ -368,8 +307,7 @@ public class BlockchainService extends android.app.Service {
     public class SPVFinishedReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i("", "sendBroadcastSyncSPVFinished onReceive");
-            Log.i("test", "SPVFinishedReceiver onReceive intent= " + intent);
+            Log.i("testPeer", "SPVFinishedReceiver onReceive intent= " + intent);
             new Thread(new Runnable() {
                 @Override
                 public void run() {

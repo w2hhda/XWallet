@@ -101,6 +101,7 @@ public class CustomeAddressManager {
         for (String addr : addressHashSet) {
             if (needNotifyAddressHashSet.contains(addr)) {
                 AbstractDb.txProvider.updateAccountBalance(addr);
+                CustomeAddress.notificatTx();
             }
         }
 

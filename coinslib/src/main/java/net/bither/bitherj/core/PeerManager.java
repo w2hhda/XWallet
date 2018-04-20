@@ -18,6 +18,7 @@ package net.bither.bitherj.core;
 
 import android.util.Log;
 
+import com.x.wallet.lib.btc.CustomeAddress;
 import com.x.wallet.lib.btc.CustomeAddressManager;
 
 import net.bither.bitherj.AbstractApp;
@@ -296,8 +297,9 @@ public class PeerManager {
             log.info("update {} txs confirmation", txHashes.size());
             AbstractDb.txProvider.confirmTx(height, txHashes);
             // update all address 's tx and balance
-            for (Address address : AddressManager.getInstance().getAllAddresses()) {
-                address.setBlockHeight(txHashes, height);
+            HashSet<String> addressHashSet = AbstractDb.txProvider.getAllAddressToHashSet();
+            for (String address : addressHashSet) {
+                CustomeAddress.notificatTx();
             }
 
             // remove confirmed tx from publish list and relay counts

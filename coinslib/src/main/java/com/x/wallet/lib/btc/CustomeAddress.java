@@ -2,6 +2,7 @@ package com.x.wallet.lib.btc;
 
 import android.util.Log;
 
+import net.bither.bitherj.AbstractApp;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.TransactionSignature;
@@ -23,7 +24,7 @@ import java.util.List;
 public class CustomeAddress {
     public static boolean initTxs(List<Tx> txs) {
         AbstractDb.txProvider.addTxs(txs);
-        //notificatTx(null, Tx.TxNotificationType.txFromApi);
+        notificatTx();
         return true;
     }
 
@@ -73,5 +74,9 @@ public class CustomeAddress {
             return CustomePrivateKeyUtil.getFullencryptPrivateKey2(address
                     , encryptPrivKeyString);
         }
+    }
+
+    public static void notificatTx(){
+        AbstractApp.notificationService.notificatTx(null, null, null, 0);
     }
 }
