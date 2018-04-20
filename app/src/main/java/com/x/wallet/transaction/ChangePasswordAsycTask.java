@@ -119,7 +119,7 @@ public class ChangePasswordAsycTask extends AsyncTask<Void, Void, ChangePassword
                         String oldKeyStore = EthAccountCreateHelper.checkPasswordForKeyStore(keystore, mOldPassword);
                         if (!TextUtils.isEmpty(oldKeyStore)) {
                             newKeyStore = EthAccountCreateHelper.generateKeyStoreWithNewPassword(keystore, mOldPassword, mNewPassword);
-                            values.put(DbUtils.DbColumns.ENCRYPT_PRIV_KEY, newKeyStore);
+                            values.put(DbUtils.DbColumns.KEYSTORE, newKeyStore);
                             result.setKeyStore(newKeyStore);
                         } else {
                             isKeyStoreDecryptOk = false;

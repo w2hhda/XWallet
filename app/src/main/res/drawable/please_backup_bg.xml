@@ -4,5 +4,5 @@
     <corners android:radius="20px" />
     <stroke
         android:width="1px"
-        android:color="@color/manage_account_textColor" />
+        android:color="@color/error_warn_color" />
 </shape>

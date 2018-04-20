@@ -47,7 +47,7 @@ public class BackupMnemonicActivity extends WithBackAppCompatActivity{
             public void onClick(View view) {
                 mBackupMnemonicStepSecondView.setVisibility(View.GONE);
                 mBackupMnemonicStepThirdView.setVisibility(View.VISIBLE);
-                mBackupMnemonicStepThirdView.initWords(mBackupMnemonicStepSecondView.getWords());
+                mBackupMnemonicStepThirdView.initWords(mBackupMnemonicStepSecondView.getWords(), mUri);
             }
         });
 

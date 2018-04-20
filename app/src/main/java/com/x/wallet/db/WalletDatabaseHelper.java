@@ -55,6 +55,7 @@ public class WalletDatabaseHelper extends SQLiteOpenHelper {
                 DbUtils.DbColumns.ENCRYPT_PRIV_KEY + " TEXT," +
                 DbUtils.DbColumns.KEYSTORE + " TEXT," +
                 DbUtils.DbColumns.BALANCE + " TEXT DEFAULT 0," +
+                DbUtils.DbColumns.HAS_BACKUP + " INTEGER DEFAULT 0," +
                 DbUtils.DbColumns.PUB_KEY + " TEXT," +
                 DbUtils.DbColumns.IS_SYNCED + " INTEGER DEFAULT 1);");
 

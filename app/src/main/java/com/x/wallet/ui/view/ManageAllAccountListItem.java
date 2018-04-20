@@ -51,6 +51,7 @@ public class ManageAllAccountListItem extends CardView {
     public void bind(Cursor cursor) {
         mAccountItem = AccountItem.createFromCursor(cursor);
         mAccountNameTv.setText(mAccountItem.getAccountName());
+        mNotBackupTv.setVisibility(mAccountItem.isHasBackup() ? GONE : VISIBLE);
         mAddressTv.setText(mAccountItem.getAddress());
         if(mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_BTC){
             mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), BtcUtils.BTC_DECIMALS_COUNT));

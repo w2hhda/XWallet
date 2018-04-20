@@ -147,8 +147,17 @@
             android:paddingTop="15dip"
             android:gravity="center"
             android:text="@string/delete_account"
-            android:textColor="@color/delete_btn_textcolor_selector"
+            android:textColor="@color/delete_account_textcolor_selector"
             android:textSize="16sp"
             android:background="@drawable/item_bg_selector"/>
+        <TextView
+            android:id="@+id/delete_account_notice_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/delete_account_notice"
+            android:textColor="@color/gray_b2"
+            android:textSize="12sp"
+            android:background="@color/main_bg_color"/>
     </LinearLayout>
 </ScrollView>

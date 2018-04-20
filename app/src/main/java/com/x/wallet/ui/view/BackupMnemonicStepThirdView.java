@@ -2,6 +2,7 @@ package com.x.wallet.ui.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import com.x.wallet.R;
 import com.x.wallet.ui.adapter.GridViewAdapter;
+import com.x.wallet.ui.dialog.ContentShowDialogHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +37,7 @@ public class BackupMnemonicStepThirdView extends LinearLayout{
     private LinkedHashSet<Integer> mCheckPositions;
 
     private View mLastBtn;
+    private Uri mUri;
 
     public BackupMnemonicStepThirdView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -84,6 +87,7 @@ public class BackupMnemonicStepThirdView extends LinearLayout{
                     if(mCheckPositions != null && mCheckPositions.size() == mInitialWords.size()
                             && isTheWordTheSame()){
                         Toast.makeText(mContext, R.string.backup_mnemonic_success, Toast.LENGTH_LONG).show();
+                        ContentShowDialogHelper.updateHasBackup(mUri);
                         ((Activity) mContext).finish();
                     } else {
                         Toast.makeText(mContext, R.string.backup_mnemonic_failed, Toast.LENGTH_LONG).show();
@@ -101,12 +105,13 @@ public class BackupMnemonicStepThirdView extends LinearLayout{
         mOutGridView.setAdapter(new GridViewAdapter(mContext, R.layout.grid_item, gridData));
     }
 
-    public void initWords(List<String> words) {
+    public void initWords(List<String> words, Uri uri) {
         mShuffleWords = words;
         mInitialWords = new ArrayList<>(words);
         Collections.shuffle(words, new Random(20));
         mInputGridView.setAdapter(new GridViewAdapter(mContext, R.layout.confirm_grid_item, words));
         mCheckPositions = new LinkedHashSet<>();
+        mUri = uri;
     }
 
     private boolean isTheWordTheSame(){

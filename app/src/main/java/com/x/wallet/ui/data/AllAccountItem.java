@@ -149,7 +149,8 @@ public class AllAccountItem {
                 accountItem.getEncryMnemonic(),
                 accountItem.getKeyStore(),
                 null,
-                accountItem.getBalance());
+                accountItem.getBalance(),
+                false);
     }
 
     public static final String ALL_COIN_TYPE = "all_coin_type";

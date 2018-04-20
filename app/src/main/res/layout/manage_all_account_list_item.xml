@@ -49,7 +49,7 @@
                         android:paddingEnd="3dp"
                         android:paddingStart="3dp"
                         android:text="@string/please_backup"
-                        android:textColor="@color/manage_account_textColor"
+                        android:textColor="@color/error_warn_color"
                         android:textSize="12sp" />
                 </LinearLayout>
 

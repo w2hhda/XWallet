@@ -29,6 +29,7 @@ public class DbUtils {
         String ENCRYPT_PRIV_KEY = "encrypt_priv_key";
         String KEYSTORE = "keystore";
         String BALANCE = "balance";
+        String HAS_BACKUP = "has_backup";
         String PUB_KEY = "pub_key";
         String IS_SYNCED = "is_synced";
     }
@@ -65,7 +66,6 @@ public class DbUtils {
         String TOKEN_NAME = "token_name";               //15
         String TOKEN_DECIMALS = "token_decimals";       //16
         String BLOCK_NUMBER = "block_number";           //17
-
     }
 
     public static final String UPDATE_TOKEN_SELECTION = DbUtils.TokenTableColumns.ACCOUNT_ADDRESS + " = ? AND " + DbUtils.TokenTableColumns.SYMBOL + " = ?";
@@ -327,5 +327,12 @@ public class DbUtils {
             }
         }
         return false;
+    }
+
+    public static int updateHasBackup(Uri uri){
+        ContentValues values = new ContentValues(1);
+        values.put(DbColumns.HAS_BACKUP, AppUtils.HAS_BACKUP);
+        return XWalletApplication.getApplication().getApplicationContext().getContentResolver().update(uri, values,
+                null, null);
     }
 }

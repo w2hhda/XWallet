@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.x.wallet.ui.view.ManageTokenView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/manage_token_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -33,4 +33,4 @@
         android:layout_height="wrap_content" />
 
     <include layout="@layout/create_account_high_divider_view" />
-</LinearLayout>
+</com.x.wallet.ui.view.ManageTokenView>

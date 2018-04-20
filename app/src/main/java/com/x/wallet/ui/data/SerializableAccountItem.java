@@ -19,10 +19,11 @@ public class SerializableAccountItem implements Serializable {
     private String mKeyStore;
     private String mPrivKey;
     private String mBalance;
+    private boolean mHasBackup;
 
     public SerializableAccountItem(long id, String address, String accountName, String coinName,
                        int coinType, String encrySeed, String encryMnemonic, String keyStore, String privKey,
-                       String balance) {
+                       String balance, boolean hasBackup) {
         mId = id;
         mAddress = address;
         mAccountName = accountName;
@@ -33,6 +34,7 @@ public class SerializableAccountItem implements Serializable {
         mKeyStore = keyStore;
         mPrivKey = privKey;
         mBalance = balance;
+        mHasBackup = hasBackup;
     }
 
     public long getId() {
@@ -113,6 +115,14 @@ public class SerializableAccountItem implements Serializable {
 
     public boolean hasKeyStore(){
         return !TextUtils.isEmpty(mKeyStore);
+    }
+
+    public void setHasBackup(boolean hasBackup) {
+        mHasBackup = hasBackup;
+    }
+
+    public boolean isHasBackup() {
+        return mHasBackup;
     }
 
     @Override

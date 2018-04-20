@@ -85,7 +85,7 @@ public class AppUtils {
     public static final int CREATE_ADDRESS_FAILED_ACCOUNTNAME_SAME = 1;
     public static final int CREATE_ADDRESS_FAILED_ADDRESS_EXIST = 2;
 
-    public static final int HAS_TOKEN = 1;
+    public static final int HAS_BACKUP = 1;
 
     public static final String LOCAL_TOKEN_URL = "file:///android_asset/";
     public static final String TOKEN_GITHUT_URL = "https://raw.githubusercontent.com/TrustWallet/tokens/master/images/";

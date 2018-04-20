@@ -14,11 +14,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,14 +28,11 @@ import com.x.wallet.transaction.ChangePasswordAsycTask;
 import com.x.wallet.transaction.DeleteAccountAsycTask;
 import com.x.wallet.transaction.key.DecryptKeyAsycTask;
 import com.x.wallet.transaction.keystore.DecryptKeyStoreAsycTask;
-import com.x.wallet.transaction.token.DeleteTokenAsyncTask;
-import com.x.wallet.ui.adapter.ManagerTokenListAdapter;
 import com.x.wallet.ui.data.SerializableAccountItem;
-import com.x.wallet.ui.data.TokenItem;
 import com.x.wallet.ui.dialog.ChangePasswordDialogHelper;
 import com.x.wallet.ui.dialog.ContentShowDialogHelper;
 import com.x.wallet.ui.dialog.PasswordCheckDialogHelper;
-import com.x.wallet.ui.view.ManagerTokenListItem;
+import com.x.wallet.ui.view.ManageTokenView;
 
 /**
  * Created by wuliang on 18-3-16.
@@ -57,21 +50,20 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
     private View mChangePasswordView;
 
     private View mDeleteView;
+    private View mDeleteNoticeTv;
     private Activity mActivity;
-    private View managerTokenLayout;
-    private RecyclerView recyclerView;
-    private View addTokenView;
-    private ManagerTokenListAdapter mAdapter;
+    private ManageTokenView mManagerTokenLayout;
+
+    private final int ACCOUNT_ITEM_LOADER = 2;
     private LoaderManager mLoaderManager;
-    private static final int TOKEN_LIST_LOADER = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.manage_account_activity);
         mActivity = this;
-        mAccountItem = (SerializableAccountItem) getIntent().getSerializableExtra(AppUtils.ACCOUNT_DATA);
 
+        init();
         initViews();
         initTokenRelatedViews();
     }
@@ -149,68 +141,17 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                 showPasswordCheckDialogForDelete();
             }
         });
+        mDeleteNoticeTv = findViewById(R.id.delete_account_notice_tv);
+        updateDeleteEnable();
     }
 
     private void initTokenRelatedViews(){
         if(mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_ETH){
-            managerTokenLayout = AppUtils.getStubView(this, R.id.manage_account_token_related_view_stub, R.id.manage_token_layout);
-            managerTokenLayout.setVisibility(View.VISIBLE);
-            addTokenView = findViewById(R.id.add_token_tv);
-            addTokenView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent("com.x.wallet.action.ADD_TOKEN_ACTION");
-                    intent.putExtra(AppUtils.ACCOUNT_ID, mAccountItem.getId());
-                    intent.putExtra(AppUtils.ACCOUNT_ADDRESS, mAccountItem.getAddress());
-                    startActivity(intent);
-                }
-            });
-
-            initRecyclerView();
-            initLoaderManager();
+            mManagerTokenLayout = (ManageTokenView) AppUtils.getStubView(this, R.id.manage_account_token_related_view_stub, R.id.manage_token_layout);
+            mManagerTokenLayout.setVisibility(View.VISIBLE);
+            mManagerTokenLayout.init(getLoaderManager(), mAccountItem.getId(), mAccountItem.getAddress());
         }
     }
-
-    private void initRecyclerView(){
-        recyclerView = findViewById(R.id.recyclerView_manage_token);
-        final LinearLayoutManager manager = new LinearLayoutManager(this);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(manager);
-        mAdapter = new ManagerTokenListAdapter(this, null, R.layout.manager_token_list_item,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        final ManagerTokenListItem listItem = (ManagerTokenListItem) view.getParent();
-                        final TokenItem item = listItem.getTokenItem();
-                        ContentShowDialogHelper.showConfirmDialog(ManageAccountActivity.this, R.string.delete_token
-                                , getResources().getString(R.string.confirm_delete_token, item.getName())
-                                , new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        dialogInterface.dismiss();
-                                        new DeleteTokenAsyncTask(ManageAccountActivity.this,
-                                                item,
-                                                mAccountItem.getAddress(),
-                                                new DeleteTokenAsyncTask.OnDeleteTokenFinishedListener() {
-                                                    @Override
-                                                    public void onDeleteFinished() {
-                                                        //Toast.makeText(ManageAccountActivity.this, "delete ok!", Toast.LENGTH_SHORT).show();
-                                                        //mAdapter.swapCursor();
-                                                        AppUtils.writeDeletedToken(mAccountItem.getAddress(), item.getName());
-                                                    }
-                                                }).execute();
-                                    }
-                                });
-                    }
-                });
-        recyclerView.setAdapter(mAdapter);
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-    }
-
-    /**
-     * BtcCreateAddressHelper.readMnemonic(mAccountItem.getEncryMnemonic(), passwordEt.getText().toString()):
-     BtcCreateAddressHelper.readPrivateKey(mAccountItem.getEncrySeed(), passwordEt.getText().toString());
-     */
 
     private void showPasswordCheckDialogForKey(){
         final PasswordCheckDialogHelper mPasswordCheckDialogHelper = new PasswordCheckDialogHelper();
@@ -225,7 +166,7 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                     public void onDecryptKeyFinished(String key) {
                         if(!TextUtils.isEmpty(key)){
                             mPasswordCheckDialogHelper.dismissDialog();
-                            ContentShowDialogHelper.showContentDialog(mActivity, R.string.backup_key, R.string.copy_key, key);
+                            ContentShowDialogHelper.showContentDialog(mActivity, R.string.backup_key, R.string.copy_key, key, mAccountItem.getId());
                         } else {
                             mPasswordCheckDialogHelper.updatePasswordCheckError();
                         }
@@ -247,7 +188,7 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                     public void onDecryptKeyStoreFinished(String keyStore) {
                         if(!TextUtils.isEmpty(keyStore)){
                             mPasswordCheckDialogHelper.dismissDialog();
-                            ContentShowDialogHelper.showContentDialog(mActivity, R.string.backup_keystore, R.string.copy_keystore, keyStore);
+                            ContentShowDialogHelper.showContentDialog(mActivity, R.string.backup_keystore, R.string.copy_keystore, keyStore,  mAccountItem.getId());
                         } else {
                             mPasswordCheckDialogHelper.updatePasswordCheckError();
                         }
@@ -309,10 +250,6 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                     @Override
                     public void onChangePasswordFinished(ChangePasswordAsycTask.ChangePasswordResult result) {
                         if(result.isSuccess()){
-                            mAccountItem.setEncrySeed(result.getEncryptHdSeed());
-                            mAccountItem.setEncryMnemonic(result.getEncrptMnemonic());
-                            mAccountItem.setKeyStore(result.getKeyStore());
-                            mAccountItem.setPrivKey(result.getEncryptPrivKey());
                             Toast.makeText(mActivity, R.string.change_password_success, Toast.LENGTH_LONG).show();
                             changePasswordDialogHelper.dismissDialog();
                         } else {
@@ -329,32 +266,54 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if(mLoaderManager != null){
-            mLoaderManager.destroyLoader(TOKEN_LIST_LOADER);
+            mLoaderManager.destroyLoader(ManageTokenView.TOKEN_LIST_LOADER);
+            mLoaderManager.destroyLoader(ACCOUNT_ITEM_LOADER);
             mLoaderManager = null;
         }
     }
 
-    private void initLoaderManager(){
+    private void init() {
+        mAccountItem = (SerializableAccountItem) getIntent().getSerializableExtra(AppUtils.ACCOUNT_DATA);
+
         mLoaderManager = getLoaderManager();
-        Loader tokenListLoader = getLoaderManager().initLoader(
-                TOKEN_LIST_LOADER,
-                new Bundle(),
-                new TokenListLoaderCallbacks());
-        tokenListLoader.forceLoad();
+        mLoaderManager.initLoader(ACCOUNT_ITEM_LOADER, null, new AccountItemLoaderCallbacks());
     }
 
-    private class TokenListLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor> {
+    private void updateDeleteEnable(){
+        if(mAccountItem.isHasBackup()){
+            mDeleteView.setEnabled(true);
+            mDeleteNoticeTv.setVisibility(View.GONE);
+        } else {
+            mDeleteView.setEnabled(false);
+            mDeleteNoticeTv.setVisibility(View.VISIBLE);
+        }
+    }
 
+    public String[] mProjection = {DbUtils.DbColumns.ENCRYPT_SEED,         //0
+                                    DbUtils.DbColumns.ENCRYPT_MNEMONIC,    //1
+                                    DbUtils.DbColumns.ENCRYPT_PRIV_KEY,    //2
+                                    DbUtils.DbColumns.KEYSTORE,            //3
+                                    DbUtils.DbColumns.HAS_BACKUP};         //4
+
+    private class AccountItemLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor> {
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-            return new CursorLoader(ManageAccountActivity.this, XWalletProvider.CONTENT_URI_TOKEN, null, DbUtils.TokenTableColumns.ACCOUNT_ADDRESS + " = ?", new String[]{mAccountItem.getAddress()}, null);
+            return new CursorLoader(ManageAccountActivity.this, XWalletProvider.CONTENT_URI,
+                    mProjection, DbUtils.ADDRESS_SELECTION, new String[]{mAccountItem.getAddress()}, null);
         }
 
         @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            Log.i(AppUtils.APP_TAG, "ManagerAccountActivity onLoadFinished cursor.count = " + data.getCount());
-            mAdapter.swapCursor(data);
+        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+            if(mAccountItem != null && cursor != null && cursor.getCount() > 0){
+                cursor.moveToFirst();
+                mAccountItem.setEncrySeed(cursor.getString(0));
+                mAccountItem.setEncryMnemonic(cursor.getString(1));
+                mAccountItem.setPrivKey(cursor.getString(2));
+                mAccountItem.setKeyStore(cursor.getString(3));
+                mAccountItem.setHasBackup(cursor.getInt(4) == AppUtils.HAS_BACKUP);
+                updateDeleteEnable();
+            }
         }
 
         @Override
