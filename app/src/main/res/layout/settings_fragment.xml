@@ -169,7 +169,7 @@
         android:id="@+id/set_pin_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/item_bg_selector"
+        android:background="@drawable/item_bg_normal"
         android:minHeight="@dimen/settings_item_height">
 
         <ImageView
@@ -178,7 +178,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/settings_item_marginStart"
-            android:src="@drawable/about_us_icon" />
+            android:src="@drawable/icon_pin_lock" />
 
         <TextView
             style="@style/SettingItemTextStyle"
@@ -189,14 +189,13 @@
             android:layout_toEndOf="@id/pin_iv"
             android:text="@string/pin_code" />
 
-        <CheckBox
-            android:id="@+id/pin_cb"
+        <Switch
+            android:id="@+id/pin_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="@dimen/settings_item_marginEnd"
-            android:src="@drawable/into_icon" />
+            android:layout_marginEnd="8dp" />
     </RelativeLayout>
 
 </LinearLayout>
