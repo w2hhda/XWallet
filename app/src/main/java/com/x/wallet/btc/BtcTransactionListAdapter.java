@@ -16,63 +16,54 @@
 
 package com.x.wallet.btc;
 
-import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.v7.util.AsyncListUtil;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 
-import com.google.common.primitives.Longs;
 import com.x.wallet.R;
 import com.x.wallet.ui.view.TransactionListItem;
 
 import net.bither.bitherj.core.Tx;
 
-import java.util.List;
 
+public class BtcTransactionListAdapter extends RecyclerView.Adapter<BtcTransactionListAdapter.TransactionListItemViewHolder>{
+    private String mAddress;
+    private AsyncListUtil<Tx> mAsyncListUtil;
 
-public class BtcTransactionListAdapter extends BaseAdapter{
-    private Context mContext;
-    private String address;
-    private final List<Tx> mTransactions;
-    protected LayoutInflater mInflater;
-    private static final int mLayoutItemId = R.layout.transaction_list_item;
+    public BtcTransactionListAdapter(String address, AsyncListUtil<Tx> asyncListUtil) {
+        mAddress = address;
+        mAsyncListUtil = asyncListUtil;
+    }
 
-    public BtcTransactionListAdapter(Context context, String address, List transactions) {
-        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.mContext = context;
-        this.address = address;
-        mTransactions = transactions;
+    @NonNull
+    @Override
+    public TransactionListItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.transaction_list_item, parent, false);
+        return new TransactionListItemViewHolder(view);
     }
 
     @Override
-    public int getCount() {
-        return mTransactions.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return mTransactions.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        Tx tx = (Tx) getItem(position);
-        return Longs.fromByteArray(tx.getTxHash());
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view;
-        if (convertView == null) {
-            view = mInflater.inflate(mLayoutItemId, parent, false);
-        } else {
-            view = convertView;
+    public void onBindViewHolder(@NonNull TransactionListItemViewHolder holder, int position) {
+        TransactionListItem listItem = (TransactionListItem) holder.mView;
+        Tx tx = mAsyncListUtil.getItem(position);
+        if(tx != null){
+            listItem.bind(tx, mAddress);
         }
-        if(view instanceof TransactionListItem){
-            TransactionListItem listItem = (TransactionListItem)view;
-            listItem.bind((Tx) getItem(position), address);
+    }
+
+    @Override
+    public int getItemCount() {
+        return mAsyncListUtil.getItemCount();
+    }
+
+    public static class TransactionListItemViewHolder extends RecyclerView.ViewHolder {
+        final View mView;
+        public TransactionListItemViewHolder(final View itemView) {
+            super(itemView);
+            mView = itemView;
         }
-        return view;
     }
 }

@@ -113,7 +113,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
                 " where a.tx_hash=b.tx_hash and a.address=? order by ifnull(b.block_no,4294967295) desc limit ?,? ";
         final StringBuilder txsStrBuilder = new StringBuilder();
         this.execQueryLoop(db, sql, new String[]{address
-                    , Integer.toString((page - 1) * BitherjSettings.TX_PAGE_SIZE)
+                    , Integer.toString(page)
                     , Integer.toString(BitherjSettings.TX_PAGE_SIZE)}
                 , new Function<ICursor, Void>() {
             @Nullable
@@ -1315,5 +1315,23 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
             }
         });
         return encryptPrivateKey[0];
+    }
+
+    @Override
+    public int getTxsCount(String address) {
+        IDb db = this.getReadDb();
+        final int[] cnt = {0};
+        String sql = "select b.* from addresses_txs a, txs b" +
+                " where a.tx_hash=b.tx_hash and a.address=?";
+        this.execQueryOneRecord(db, sql, new String[]{address}
+                , new Function<ICursor, Void>() {
+                    @Nullable
+                    @Override
+                    public Void apply(@Nullable ICursor c) {
+                        cnt[0] = c != null ? c.getCount() : 0;
+                        return null;
+                    }
+                });
+        return cnt[0];
     }
 }

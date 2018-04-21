@@ -356,8 +356,8 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     }
 
     private void initBtcAccount(){
-        ListView listView = (ListView)AppUtils.getStubView(this, R.id.transaction_list_btc_view_stub, R.id.listview);
-        listView.setVisibility(View.VISIBLE);
+        RecyclerView recyclerView = (RecyclerView)AppUtils.getStubView(this, R.id.transaction_list_btc_view_stub, R.id.listview);
+        recyclerView.setVisibility(View.VISIBLE);
         BtcAccountDetailHelper.OnDataLoadFinishedListener onDataLoadFinishedListener = new BtcAccountDetailHelper.OnDataLoadFinishedListener() {
             @Override
             public void onBalanceLoadFinished(String balance) {
@@ -373,7 +373,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         };
         mBtcAccountDetailHelper = new BtcAccountDetailHelper(this);
         mBtcAccountDetailHelper.init(mAccountItem.getAddress(),
-                listView,
+                recyclerView,
                 getLoaderManager(),
                 onDataLoadFinishedListener
         );

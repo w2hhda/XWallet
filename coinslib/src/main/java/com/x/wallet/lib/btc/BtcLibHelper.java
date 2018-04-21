@@ -86,4 +86,8 @@ public class BtcLibHelper {
         List<Tx> txs = AbstractDb.txProvider.getTxAndDetailByAddress(address, page);
         return txs;
     }
+
+    public static int getTxsCount(String address) {
+        return AbstractDb.txProvider.getTxsCount(address);
+    }
 }

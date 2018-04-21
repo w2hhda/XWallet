@@ -101,4 +101,6 @@ public interface ITxProvider {
     String getEncryptPrivateKey(String address);
 
     void updateAccountBalance(String addr);
+
+    int getTxsCount(String address);
 }
