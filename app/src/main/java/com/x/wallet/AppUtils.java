@@ -134,15 +134,14 @@ public class AppUtils {
                 }
                 in.close();
             }catch (IOException e){
-
+                log("setImage error " + e.getMessage());
             }
         }else if (file.exists()){
             view.setImageURI(Uri.fromFile(file));
         }else {
-            Picasso.get().load(TOKEN_GITHUT_URL + iconName).into(view, new com.squareup.picasso.Callback() {
+            Picasso.get().load(TOKEN_GITHUT_URL + iconName).placeholder(R.drawable.eos_28).into(view, new com.squareup.picasso.Callback() {
                 @Override
                 public void onSuccess() {
-                    Log.i(APP_TAG, "set github icon ok!");
                     view.post(new Runnable() {
                         @Override
                         public void run() {
@@ -156,7 +155,7 @@ public class AppUtils {
                     try {
                         getTokenImage(view, address);
                     } catch (IOException e) {
-                        Log.i(APP_TAG, "get token image failure for :" + e.getMessage());
+                        log("get token image failure for :" + e.getMessage());
                     }
                 }
             });
@@ -171,27 +170,37 @@ public class AppUtils {
         EtherscanAPI.getInstance().get(url, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                view.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        view.setImageResource(R.drawable.eos_28);
+                    }
+                });
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String result = response.body().string();
-                Pattern pattern = Pattern.compile("token.*/(.*.png)");
+                Pattern pattern = Pattern.compile("token.images.(.*.png)");
                 Matcher matcher = pattern.matcher(result);
+                String path = "";
                 if(matcher.find()) {
-
                     final String image = matcher.group();
-                    final String path = image.substring(image.lastIndexOf("/") + 1, image.length());
+                    path = image.substring(image.lastIndexOf("/") + 1, image.length());
                     //WeakReference<ImageView> reference = new WeakReference<>(view);
-                    view.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Picasso.get().load(baseUrl + path).error(R.drawable.eos_28).into(view);
-                            download(baseUrl + path, address);//cache it
-                        }
-                    });
                 }
+
+                final String tokenIconUrl = baseUrl + path;
+                view.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (tokenIconUrl.contains("png")){
+                            download(tokenIconUrl, address);//cache it
+                            Picasso.get().load(tokenIconUrl).error(R.drawable.eos_28).into(view);
+                        }
+                    }
+                });
+
             }
         });
 
