@@ -32,17 +32,19 @@ import net.bither.bitherj.core.Tx;
 public class BtcTransactionListAdapter extends RecyclerView.Adapter<BtcTransactionListAdapter.TransactionListItemViewHolder>{
     private String mAddress;
     private AsyncListUtil<Tx> mAsyncListUtil;
+    private final View.OnClickListener mViewClickListener;
 
-    public BtcTransactionListAdapter(String address, AsyncListUtil<Tx> asyncListUtil) {
+    public BtcTransactionListAdapter(String address, AsyncListUtil<Tx> asyncListUtil, View.OnClickListener clickListener) {
         mAddress = address;
         mAsyncListUtil = asyncListUtil;
+        mViewClickListener = clickListener;
     }
 
     @NonNull
     @Override
     public TransactionListItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.transaction_list_item, parent, false);
-        return new TransactionListItemViewHolder(view);
+        return new TransactionListItemViewHolder(view, mViewClickListener);
     }
 
     @Override
@@ -61,9 +63,10 @@ public class BtcTransactionListAdapter extends RecyclerView.Adapter<BtcTransacti
 
     public static class TransactionListItemViewHolder extends RecyclerView.ViewHolder {
         final View mView;
-        public TransactionListItemViewHolder(final View itemView) {
+        public TransactionListItemViewHolder(final View itemView, View.OnClickListener listener) {
             super(itemView);
             mView = itemView;
+            mView.setOnClickListener(listener);
         }
     }
 }

@@ -37,6 +37,7 @@ import com.x.wallet.transaction.balance.ItemLoadedCallback;
 import com.x.wallet.transaction.history.HistoryLoaderManager;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
+import com.x.wallet.ui.ActionUtils;
 import com.x.wallet.ui.adapter.TransactionAdapter;
 import com.x.wallet.ui.data.RawAccountItem;
 import com.x.wallet.ui.data.SerializableAccountItem;
@@ -212,11 +213,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         TransactionListItem listItem = (TransactionListItem)v;
-                        TransactionItem item = listItem.getTransactionItem();
-                        Intent intent = new Intent("com.x.wallet.action_SEE_TRANSACTION_DETAIL");
-                        intent.putExtra(AppUtils.TRANSACTION_ITEM, item);
-                        intent.putExtra(AppUtils.ACCOUNT_TYPE, isTokenAccount);
-                        startActivity(intent);
+                        ActionUtils.openTransactionDetail(AccountDetailActivity.this, listItem.getTransactionItem(), isTokenAccount, LibUtils.COINTYPE.COIN_ETH);
                     }
                 });
         mRecyclerView = findViewById(R.id.recyclerView);

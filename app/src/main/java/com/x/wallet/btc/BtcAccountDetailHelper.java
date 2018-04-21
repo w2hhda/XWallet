@@ -8,9 +8,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.x.wallet.lib.btc.BtcLibHelper;
+import com.x.wallet.lib.common.LibUtils;
+import com.x.wallet.ui.ActionUtils;
+import com.x.wallet.ui.data.TransactionItem;
+import com.x.wallet.ui.view.TransactionListItem;
 
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.core.Tx;
+import net.bither.bitherj.utils.Utils;
 
 import java.util.List;
 
@@ -46,7 +51,24 @@ public class BtcAccountDetailHelper {
 
         initAsyncListUtil();
 
-        mAdapter = new BtcTransactionListAdapter(address, mAsyncListUtil);
+        mAdapter = new BtcTransactionListAdapter(address, mAsyncListUtil, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TransactionListItem listItem = (TransactionListItem)view;
+                Tx tx = listItem.getTx();
+                TransactionItem item = new TransactionItem();
+                String outAddress = tx.getFirstOutAddress();
+                item.setToAddress(outAddress);
+                item.setFromAddress(tx.getFromAddress());
+                item.setAmount(Long.toString(tx.amountSentToAddress(outAddress)));
+                long fee =tx.getFee();
+                item.setTransactionFee(fee == Long.MAX_VALUE ? "0" : Long.toString(fee));
+                item.setReceiptHash( Utils.hashToString(tx.getTxHash()));
+                long amount = BtcLibHelper.deltaAmountFrom(mAddress, tx);
+                item.setTransactionType(amount > 0 ? TransactionItem.TRANSACTION_TYPE_RECEIVE : TransactionItem.TRANSACTION_TYPE_TRANSFER_OUT);
+                ActionUtils.openTransactionDetail(mContext, item, false, LibUtils.COINTYPE.COIN_BTC);
+            }
+        });
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

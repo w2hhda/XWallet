@@ -29,7 +29,7 @@ import java.util.Map;
 public class CustomeTransactionsUtil {
     private static final String BLOCK_CHAIN_HEIGHT = "height";
     private static final String BLOCK_CHAIN_CNT = "n_tx";
-    private static final int MAX_TX_IN_PAGE = 50;
+    private static final int MAX_TX_IN_PAGE = 10;
 
     public static void getMyTxFromBither(List<String> addressList) throws Exception {
         Log.i("testTx", "TransactionsUtil getMyTxFromBither");
@@ -46,7 +46,7 @@ public class CustomeTransactionsUtil {
             int page = 0;
             List<Tx> transactions = new ArrayList<Tx>();
             while (needGetTxs) {
-                BlockChainMytransactionsApi blockChainMytransactionsApi = new BlockChainMytransactionsApi(address, page * MAX_TX_IN_PAGE);
+                BlockChainMytransactionsApi blockChainMytransactionsApi = new BlockChainMytransactionsApi(address, page * MAX_TX_IN_PAGE, MAX_TX_IN_PAGE);
                 blockChainMytransactionsApi.handleHttpGet();
                 String txResult = blockChainMytransactionsApi.getResult();
                 JSONObject jsonObject = new JSONObject(txResult);

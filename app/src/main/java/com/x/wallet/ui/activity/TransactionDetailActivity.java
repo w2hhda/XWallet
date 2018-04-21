@@ -6,11 +6,12 @@ import android.widget.TextView;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
-import com.x.wallet.lib.eth.util.ExchangeCalUtil;
+import com.x.wallet.btc.BtcUtils;
+import com.x.wallet.lib.common.LibUtils;
+import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.data.TransactionItem;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 /**
  * Created by Nick on 28/3/2018.
@@ -26,16 +27,27 @@ public class TransactionDetailActivity extends WithBackAppCompatActivity {
     }
 
     private void initView(){
-        TextView fromAddress = findViewById(R.id.transaction_detail_from);
-        TextView toAddress   = findViewById(R.id.transaction_detail_to);
-        TextView amount      = findViewById(R.id.transaction_detail_amount);
-        TextView fax         = findViewById(R.id.transaction_detail_fax);
-        TextView hash        = findViewById(R.id.transaction_detail_hash);
+        TextView fromAddressTv = findViewById(R.id.transaction_detail_from);
+        TextView toAddressTv   = findViewById(R.id.transaction_detail_to);
+        TextView amountTv      = findViewById(R.id.transaction_detail_amount);
+        TextView feeTv         = findViewById(R.id.transaction_detail_fax);
+        TextView hashTv        = findViewById(R.id.transaction_detail_hash);
         TransactionItem item = (TransactionItem) getIntent().getSerializableExtra(AppUtils.TRANSACTION_ITEM);
         boolean isTokenAccount = getIntent().getBooleanExtra(AppUtils.ACCOUNT_TYPE, false);
 
-        fromAddress.setText(item.getFromAddress());
-        toAddress.setText(item.getToAddress());
+        fromAddressTv.setText(item.getFromAddress());
+        toAddressTv.setText(item.getToAddress());
+
+        if(isBtcAccount()){
+            bindAmount(item, amountTv, feeTv);
+        } else {
+            bindAmount(item, isTokenAccount, amountTv, feeTv);
+        }
+
+        hashTv.setText(item.getReceiptHash());
+    }
+
+    private void bindAmount(TransactionItem item, boolean isTokenAccount, TextView amountTv, TextView feeTv){
         BigDecimal rawAmount = new BigDecimal(item.getAmount());
         int decimal = 18;
         if (isTokenAccount){
@@ -58,21 +70,23 @@ public class TransactionDetailActivity extends WithBackAppCompatActivity {
             symbols = item.getmCoinType();
         }
 
-        boolean isReceive = false;
-        if (item.getTransactionType().equals(TransactionItem.TRANSACTION_TYPE_RECEIVE)){
-            isReceive = true;
-        }
-        String amountString = amountResult + " " + symbols;
-        if (isReceive){
-            amountString = "+ " + amountString;
-        }else {
-            amountString = "-" + amountString;
-        }
+        String amountString = getPrefix(item.getTransactionType()) + amountResult + " " + symbols;
+        amountTv.setText(amountString);
 
-        amount.setText(amountString);
+        feeTv.setText(TokenUtils.getBalanceText(item.getTransactionFee(), TokenUtils.ETH_DECIMALS) + " ETH");
+    }
 
-        String faxResult = ExchangeCalUtil.getInstance().weiToEther(new BigInteger(item.getTransactionFee())).stripTrailingZeros().toPlainString();
-        fax.setText(faxResult + " ETH");
-        hash.setText(item.getReceiptHash());
+    private void bindAmount(TransactionItem item, TextView amountTv, TextView feeTv){
+        String prefix = getPrefix(item.getTransactionType());
+        amountTv.setText(prefix + TokenUtils.getBalanceText(item.getAmount(), BtcUtils.BTC_DECIMALS_COUNT) + " BTC");
+        feeTv.setText(TokenUtils.getBalanceText(item.getTransactionFee(), BtcUtils.BTC_DECIMALS_COUNT) + " BTC");
+    }
+
+    private String getPrefix(String transactionType){
+        return transactionType.equals(TransactionItem.TRANSACTION_TYPE_RECEIVE) ? "+ " : "- ";
+    }
+
+    private boolean isBtcAccount(){
+        return getIntent().getIntExtra(AppUtils.COIN_TYPE, -1) == LibUtils.COINTYPE.COIN_BTC;
     }
 }

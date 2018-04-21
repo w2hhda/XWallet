@@ -432,8 +432,11 @@ public class Tx extends Message implements Comparable<Tx> {
         long amount = 0;
         for (In in : getIns()) {
             Tx preTx = AbstractDb.txProvider.getTxDetailByTxHash(in.getPrevTxHash());
+            if(preTx == null) continue;
             boolean hasOut = false;
-            for (Out out : preTx.getOuts()) {
+            List<Out> outs = preTx.getOuts();
+            if(outs == null) continue;
+            for (Out out : outs) {
                 if (in.getPrevOutSn() == out.getOutSn()) {
                     amount += out.getOutValue();
                     hasOut = true;

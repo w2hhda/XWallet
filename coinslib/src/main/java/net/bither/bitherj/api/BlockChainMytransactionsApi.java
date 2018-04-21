@@ -17,9 +17,14 @@ public class BlockChainMytransactionsApi extends HttpsGetResponse<String> {
         //Log.i("test34", "BlockChainMytransactionsApi result = " + result);
     }
 
-    public BlockChainMytransactionsApi(String address, int offset) {
+    public BlockChainMytransactionsApi(String address) {
         String url = Utils.format(BitherUrl.BITHER_BC_GET_BY_ADDRESS, address);
-        setUrl(url + "?offset=" + offset);
+        setUrl(url);
+    }
+
+    public BlockChainMytransactionsApi(String address, int offset, int limit) {
+        String url = Utils.format(BitherUrl.BITHER_BC_GET_BY_ADDRESS, address);
+        setUrl(url + "?offset=" + offset + "&limit=" + limit);
     }
 
     public BlockChainMytransactionsApi() {

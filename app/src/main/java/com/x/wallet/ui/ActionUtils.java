@@ -5,6 +5,7 @@ import android.content.Intent;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.lib.common.LibUtils;
+import com.x.wallet.ui.data.TransactionItem;
 
 /**
  * Created by wuliang on 18-4-16.
@@ -25,5 +26,14 @@ public class ActionUtils {
             intent.putExtra(AppUtils.COIN_TYPE, LibUtils.COINTYPE.COIN_ETH);
             context.startActivity(intent);
         }
+    }
+
+    public static void openTransactionDetail(Context context, TransactionItem item,
+                                             boolean isTokenAccount, int coinType){
+        Intent intent = new Intent("com.x.wallet.action_SEE_TRANSACTION_DETAIL");
+        intent.putExtra(AppUtils.TRANSACTION_ITEM, item);
+        intent.putExtra(AppUtils.ACCOUNT_TYPE, isTokenAccount);
+        intent.putExtra(AppUtils.COIN_TYPE, coinType);
+        context.startActivity(intent);
     }
 }

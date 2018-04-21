@@ -206,4 +206,8 @@ public class TransactionListItem extends RelativeLayout{
             }
         }
     }
+
+    public Tx getTx() {
+        return mTransaction;
+    }
 }

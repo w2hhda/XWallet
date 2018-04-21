@@ -323,7 +323,7 @@ public class TransactionsUtil {
                         page++;
 
                     }else {
-                        BlockChainMytransactionsApi blockChainMytransactionsApi = new BlockChainMytransactionsApi(hdAccountAddress.getAddress(), 0);
+                        BlockChainMytransactionsApi blockChainMytransactionsApi = new BlockChainMytransactionsApi(hdAccountAddress.getAddress());
                         blockChainMytransactionsApi.handleHttpGet();
                         String txResult = blockChainMytransactionsApi.getResult();
                         JSONObject jsonObject = new JSONObject(txResult);
@@ -450,7 +450,7 @@ public class TransactionsUtil {
                         page++;
 
                     }else {
-                        BlockChainMytransactionsApi blockChainMytransactionsApi = new BlockChainMytransactionsApi(hdAccountAddress.getAddress(), 0);
+                        BlockChainMytransactionsApi blockChainMytransactionsApi = new BlockChainMytransactionsApi(hdAccountAddress.getAddress());
                         blockChainMytransactionsApi.handleHttpGet();
                         String txResult = blockChainMytransactionsApi.getResult();
                         JSONObject jsonObject = new JSONObject(txResult);
@@ -570,7 +570,7 @@ public class TransactionsUtil {
                         page++;
 
                     }else {
-                        BlockChainMytransactionsApi blockChainMytransactionsApi = new BlockChainMytransactionsApi(desktopHDMAddress.getAddress(), 0);
+                        BlockChainMytransactionsApi blockChainMytransactionsApi = new BlockChainMytransactionsApi(desktopHDMAddress.getAddress());
                         blockChainMytransactionsApi.handleHttpGet();
                         String txResult = blockChainMytransactionsApi.getResult();
                         JSONObject jsonObject = new JSONObject(txResult);
@@ -675,7 +675,7 @@ public class TransactionsUtil {
                         page++;
 
                     }else {
-                        BlockChainMytransactionsApi blockChainMytransactionsApi = new BlockChainMytransactionsApi(address.getAddress(), 0);
+                        BlockChainMytransactionsApi blockChainMytransactionsApi = new BlockChainMytransactionsApi(address.getAddress());
                         blockChainMytransactionsApi.handleHttpGet();
                         String txResult = blockChainMytransactionsApi.getResult();
                         JSONObject jsonObject = new JSONObject(txResult);
