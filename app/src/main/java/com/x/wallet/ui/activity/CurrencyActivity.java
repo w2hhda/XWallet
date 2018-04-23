@@ -38,7 +38,8 @@ public class CurrencyActivity extends WithBackAppCompatActivity{
         mRecyclerView.setLayoutManager(manager);
         mAdapter = new CurrencyArrayAdapter(R.layout.currency_list_item,
                 this.getResources().getStringArray(R.array.support_currency_array),
-                this.getResources().getStringArray(R.array.support_currency_unit_array));
+                this.getResources().getStringArray(R.array.support_currency_unit_array),
+                currencyFlags);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
@@ -65,4 +66,21 @@ public class CurrencyActivity extends WithBackAppCompatActivity{
             }
         });
     }
+    
+    private final static int[] currencyFlags = {
+        R.drawable.chf,
+        R.drawable.cny,
+        R.drawable.eur,
+        R.drawable.gbp,
+        R.drawable.hkd,
+        R.drawable.inr,
+        R.drawable.jpy,
+        R.drawable.krw,
+        R.drawable.nzd,
+        R.drawable.pln,
+        R.drawable.rub,
+        R.drawable.sgd,
+        R.drawable.thb,
+        R.drawable.usd
+    };
 }

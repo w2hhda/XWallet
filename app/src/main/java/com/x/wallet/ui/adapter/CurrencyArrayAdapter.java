@@ -18,14 +18,16 @@ public class CurrencyArrayAdapter extends RecyclerView.Adapter<CurrencyArrayAdap
     private String[] mCurrencyUnitArray;
     private String mChooseCurrency;
     private String mChooseCurrencyUnit;
+    private int[] mCurrencyFlagArray;
 
     private ItemClickListener mItemClickListener;
 
-    public CurrencyArrayAdapter(int layoutId, String[] currencyArray, String[] currencyUnitArray) {
+    public CurrencyArrayAdapter(int layoutId, String[] currencyArray, String[] currencyUnitArray, int[] currencyFlagArray) {
         mListItemLayoutId = layoutId;
         mCurrencyArray = currencyArray;
         mCurrencyUnitArray = currencyUnitArray;
         mChooseCurrency = UsdToCnyHelper.getChooseCurrency();
+        mCurrencyFlagArray = currencyFlagArray;
     }
 
     @Override
@@ -57,7 +59,7 @@ public class CurrencyArrayAdapter extends RecyclerView.Adapter<CurrencyArrayAdap
             }
         });
 
-        listItem.bind(mCurrencyArray[listPosition], mChooseCurrency);
+        listItem.bind(mCurrencyArray[listPosition], mChooseCurrency, mCurrencyFlagArray[listPosition]);
     }
 
     public void saveCurrencyChoose(){
