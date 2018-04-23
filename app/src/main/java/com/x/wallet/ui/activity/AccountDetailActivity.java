@@ -142,6 +142,7 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent("com.x.wallet.action_SHARE_ADDRESS_QR_ACTION");
                 intent.putExtra(SHARE_ADDRESS_EXTRA,mAccountItem.getAddress());
+                intent.putExtra(AppUtils.COIN_TYPE, mTokenItem != null ? LibUtils.COINTYPE.COIN_ETH : mAccountItem.getCoinType());
                 startActivity(intent);
             }
         });

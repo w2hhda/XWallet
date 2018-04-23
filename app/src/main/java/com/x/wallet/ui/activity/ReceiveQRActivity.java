@@ -7,18 +7,16 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
+import com.x.wallet.AppUtils;
 import com.x.wallet.R;
-import com.x.wallet.lib.eth.util.qr.AddressEncoder;
-import com.x.wallet.lib.eth.util.qr.Contents;
-import com.x.wallet.lib.eth.util.qr.QREncoder;
+import com.x.wallet.btc.GenerateQrBitmapAsycTask;
 
 /**
  * Created by Nick on 26/3/2018.
@@ -34,33 +32,26 @@ public class ReceiveQRActivity extends WithBackAppCompatActivity {
         Intent intent = getIntent();
         if (intent != null){
             address = intent.getStringExtra(AccountDetailActivity.SHARE_ADDRESS_EXTRA);
-        }
-        if (address != "") {
-            initView(address);
-        }else {
-            Toast.makeText(this, "error address!", Toast.LENGTH_SHORT);
+            if (!TextUtils.isEmpty(address)) {
+                initView(address, intent.getIntExtra(AppUtils.COIN_TYPE, -1));
+            }
         }
     }
 
-    private void initView(final String address){
-        this.setTitle(getResources().getString(R.string.receipt_transaction));
-
-        ImageView imageView = findViewById(R.id.address_qr_img);
+    private void initView(final String address, int coinType){
+        final ImageView imageView = findViewById(R.id.address_qr_img);
         TextView addressTv = findViewById(R.id.receive_address_tv);
         Button copyBtn = findViewById(R.id.copy_address_btn);
         addressTv.setText(address);
 
-        final float scale = getResources().getDisplayMetrics().density;
-        int qrCodeDimention = (int) (310 * scale + 0.5f);
-
-        QREncoder qrCodeEncoder = new QREncoder( AddressEncoder.encodeERC(new AddressEncoder(address)) , null,
-                Contents.Type.TEXT, BarcodeFormat.QR_CODE.toString(), qrCodeDimention);
-        try {
-            Bitmap bitmap = qrCodeEncoder.encodeAsBitmap();
-            imageView.setImageBitmap(bitmap);
-        } catch (WriterException e) {
-            e.printStackTrace();
-        }
+        new GenerateQrBitmapAsycTask(this, address, coinType, new GenerateQrBitmapAsycTask.OnQrBitmapGenerateFinishedListener() {
+            @Override
+            public void onQrBitmapGenerate(Bitmap bitmap) {
+                if(bitmap != null){
+                    imageView.setImageBitmap(bitmap);
+                }
+            }
+        }).execute();
 
         copyBtn.setOnClickListener(new View.OnClickListener() {
             @Override

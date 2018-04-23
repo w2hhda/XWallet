@@ -12,8 +12,8 @@
 
         <ImageView
             android:id="@+id/address_qr_img"
-            android:layout_width="235dp"
-            android:layout_height="235dp" />
+            android:layout_width="@dimen/qr_bitmap_wh"
+            android:layout_height="@dimen/qr_bitmap_wh" />
 
         <TextView
             android:id="@+id/receive_address_tv"

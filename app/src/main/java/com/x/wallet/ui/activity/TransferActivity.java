@@ -95,6 +95,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(TransferActivity.this, ScanAddressQRActivity.class);
+                intent.putExtra(AppUtils.COIN_TYPE, mTokenItem != null ? LibUtils.COINTYPE.COIN_ETH : mAccountItem.getCoinType());
                 startActivityForResult(intent, ScanAddressQRActivity.REQUEST_CODE);
             }
         });

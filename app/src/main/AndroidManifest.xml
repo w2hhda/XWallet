@@ -106,6 +106,7 @@
         </activity>
         <activity
             android:name=".ui.activity.ReceiveQRActivity"
+            android:label="@string/receipt_transaction"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.x.wallet.action_SHARE_ADDRESS_QR_ACTION" />
@@ -123,6 +124,7 @@
         </activity>
         <activity
             android:name=".ui.activity.ScanAddressQRActivity"
+            android:label="@string/scan_address_qr"
             android:exported="false">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />

@@ -47,5 +47,6 @@
     <dimen name="spacing_tiny">4dp</dimen>
     <dimen name="text_item_height">43dp</dimen>
     <dimen name="input_method_spacing">2px</dimen>
-
+    <dimen name="qr_bitmap_wh">235dp</dimen>
+    <dimen name="qr_bitmap_marginsize">16dp</dimen>
 </resources>

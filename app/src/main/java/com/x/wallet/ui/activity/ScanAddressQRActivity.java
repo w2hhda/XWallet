@@ -13,7 +13,9 @@ import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
+import com.x.wallet.AppUtils;
 import com.x.wallet.R;
+import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.lib.eth.util.qr.AddressEncoder;
 
 import java.io.IOException;
@@ -32,16 +34,17 @@ public class ScanAddressQRActivity extends WithBackAppCompatActivity implements 
     private ZXingScannerView mScannerView;
     private FrameLayout scanLayout;
     public static final int REQUEST_CAMERA_PERMISSION = 106;
+    private int mCoinType;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scan_address_ar_activity);
+        mCoinType = getIntent().getIntExtra(AppUtils.COIN_TYPE, -1);
         initView();
     }
 
     private void initView(){
-        this.setTitle(getResources().getString(R.string.scan_address_qr));
         scanLayout = findViewById(R.id.scan_frame_layout);
         if (hasPermission()) {
             initQRScan();
@@ -67,7 +70,7 @@ public class ScanAddressQRActivity extends WithBackAppCompatActivity implements 
         try {
             AddressEncoder scanned = AddressEncoder.decode(address);
             Intent data = new Intent();
-            data.putExtra(EXTRA_ADDRESS, scanned.getAddress().toLowerCase());
+            data.putExtra(EXTRA_ADDRESS, mCoinType == LibUtils.COINTYPE.COIN_BTC ? scanned.getAddress() : scanned.getAddress().toLowerCase());
 
             setResult(RESULT_OK, data);
             finish();
