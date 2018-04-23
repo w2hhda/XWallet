@@ -248,7 +248,7 @@ public class Block extends Message {
     }
 
     public void verifyDifficultyFromPreviousBlock(Block prev) {
-        /*// checkState(lock.isHeldByCurrentThread());
+        // checkState(lock.isHeldByCurrentThread());
 
         // Is this supposed to be a difficulty transition point?
         if ((prev.getBlockNo() + 1) % BitherjSettings.BLOCK_DIFFICULTY_INTERVAL != 0) {
@@ -312,7 +312,7 @@ public class Block extends Message {
 
         if (newDifficulty.compareTo(receivedDifficulty) != 0)
             throw new VerificationException("Network provided difficulty bits do not match what was calculated: " +
-                    receivedDifficulty.toString(16) + " vs " + newDifficulty.toString(16));*/
+                    receivedDifficulty.toString(16) + " vs " + newDifficulty.toString(16));
     }
 
     public void verifyDifficultyFromPreviousBlock(Block prev, int transitionTime) {

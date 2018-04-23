@@ -54,20 +54,20 @@ public class BitherjSettings {
     public static final BigInteger proofOfWorkLimit = Utils.decodeCompactBits(0x1d00ffffL);
 
 
-    public static final int port = 18333; //83333
-    public static final int addressHeader = 111;
-    public static final int dumpedPrivateKeyHeader = 239;
-    public static final int p2shHeader = 196;//5;
-    public static final long packetMagic = 0x0b110907;
-    public static final byte[] GENESIS_BLOCK_HASH = Utils.reverseBytes(Hex.decode("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"));
+//    public static final int port = 18333; //83333
+//    public static final int addressHeader = 111;
+//    public static final int dumpedPrivateKeyHeader = 239;
+//    public static final int p2shHeader = 196;//5;
+//    public static final long packetMagic = 0x0b110907;
+//    public static final byte[] GENESIS_BLOCK_HASH = Utils.reverseBytes(Hex.decode("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"));
 
 
-    //public static final int port = 8333;
-    //public static final int addressHeader = 0;
-    //public static final int dumpedPrivateKeyHeader = 128;
-    //public static final int p2shHeader = 5;
-    //public static final long packetMagic = 0xf9beb4d9L;
-    //public static final byte[] GENESIS_BLOCK_HASH = Utils.reverseBytes(Hex.decode("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
+    public static final int port = 8333;
+    public static final int addressHeader = 0;
+    public static final int dumpedPrivateKeyHeader = 128;
+    public static final int p2shHeader = 5;
+    public static final long packetMagic = 0xf9beb4d9L;
+    public static final byte[] GENESIS_BLOCK_HASH = Utils.reverseBytes(Hex.decode("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
 
     public static final int btgAddressHeader = 38;
     public static final int btwAddressHeader = 73;
@@ -96,17 +96,17 @@ public class BitherjSettings {
      */
     public static final int spendableCoinbaseDepth = 100;
     public static final String[] dnsSeeds = new String[]{
-            /*"seed.bitcoin.sipa.be",        // Pieter Wuille
+            "seed.bitcoin.sipa.be",        // Pieter Wuille
             "dnsseed.bluematt.me",         // Matt Corallo
             "seed.bitcoinstats.com",       // Chris Decker
             "bitseed.xf2.org",
             "seed.bitcoinstats.com",
-            "seed.bitnodes.io"*/
-            "testnet-seed.bitcoin.jonasschnelli.ch", // Jonas Schnelli
+            "seed.bitnodes.io"
+            /*"testnet-seed.bitcoin.jonasschnelli.ch", // Jonas Schnelli
             "testnet-seed.bluematt.me",              // Matt Corallo
             "testnet-seed.bitcoin.petertodd.org",    // Peter Todd
             "testnet-seed.bitcoin.schildbach.de",    // Andreas Schildbach
-            "bitcoin-testnet.bloqseeds.net"         // Bloq
+            "bitcoin-testnet.bloqseeds.net"         // Bloq*/
     };
 
     public static final long MAX_MONEY = 21000000l * 100000000l;

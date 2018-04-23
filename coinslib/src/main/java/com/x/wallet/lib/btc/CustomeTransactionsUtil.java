@@ -107,7 +107,7 @@ public class CustomeTransactionsUtil {
             HashMap<String, String> txIdMap = new HashMap<String, String>();
             for(RawaddrResultBean.Tx txBean : txBeanList){
                 String hash = txBean.getHash();
-                /*RawtxResultBean rawtxResultBean = queryTxByHash(hash);
+                RawtxResultBean rawtxResultBean = queryTxByHash(hash);
                 RawtxResultBean.Data data = rawtxResultBean.getData();
                 if(data != null){
                     List<RawtxResultBean.InputBean> inputBeanList = data.getInputs();
@@ -115,16 +115,16 @@ public class CustomeTransactionsUtil {
                         txIdMap.put(inputBean.getScript_hex(), inputBean.getReceived_from().getTxid());
                         System.out.println("testGetTx 2 script = " + inputBean.getScript_hex() + ", txId = " + inputBean.getReceived_from().getTxid());
                     }
-                }*/
+                }
 
-                RawtxResultBean2 rawtxResultBean = queryTxByHash2(hash);
+                /*RawtxResultBean2 rawtxResultBean = queryTxByHash2(hash);
                 if(rawtxResultBean != null){
                     List<RawtxResultBean2.Inputs> inputBeanList = rawtxResultBean.getInputs();
                     for(RawtxResultBean2.Inputs inputBean : inputBeanList){
                         txIdMap.put(inputBean.getScript(), inputBean.getPrev_hash());
                         System.out.println("testGetTx 2 script = " + inputBean.getScript() + ", txId = " + inputBean.getPrev_hash());
                     }
-                }
+                }*/
 
                 Tx tx = new Tx();
                 tx.setTxHash(Utils.reverseBytes(Utils.hexStringToByteArray(hash)));
