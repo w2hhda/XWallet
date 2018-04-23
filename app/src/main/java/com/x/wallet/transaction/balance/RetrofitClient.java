@@ -15,6 +15,7 @@ import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.data.BalanceResultBean;
 import com.x.wallet.lib.eth.data.PriceResultBean;
+import com.x.wallet.transaction.token.DeleteTokenHelper;
 import com.x.wallet.transaction.token.TokenDeserializer;
 import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 
@@ -346,7 +347,7 @@ public class RetrofitClient {
             if(isExist){
                 rawOperations.add(buildUpdateTokenOperation(address, symbol, tokenBean.getBalance(), rate, decimals));
             } else {
-                boolean hasDeleted = AppUtils.hasDeleted(address, tokeName);
+                boolean hasDeleted = DeleteTokenHelper.isDeletedToken(address, tokeName);
                 if(!hasDeleted){
                     rawOperations.add(buildInsertTokenOperation(accountId, address, tokens.indexOf(tokenBean),
                             tokeName, symbol, decimals,

@@ -104,15 +104,7 @@ public class ManageTokenView extends LinearLayout{
                                         dialogInterface.dismiss();
                                         new DeleteTokenAsyncTask(ManageTokenView.this.getContext(),
                                                 item,
-                                                mAccountAddress,
-                                                new DeleteTokenAsyncTask.OnDeleteTokenFinishedListener() {
-                                                    @Override
-                                                    public void onDeleteFinished() {
-                                                        //Toast.makeText(ManageAccountActivity.this, "delete ok!", Toast.LENGTH_SHORT).show();
-                                                        //mAdapter.swapCursor();
-                                                        AppUtils.writeDeletedToken(mAccountAddress, item.getName());
-                                                    }
-                                                }).execute();
+                                                mAccountAddress).execute();
                                     }
                                 });
                     }

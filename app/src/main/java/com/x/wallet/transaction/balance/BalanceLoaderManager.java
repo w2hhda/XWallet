@@ -18,6 +18,7 @@ import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.data.BalanceResultBean;
 import com.x.wallet.lib.eth.data.PriceResultBean;
 import com.x.wallet.transaction.token.BackgroundLoaderManager;
+import com.x.wallet.transaction.token.DeleteTokenHelper;
 import com.x.wallet.transaction.token.TokenUtils;
 
 import java.io.IOException;
@@ -365,7 +366,7 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
         for (TokenListBean.TokenBean token : tokens) {
             TokenListBean.TokenInfo tokenInfo = token.getTokenInfo();
             boolean isExist = DbUtils.isAlreadyExistToken(DbUtils.UPDATE_TOKEN_SELECTION, new String[]{address, tokenInfo.getSymbol()});
-            boolean hasDeleted = AppUtils.hasDeleted(address, tokenInfo.getName());
+            boolean hasDeleted = DeleteTokenHelper.isDeletedToken(address, tokenInfo.getName());
             Log.i(AppUtils.APP_TAG, "Loader insertTokenIntoDb isExist = " + isExist + ", hasDeleted = " + hasDeleted);
 
             if (isExist || hasDeleted) {

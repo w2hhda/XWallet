@@ -47,7 +47,9 @@ public class InsertTokenAsycTask extends AsyncTask<Void, Void, Uri> {
         Uri uri = DbUtils.insertTokenIntoDb(mAccountId, mAccountAddress, mTokenItem.getIdInAll(),
                 mTokenItem.getName(), mTokenItem.getSymbol(), mTokenItem.getDecimals(),
                 mTokenItem.getContractAddress(), "0", "0");
-
+        if(uri != null){
+            DeleteTokenHelper.removeTokenFromDeletedSet(mAccountAddress, mTokenItem.getName());
+        }
         Log.i(AppUtils.APP_TAG, "InsertTokenAsycTask doInBackground uri = " + uri);
         return uri;
     }

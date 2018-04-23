@@ -216,7 +216,8 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     dialogInterface.dismiss();
-                                    new DeleteAccountAsycTask(mActivity, mAccountItem.getId(), new DeleteAccountAsycTask.OnDeleteFinishedListener() {
+                                    new DeleteAccountAsycTask(mActivity, mAccountItem.getId(), mAccountItem.getAddress(), mAccountItem.getCoinType(),
+                                            new DeleteAccountAsycTask.OnDeleteFinishedListener() {
                                         @Override
                                         public void onDeleteFinished(int count) {
                                             if(count > 0){
