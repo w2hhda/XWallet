@@ -44,10 +44,10 @@ public class SettingsFragment extends Fragment{
             }
         });
 
-        View servicePolicyItem = view.findViewById(R.id.mark_rl);
+        View servicePolicyItem = view.findViewById(R.id.service_aggrement_rl);
         PrivacyPolicyView.setOnClickListener(getContext(), servicePolicyItem, ServicePolicyActivity.TYPE_SERVICE);
 
-        View privacyPolicyItem = view.findViewById(R.id.about_us_rl);
+        View privacyPolicyItem = view.findViewById(R.id.privacy_terms_rl);
         PrivacyPolicyView.setOnClickListener(getContext(), privacyPolicyItem, ServicePolicyActivity.TYPE_PRIVACY);
 
         mChangeCurrencyPref = view.findViewById(R.id.change_currency_pref);

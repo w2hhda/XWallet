@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginStart="@dimen/settings_item_marginStart"
-        android:src="@drawable/manage_wallet_icon" />
+        android:src="@drawable/setting_icon_currency" />
 
     <TextView
         style="@style/SettingItemTextStyle"

@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/settings_item_marginStart"
-            android:src="@drawable/manage_wallet_icon" />
+            android:src="@drawable/setting_icon_manage_wallet" />
 
         <TextView
             style="@style/SettingItemTextStyle"
@@ -48,21 +48,19 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/settings_item_divider_height" />
 
-    <RelativeLayout
-        android:id="@+id/feedback_rl"
+    <RelativeLayout android:id="@+id/service_aggrement_rl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/item_bg_selector"
-        android:visibility="gone"
         android:minHeight="@dimen/settings_item_height">
 
         <ImageView
-            android:id="@+id/feedback_iv"
+            android:id="@+id/service_aggrement_iv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/settings_item_marginStart"
-            android:src="@drawable/feedback_icon" />
+            android:src="@drawable/setting_icon_service_aggrement" />
 
         <TextView
             style="@style/SettingItemTextStyle"
@@ -70,44 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/settings_item_tv_marginStart"
-            android:layout_toEndOf="@id/feedback_iv"
-            android:text="@string/feedback" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="@dimen/settings_item_marginEnd"
-            android:src="@drawable/into_icon" />
-    </RelativeLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/settings_item_divider_height" />
-
-    <RelativeLayout
-        android:id="@+id/mark_rl"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/item_bg_selector"
-        android:minHeight="@dimen/settings_item_height">
-
-        <ImageView
-            android:id="@+id/mark_iv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="@dimen/settings_item_marginStart"
-            android:src="@drawable/mark_icon" />
-
-        <TextView
-            style="@style/SettingItemTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="@dimen/settings_item_tv_marginStart"
-            android:layout_toEndOf="@id/mark_iv"
+            android:layout_toEndOf="@id/service_aggrement_iv"
             android:text="@string/service_policy" />
 
         <ImageView
@@ -124,19 +85,19 @@
         android:layout_height="@dimen/settings_item_divider_height_low" />
 
     <RelativeLayout
-        android:id="@+id/about_us_rl"
+        android:id="@+id/privacy_terms_rl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/item_bg_selector"
         android:minHeight="@dimen/settings_item_height">
 
         <ImageView
-            android:id="@+id/about_us_iv"
+            android:id="@+id/privacy_terms_iv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/settings_item_marginStart"
-            android:src="@drawable/about_us_icon" />
+            android:src="@drawable/setting_icon_privacy_terms" />
 
         <TextView
             style="@style/SettingItemTextStyle"
@@ -144,7 +105,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/settings_item_tv_marginStart"
-            android:layout_toEndOf="@id/about_us_iv"
+            android:layout_toEndOf="@id/privacy_terms_iv"
             android:text="@string/privacy_policy" />
 
         <ImageView
@@ -155,11 +116,11 @@
             android:layout_marginEnd="@dimen/settings_item_marginEnd"
             android:src="@drawable/into_icon" />
     </RelativeLayout>
+
     <com.x.wallet.ui.view.ChangeCurrencyPrefView
         android:id="@+id/change_currency_pref"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-
 
     <View
         android:layout_width="match_parent"
@@ -178,7 +139,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/settings_item_marginStart"
-            android:src="@drawable/icon_pin_lock" />
+            android:src="@drawable/setting_icon_pin_lock" />
 
         <TextView
             style="@style/SettingItemTextStyle"
