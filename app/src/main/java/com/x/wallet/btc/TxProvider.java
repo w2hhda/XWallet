@@ -16,7 +16,9 @@
 
 package com.x.wallet.btc;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
@@ -128,5 +130,11 @@ public class TxProvider extends AbstractTxProvider {
         int count = XWalletApplication.getApplication().getApplicationContext().getContentResolver().update(XWalletProvider.CONTENT_URI,
                 values, DbUtils.ADDRESS_SELECTION, new String[]{address});
         Log.i("testTx", "TxProvider updateAccountBalance address = " + address + ", balance = " + balance + ", count = " + count);
+    }
+
+    @Override
+    public void notifyTxChanged() {
+        final ContentResolver cr = XWalletApplication.getApplication().getContentResolver();
+        cr.notifyChange(BtcUtils.BTC_CONTENT_URI, null);
     }
 }

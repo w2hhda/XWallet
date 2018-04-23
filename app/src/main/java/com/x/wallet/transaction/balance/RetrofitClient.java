@@ -79,7 +79,7 @@ public class RetrofitClient {
         return mRetrofitBtc;
     }
 
-    private static final String BALANCE_BASE_URL = "http://api.etherscan.io/";
+    private static final String BALANCE_BASE_URL = "https://api.etherscan.io/";
     private static final String TOKEN_BASE_URL = "https://api.ethplorer.io/";
     private static final String BTC_BASE_URL = "https://blockchain.info/";
 

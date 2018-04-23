@@ -271,6 +271,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
         db.beginTransaction();
         addTxToDb(db, txItem);
         db.endTransaction();
+        notifyTxChanged();
     }
 
     public void addTxs(List<Tx> txItems) {
@@ -282,6 +283,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
                 addTxToDb(db, txItem);
             }
             db.endTransaction();
+            notifyTxChanged();
         }
     }
 
@@ -1233,6 +1235,8 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
     }
 
     protected abstract void insertOutToDb(IDb db, Out out);
+
+    public abstract void notifyTxChanged();
 
     public static class AddressTx {
         private String address;

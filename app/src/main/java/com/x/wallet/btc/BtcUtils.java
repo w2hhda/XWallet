@@ -2,6 +2,7 @@ package com.x.wallet.btc;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,6 +26,7 @@ import okhttp3.ResponseBody;
 public class BtcUtils {
     private static final String TAG = "BtcUtils";
     public static final int BTC_DECIMALS_COUNT = 8;
+    public static final Uri BTC_CONTENT_URI = Uri.parse("content://com.x.wallet/btc/tx");
 
     public static final String BLOCKCHAIN_SERVICE_ACTION = "blockchain_service_action";
     public static final int BLOCKCHAIN_SERVICE_ACTION_START = 0;

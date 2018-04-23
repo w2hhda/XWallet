@@ -2,11 +2,14 @@ package com.x.wallet.btc;
 
 import android.app.LoaderManager;
 import android.content.Context;
+import android.database.ContentObserver;
+import android.os.Handler;
 import android.support.v7.util.AsyncListUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.x.wallet.XWalletApplication;
 import com.x.wallet.lib.btc.BtcLibHelper;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.ui.ActionUtils;
@@ -34,6 +37,7 @@ public class BtcAccountDetailHelper {
     private BtcTransactionListAdapter mAdapter;
     private LinearLayoutManager mLinearLayoutManager;
     private AsyncListUtil<Tx> mAsyncListUtil;
+    private int mAllTxCount = 0;
 
     public BtcAccountDetailHelper(Context context) {
         mContext = context;
@@ -88,12 +92,15 @@ public class BtcAccountDetailHelper {
         });
 
         mBtcAccountBalanceLoaderHelper.forceLoad();
+
+        registerContentObserver();
     }
 
     public void destory(){
         if(mBtcAccountBalanceLoaderHelper != null){
             mBtcAccountBalanceLoaderHelper.destory();
         }
+        unregisterContentObserver();
     }
 
     private void updateViewVisibility(int size){
@@ -106,20 +113,14 @@ public class BtcAccountDetailHelper {
     }
 
     private void initAsyncListUtil(){
-        int allTxCount = BtcLibHelper.getTxsCount(mAddress);
-        MyViewCallback mViewCallback = new MyViewCallback(allTxCount);
-        MyDataCallback mDataCallback = new MyDataCallback(allTxCount);
+        mAllTxCount = BtcLibHelper.getTxsCount(mAddress);
+        updateViewVisibility(mAllTxCount);
+        MyViewCallback mViewCallback = new MyViewCallback();
+        MyDataCallback mDataCallback = new MyDataCallback();
         mAsyncListUtil = new AsyncListUtil<>(Tx.class, BitherjSettings.TX_PAGE_SIZE, mDataCallback, mViewCallback);
     }
 
     private class MyDataCallback extends AsyncListUtil.DataCallback<Tx> {
-        private int mAllTxCount = 0;
-
-        public MyDataCallback(int allTxCount) {
-            mAllTxCount = allTxCount;
-            updateViewVisibility(mAllTxCount);
-        }
-
         @Override
         public int refreshData() {
             return mAllTxCount;
@@ -137,12 +138,6 @@ public class BtcAccountDetailHelper {
     }
 
     private class MyViewCallback extends AsyncListUtil.ViewCallback {
-        private int mAllTxCount = 0;
-
-        public MyViewCallback(int allTxCount) {
-            mAllTxCount = allTxCount;
-        }
-
         @Override
         public void getItemRangeInto(int[] outRange) {
             getOutRange(outRange);
@@ -154,7 +149,8 @@ public class BtcAccountDetailHelper {
 
         @Override
         public void onDataRefresh() {
-            mAdapter.notifyItemRangeChanged(mLinearLayoutManager.findFirstVisibleItemPosition(), BitherjSettings.TX_PAGE_SIZE);
+            mAdapter.notifyDataSetChanged();
+            //mAdapter.notifyItemRangeChanged(mLinearLayoutManager.findFirstVisibleItemPosition(), BitherjSettings.TX_PAGE_SIZE);
         }
 
         @Override
@@ -174,6 +170,30 @@ public class BtcAccountDetailHelper {
             return mAllTxCount;
         }
     }
+
+    private void updateAllTxCount(){
+        mAllTxCount = BtcLibHelper.getTxsCount(mAddress);
+        updateViewVisibility(mAllTxCount);
+    }
+
+    private void registerContentObserver(){
+        XWalletApplication.getApplication().getContentResolver().registerContentObserver(BtcUtils.BTC_CONTENT_URI, true,
+                mTxChangeObserver);
+    }
+
+    public void unregisterContentObserver(){
+        XWalletApplication.getApplication().getContentResolver().unregisterContentObserver(mTxChangeObserver);
+    }
+
+    private final ContentObserver mTxChangeObserver =
+            new ContentObserver(new Handler()) {
+                @Override
+                public void onChange(boolean selfUpdate) {
+                    updateAllTxCount();
+                    mBtcAccountBalanceLoaderHelper.forceLoad();
+                    mAsyncListUtil.refresh();
+                }
+            };
 
     public interface OnDataLoadFinishedListener{
         void onBalanceLoadFinished(String balance);
