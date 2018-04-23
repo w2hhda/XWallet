@@ -238,6 +238,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
                 new ConfirmPasswordAsyncTask(intent, password, mAddress).execute(createConfirmTransactionCallback());
                 dialog.dismiss();
                 mProgressDialog.show();
+                mProgressDialog.setCancelable(false);
             }
         });
     }
