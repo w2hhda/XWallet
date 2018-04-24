@@ -221,7 +221,6 @@ public class HistoryLoaderManager extends BackgroundLoaderManager {
         }
 
         private void handleNormalHistory(String result){
-            AppUtils.log("result = " + result);
             if (result == null){
                 handleCallback();
                 return;

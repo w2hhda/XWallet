@@ -140,19 +140,6 @@ public class AllAccountItem {
     }
 
     public static SerializableAccountItem translateToSerializable(AllAccountItem accountItem) {
-        if(accountItem.getAddress().equals("0x392b6cfe7ef86624a094fc383d46c5792cb5bd2f")){
-            return new SerializableAccountItem(accountItem.getId(),
-                    "0xBf66Eb7d5c587eF111c6ab8191080322582C61AB",
-                    accountItem.getAccountName(),
-                    accountItem.getCoinName(),
-                    accountItem.getCoinType(),
-                    accountItem.getEncrySeed(),
-                    accountItem.getEncryMnemonic(),
-                    accountItem.getKeyStore(),
-                    null,
-                    accountItem.getBalance(),
-                    false);
-        }
         return new SerializableAccountItem(accountItem.getId(),
                 accountItem.getAddress(),
                 accountItem.getAccountName(),
