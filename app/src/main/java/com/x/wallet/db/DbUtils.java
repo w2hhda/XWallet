@@ -212,19 +212,16 @@ public class DbUtils {
 
     public static boolean isTxExist(String txHash){
         Cursor cursor = null;
+        final String selection = TxTableColumns.TX_HASH + " = ?";
+        final String[] selectionArgs = new String[]{txHash};
         try{
             cursor = XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
                     XWalletProvider.CONTENT_URI_TRANSACTION,
                     null,
-                    null,
-                    null, null);
+                    selection,
+                    selectionArgs, null);
             if(cursor != null && cursor.getCount() > 0){
-                while (cursor.moveToNext()) {
-                    String hash = cursor.getString(cursor.getColumnIndex(TxTableColumns.TX_HASH));
-                    if (hash != null && hash.equalsIgnoreCase(txHash)) {
-                        return true;
-                    }
-                }
+                return true;
             }
         } finally {
             if(cursor != null){
@@ -236,24 +233,16 @@ public class DbUtils {
 
     public static boolean isTokenNeedUpdate(String txHash, String blockNumber){
         Cursor cursor = null;
+        final String selection = TxTableColumns.TX_HASH + " = ? AND " + TxTableColumns.BLOCK_NUMBER + " = ? AND " + TxTableColumns.VALUE + " = ?";
+        final String[] selectionArgs = new String[]{txHash, blockNumber, "0"};
         try{
             cursor = XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
                     XWalletProvider.CONTENT_URI_TRANSACTION,
                     null,
-                    null,
-                    null, null);
+                    selection,
+                    selectionArgs, null);
             if(cursor != null && cursor.getCount() > 0){
-                while (cursor.moveToNext()) {
-                    String hash = cursor.getString(cursor.getColumnIndex(TxTableColumns.TX_HASH));
-                    String blockNum = cursor.getString(cursor.getColumnIndex(TxTableColumns.BLOCK_NUMBER));
-                    if (hash != null && hash.equalsIgnoreCase(txHash)) {
-                        if (blockNum != null && blockNum.equals(blockNumber)) {
-                            String value = cursor.getString(cursor.getColumnIndex(TxTableColumns.VALUE));
-                            //value = 0, need to insert contract address .etc when load token tx list.
-                            return value.equals("0");
-                        }
-                    }
-                }
+                return true;
             }
         } finally {
             if(cursor != null){
@@ -265,26 +254,16 @@ public class DbUtils {
 
     public static boolean isTxNeedUpdate(String txHash, String blockNumber){
         Cursor cursor = null;
+        final String selection = TxTableColumns.TX_HASH + " = ? AND " + TxTableColumns.BLOCK_NUMBER + " != ?";
+        final String[] selectionArgs = new String[]{txHash, blockNumber};
         try {
             cursor = XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
                     XWalletProvider.CONTENT_URI_TRANSACTION,
                     null,
-                    null,
-                    null, null);
+                    selection,
+                    selectionArgs, null);
             if(cursor != null && cursor.getCount() > 0){
-                while (cursor.moveToNext()) {
-                    // hash exits & block number = 0, means new tx, need to update
-                    String hash = cursor.getString(cursor.getColumnIndex(TxTableColumns.TX_HASH));
-                    String blockNum = cursor.getString(cursor.getColumnIndex(TxTableColumns.BLOCK_NUMBER));
-
-                    if (hash != null && hash.equalsIgnoreCase(txHash)){
-                        if (blockNum != null && !blockNum.equals(blockNumber)) {
-                            //new tx
-                            return true;
-                        }
-                    }
-
-                }
+                return true;
             }
         }finally {
             if (cursor != null){
