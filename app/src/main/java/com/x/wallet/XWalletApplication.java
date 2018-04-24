@@ -64,7 +64,7 @@ public class XWalletApplication extends Application implements Application.Activ
         return mTokenLoaderManager;
     }
 
-    public HistoryLoaderManager getmHistoryLoaderManager() {
+    public HistoryLoaderManager getHistoryLoaderManager() {
         return mHistoryLoaderManager;
     }
 
