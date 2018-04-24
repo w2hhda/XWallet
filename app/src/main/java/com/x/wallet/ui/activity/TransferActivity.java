@@ -287,16 +287,8 @@ public class TransferActivity extends WithBackAppCompatActivity {
             public void onTransactionConfirmed(Boolean result, final Throwable e) {
                 mProgressDialog.dismiss();
                 if (result){
-                    XWalletApplication.getApplication().getBalanceLoaderManager().getAllBalance(null, false);
-                    Intent newIntent = new Intent("com.x.wallet.action.SEE_ACCOUNT_DETAIL_ACTION");
-                    newIntent.putExtra(AppUtils.ACCOUNT_DATA, mAccountItem);
-                    if (mTokenItem != null){
-                        //RawAccountItem mTokenItem = (RawAccountItem)intent.getSerializableExtra(AppUtils.TOKEN_DATA);
-                        newIntent.putExtra(AppUtils.TOKEN_DATA, mTokenItem);
-                    }
-                    newIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    TransferActivity.this.startActivity(newIntent);
-                }else {
+                    TransferActivity.this.finish();
+                } else {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
