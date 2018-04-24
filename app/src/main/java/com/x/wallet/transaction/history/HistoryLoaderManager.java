@@ -96,10 +96,12 @@ public class HistoryLoaderManager extends BackgroundLoaderManager {
         public void run() {
             switch (mUri.toString()){
                 case NORMAL_HISTORY:
-                    getNormalHistory(address);
+                    //getNormalHistory(address);
+                    requestTxList(address);
                     break;
                 case TOKEN_HISTORY:
-                    getTokenHistory(address, contractAddress);
+                    requestTokenTxList(address, contractAddress);
+                    //getTokenHistory(address, contractAddress);
                     break;
                     default:
                         break;
@@ -391,6 +393,24 @@ public class HistoryLoaderManager extends BackgroundLoaderManager {
 
                     mCallbacks.remove(mUri);
                     mPendingTaskUris.remove(mUri);
+                }
+            });
+        }
+
+        private void requestTxList(String address){
+            TxRetrofitClient.requestTxList(address, new TxRetrofitClient.OnRequestFinishedListener() {
+                @Override
+                public void onRequestFinished() {
+                    handleCallback();
+                }
+            });
+        }
+
+        private void requestTokenTxList(String address, String contractAddress){
+            TxRetrofitClient.requestTokenTxList(address, contractAddress, new TxRetrofitClient.OnRequestFinishedListener() {
+                @Override
+                public void onRequestFinished() {
+                    handleCallback();
                 }
             });
         }
