@@ -16,7 +16,6 @@ public class TokenUtils {
     public static final String ZERO = "0";
     private static BalanceConversionUtils.RateUpdateListener mRateUpdateListener;
 
-    public static final Uri QUERY_TOKEN_BALANCE_URI = Uri.parse("content://com.x.wallet/token/");
     public static final int DECIMAL_COUNT = 2;
     public static final int BALANCE_DECIMAL_COUNT = 8;
     public static final int ETH_DECIMALS = 18;
@@ -82,7 +81,7 @@ public class TokenUtils {
         return TokenUtils.format(translate(Long.toString(rawBalance), decimals));
     }
 
-    private static BigDecimal translate(String rawBalance, int decimals){
+    public static BigDecimal translate(String rawBalance, int decimals){
         BigDecimal balance = new BigDecimal(rawBalance);
         return balance.divide(BigDecimal.TEN.pow(decimals));
     }

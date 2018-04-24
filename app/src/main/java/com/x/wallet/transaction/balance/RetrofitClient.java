@@ -80,7 +80,7 @@ public class RetrofitClient {
         return mRetrofitBtc;
     }
 
-    private static final String BALANCE_BASE_URL = "https://api.etherscan.io/";
+    public static final String BALANCE_BASE_URL = "https://api.etherscan.io/";
     private static final String TOKEN_BASE_URL = "https://api.ethplorer.io/";
     private static final String BTC_BASE_URL = "https://blockchain.info/";
 
@@ -302,24 +302,7 @@ public class RetrofitClient {
         if(isNeedAddTokenAutomatic){
             handleAutoAddToken(rawOperations, tokens, tokenListBean.getAddress());
         } else {
-            String address = tokenListBean.getAddress();
-            for (TokenListBean.TokenBean tokenBean : tokens) {
-                Log.i(TAG, "RetrofitClient handleTokenListBean address = " + address + ", balance = " + tokenBean.getBalance());
-
-                TokenListBean.TokenInfo tokenInfo = tokenBean.getTokenInfo();
-                String symbol = null;
-                int decimals = 1;
-                double rate = 0;
-                if (tokenInfo != null) {
-                    symbol = tokenInfo.getSymbol();
-                    decimals = tokenInfo.getDecimals();
-                    if (tokenInfo.getPrice() != null) {
-                        rate = tokenInfo.getPrice().getRate();
-                    }
-                }
-
-                rawOperations.add(buildUpdateTokenOperation(address, symbol, tokenBean.getBalance(), rate, decimals));
-            }
+            updateTokensBalance(rawOperations, tokens, tokenListBean.getAddress());
         }
     }
 
@@ -353,6 +336,22 @@ public class RetrofitClient {
                             tokeName, symbol, decimals,
                             contractAddress, tokenBean.getBalance(), String.valueOf(rate)));
                 }
+            }
+        }
+    }
+
+    public static void updateTokensBalance(ArrayList<ContentProviderOperation> rawOperations, List<TokenListBean.TokenBean> tokens, String address){
+        for (TokenListBean.TokenBean tokenBean : tokens) {
+            Log.i(TAG, "RetrofitClient handleTokenListBean address = " + address + ", balance = " + tokenBean.getBalance());
+            TokenListBean.TokenInfo tokenInfo = tokenBean.getTokenInfo();
+            if(tokenInfo != null){
+                String symbol = tokenInfo.getSymbol();
+                int decimals = tokenInfo.getDecimals();
+                double rate = 0;
+                if (tokenInfo.getPrice() != null) {
+                    rate = tokenInfo.getPrice().getRate();
+                }
+                rawOperations.add(buildUpdateTokenOperation(address, symbol, tokenBean.getBalance(), rate, decimals));
             }
         }
     }

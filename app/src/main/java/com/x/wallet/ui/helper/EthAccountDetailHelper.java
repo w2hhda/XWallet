@@ -2,9 +2,11 @@ package com.x.wallet.ui.helper;
 
 import android.app.Activity;
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
@@ -29,7 +31,7 @@ import com.x.wallet.ui.view.TransactionListItem;
  */
 
 public class EthAccountDetailHelper {
-    private static final int TX_LIST_LOADER = 1;
+    public static final int TX_LIST_LOADER = 1;
 
     private Activity mActivity;
     private RecyclerView mRecyclerView;
@@ -103,10 +105,13 @@ public class EthAccountDetailHelper {
     private void requestHistory(ItemLoadedCallback<HistoryLoaderManager.HistoryLoaded> callback){
         if(mIsToken){
             XWalletApplication.getApplication().getHistoryLoaderManager().getTokenHistory(mAccountAddress, mContractAddress, callback);
+            Uri uri = Uri.withAppendedPath(XWalletProvider.CONTENT_URI_TOKEN, mAccountAddress);
+            XWalletApplication.getApplication().getBalanceLoaderManager().getOneAccountBalance(uri);
         } else {
             XWalletApplication.getApplication().getHistoryLoaderManager().getNormalHistory(mAccountAddress, callback);
+            Uri uri = Uri.withAppendedPath(XWalletProvider.CONTENT_URI, mAccountAddress);
+            XWalletApplication.getApplication().getBalanceLoaderManager().getOneAccountBalance(uri);
         }
-        XWalletApplication.getApplication().getBalanceLoaderManager().getAllBalance(null, false);
     }
 
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
@@ -125,12 +130,6 @@ public class EthAccountDetailHelper {
                 }
             }
         };
-    }
-
-    public void destory() {
-        if(mLoaderManager != null){
-            mLoaderManager.destroyLoader(TX_LIST_LOADER);
-        }
     }
 
     private class TxListLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -161,16 +160,16 @@ public class EthAccountDetailHelper {
 
         }
 
-        private CursorLoader createEthTxListLoader(){
-            String selectionNormal = DbUtils.TxTableColumns.FROM_ADDRESS + " = ? OR (" + DbUtils.TxTableColumns.TO_ADDRESS + " = ? AND " + DbUtils.TxTableColumns.CONTRACT_ADDRESS + " = ? )";
-            return new CursorLoader(mActivity, XWalletProvider.CONTENT_URI_TRANSACTION, null, selectionNormal, new String[]{mAccountAddress, mAccountAddress, ""}, mOrder);
-        }
-
         private CursorLoader createTokenTxListLoader(String contractAddress){
             String baseSelection = DbUtils.TxTableColumns.FROM_ADDRESS + " = ? OR " + DbUtils.TxTableColumns.TO_ADDRESS + " = ?";
             String selectionToken = "( " + baseSelection + " )" + " AND " + DbUtils.TxTableColumns.CONTRACT_ADDRESS + " = ?";
             return new CursorLoader(mActivity, XWalletProvider.CONTENT_URI_TRANSACTION, null, selectionToken,
                     new String[]{mAccountAddress, mAccountAddress, contractAddress}, mOrder);
+        }
+
+        private CursorLoader createEthTxListLoader(){
+            String selectionNormal = DbUtils.TxTableColumns.FROM_ADDRESS + " = ? OR (" + DbUtils.TxTableColumns.TO_ADDRESS + " = ? AND " + DbUtils.TxTableColumns.CONTRACT_ADDRESS + " = ? )";
+            return new CursorLoader(mActivity, XWalletProvider.CONTENT_URI_TRANSACTION, null, selectionNormal, new String[]{mAccountAddress, mAccountAddress, ""}, mOrder);
         }
     }
 

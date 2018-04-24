@@ -30,7 +30,6 @@ public class BtcAccountDetailHelper {
     private Context mContext;
     private String mAddress;
 
-    private BtcAccountBalanceLoaderHelper mBtcAccountBalanceLoaderHelper;
     private OnDataLoadFinishedListener mOnDataLoadFinishedListener;
 
     private RecyclerView mRecyclerView;
@@ -82,24 +81,10 @@ public class BtcAccountDetailHelper {
             }
         });
 
-        mBtcAccountBalanceLoaderHelper = new BtcAccountBalanceLoaderHelper(mContext, loaderManager, address, new BtcAccountBalanceLoaderHelper.OnDataLoadFinishedListener() {
-            @Override
-            public void onBalanceLoadFinished(String balance) {
-                if(mOnDataLoadFinishedListener != null){
-                    mOnDataLoadFinishedListener.onBalanceLoadFinished(balance);
-                }
-            }
-        });
-
-        mBtcAccountBalanceLoaderHelper.forceLoad();
-
         registerContentObserver();
     }
 
     public void destory(){
-        if(mBtcAccountBalanceLoaderHelper != null){
-            mBtcAccountBalanceLoaderHelper.destory();
-        }
         unregisterContentObserver();
     }
 
@@ -190,13 +175,11 @@ public class BtcAccountDetailHelper {
                 @Override
                 public void onChange(boolean selfUpdate) {
                     updateAllTxCount();
-                    mBtcAccountBalanceLoaderHelper.forceLoad();
                     mAsyncListUtil.refresh();
                 }
             };
 
     public interface OnDataLoadFinishedListener{
-        void onBalanceLoadFinished(String balance);
         void onTransationListLoadFinished(int count);
     }
 }

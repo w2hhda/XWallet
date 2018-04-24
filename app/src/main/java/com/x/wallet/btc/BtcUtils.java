@@ -112,4 +112,11 @@ public class BtcUtils {
         BigDecimal bigDecimal = new BigDecimal(balance);
         return TokenUtils.formatConversion(bigDecimal.multiply(new BigDecimal(mCurrentBtcPrice)));
     }
+
+    public static String getBalanceConversionTextFromRawBalance(String balance) {
+        if (TextUtils.isEmpty(balance) || balance.equals(TokenUtils.ZERO)) return TokenUtils.ZERO;
+
+        BigDecimal bigDecimal = TokenUtils.translate(balance, BtcUtils.BTC_DECIMALS_COUNT);
+        return TokenUtils.formatConversion(bigDecimal.multiply(new BigDecimal(mCurrentBtcPrice)));
+    }
 }

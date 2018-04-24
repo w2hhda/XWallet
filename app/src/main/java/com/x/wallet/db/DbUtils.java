@@ -335,4 +335,11 @@ public class DbUtils {
         return XWalletApplication.getApplication().getApplicationContext().getContentResolver().update(uri, values,
                 null, null);
     }
+
+    public static int updateAccountBalance(String accountAddress, String balance){
+        ContentValues values = new ContentValues(1);
+        values.put(DbColumns.BALANCE, balance);
+        return XWalletApplication.getApplication().getApplicationContext().getContentResolver().update(XWalletProvider.CONTENT_URI, values,
+                ADDRESS_SELECTION, new String[]{accountAddress});
+    }
 }

@@ -1,7 +1,6 @@
 package com.x.wallet.transaction.balance;
 
 import android.content.ContentProviderOperation;
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -9,7 +8,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.x.wallet.AppUtils;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.DbUtils;
@@ -18,8 +16,6 @@ import com.x.wallet.lib.eth.api.EtherscanAPI;
 import com.x.wallet.lib.eth.data.BalanceResultBean;
 import com.x.wallet.lib.eth.data.PriceResultBean;
 import com.x.wallet.transaction.token.BackgroundLoaderManager;
-import com.x.wallet.transaction.token.DeleteTokenHelper;
-import com.x.wallet.transaction.token.TokenUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,12 +34,15 @@ import okhttp3.ResponseBody;
 public class BalanceLoaderManager extends BackgroundLoaderManager {
     public static final String ALL_BALANCE = "all_balance";
     public static final String ALL_ADDRESS_BALANCE = "all_address_balance";
-    public static final String ALL_TOKEN_BALANCE = "all_token_balance";
     private Context mContext;
 
     public BalanceLoaderManager(Context context) {
         super(context);
         mContext = context;
+    }
+
+    public ItemLoadedFuture getOneAccountBalance(Uri uri) {
+        return getBalance(uri, null, false);
     }
 
     public ItemLoadedFuture getAllBalance(final ItemLoadedCallback<BalanceLoaded> callback, boolean isNeedAutoAddToken) {
@@ -52,11 +51,6 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
 
     public ItemLoadedFuture getBalance(final ItemLoadedCallback<BalanceLoaded> callback) {
         return getBalance(Uri.parse(ALL_ADDRESS_BALANCE), callback, false);
-    }
-
-    public ItemLoadedFuture getAllTokenBalance(final ItemLoadedCallback<BalanceLoaded> callback){
-        Log.i("@@@@","ItemLoadedFuture getAllTokenBalance,callback = " + callback);
-        return getBalance(Uri.parse(ALL_TOKEN_BALANCE), callback, false);
     }
 
     public ItemLoadedFuture getBalance(Uri uri, final ItemLoadedCallback<BalanceLoaded> callback, boolean isNeedAutoAddToken) {
@@ -121,13 +115,12 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                     return;
                 }
                 getEtherPrice(allEthAddress);
-            } else if(ALL_TOKEN_BALANCE.equals(mUri.toString())){
-                requestBalanceForToken();
-            } else {
+            } else if(mUri.toString().startsWith(XWalletProvider.CONTENT_URI_TOKEN.toString())){
                 String address = mUri.getLastPathSegment();
-                if(mUri.toString().startsWith(TokenUtils.QUERY_TOKEN_BALANCE_URI.toString())){
-                    requestBalanceForToken(address);
-                }
+                requestBalanceForToken(address);
+            } else if(mUri.toString().startsWith(XWalletProvider.CONTENT_URI.toString())){
+                String address = mUri.getLastPathSegment();
+                SingleEthAccountBalanceRetrofitClient.requestBalance(null, address);
             }
         }
 
@@ -251,33 +244,6 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
             }
         }
 
-        private void requestBalanceForToken(){
-            Cursor cursor = null;
-            try{
-                //1.query from db
-                cursor = DbUtils.queryAllEthAddressToCursor();
-                if(cursor != null && cursor.getCount() > 0){
-                    while (cursor.moveToNext()){
-                        String accountAddress = cursor.getString(0);
-                        Log.i(AppUtils.APP_TAG, "BalanceLoaderManager requestBalanceForToken accountAddress = " + accountAddress);
-                        if(!TextUtils.isEmpty(accountAddress)){
-                            Log.i("@@@@","requestBalanceForToken for address: " + accountAddress);
-                            requestBalanceForToken(accountAddress);
-                        } else {
-                            removeCallback();
-                        }
-                    }
-                } else {
-                    Log.i("@@@@","requestBalanceForToken have no tokens");
-                    removeCallback();
-                }
-            } finally {
-                if(cursor != null){
-                    cursor.close();
-                }
-            }
-        }
-
         private void requestBalanceForToken(final String address){
             Log.i(AppUtils.APP_TAG, "BalanceLoaderManager requestBalanceForToken address = " + address);
             try{
@@ -303,15 +269,11 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                                     return;
                                 }
 
-                                //2.insert into db
-                                //updateTokenBalanceIntoDb(address, tokens);
-                                //3.parse if has new tokens
-                                long accountId = DbUtils.queryEthAccountId(address);
-                                if (accountId == -1)
-                                    return;
-
-                                insertTokenIntoDb(address, tokens, Long.toString(accountId));
-
+                                ArrayList<ContentProviderOperation> rawOperations = new ArrayList<ContentProviderOperation>();
+                                RetrofitClient.updateTokensBalance(rawOperations, tokens, address);
+                                if (rawOperations.size() > 0) {
+                                    XWalletApplication.getApplication().getContentResolver().applyBatch(XWalletProvider.AUTHORITY, rawOperations);
+                                }
                             }
                         } catch (Exception e){
                             Log.e(AppUtils.APP_TAG, "BalanceLoaderManager requestBalanceForToken onResponse exception1 address = " + address, e);
@@ -327,81 +289,6 @@ public class BalanceLoaderManager extends BackgroundLoaderManager {
                 Log.e(AppUtils.APP_TAG, "BalanceLoaderManager requestBalanceForToken exception2", e);
                 removeCallback();
             }
-        }
-
-        private void updateTokenBalanceIntoDb(String address, List<TokenListBean.TokenBean> tokens){
-            final ArrayList<ContentProviderOperation> rawOperations = new ArrayList<ContentProviderOperation>();
-            for(TokenListBean.TokenBean tokenBean : tokens){
-                Log.i(AppUtils.APP_TAG, "BalanceLoaderManager updateTokenBalanceIntoDb address = " + address + ", balance = " + tokenBean.getBalance());
-                TokenListBean.TokenInfo tokenInfo = tokenBean.getTokenInfo();
-                String symbol = null;
-                int decimals = 1;
-                double rate = 0;
-                if(tokenInfo != null){
-                    symbol = tokenInfo.getSymbol();
-                    decimals = tokenInfo.getDecimals();
-                    if(tokenInfo.getPrice() != null){
-                        rate = tokenInfo.getPrice().getRate();
-                    }
-                }
-
-                String rawBalance = tokenBean.getBalance();
-                final ContentProviderOperation.Builder updateBuilder = ContentProviderOperation
-                        .newUpdate(XWalletProvider.CONTENT_URI_TOKEN);
-                updateBuilder.withSelection(DbUtils.UPDATE_TOKEN_SELECTION, new String[] {address, symbol});
-                updateBuilder.withValue(DbUtils.TokenTableColumns.BALANCE, rawBalance);
-                updateBuilder.withValue(DbUtils.TokenTableColumns.RATE, rate);
-                updateBuilder.withValue(DbUtils.TokenTableColumns.DECIMALS, decimals);
-                rawOperations.add(updateBuilder.build());
-            }
-            try{
-                mContext.getContentResolver().applyBatch(XWalletProvider.AUTHORITY, rawOperations);
-            }catch (Exception e){
-                Log.e(AppUtils.APP_TAG, "BalanceLoaderManager updateTokenBalanceIntoDb exception", e);
-            }
-        }
-    }
-
-    private void insertTokenIntoDb(String address, List<TokenListBean.TokenBean> tokens, String accountId) {
-        for (TokenListBean.TokenBean token : tokens) {
-            TokenListBean.TokenInfo tokenInfo = token.getTokenInfo();
-            boolean isExist = DbUtils.isAlreadyExistToken(DbUtils.UPDATE_TOKEN_SELECTION, new String[]{address, tokenInfo.getSymbol()});
-            boolean hasDeleted = DeleteTokenHelper.isDeletedToken(address, tokenInfo.getName());
-            Log.i(AppUtils.APP_TAG, "Loader insertTokenIntoDb isExist = " + isExist + ", hasDeleted = " + hasDeleted);
-
-            if (isExist || hasDeleted) {
-                continue;
-            }
-            String symbol = null;
-            int decimals = 1;
-            double rate = 0;
-            try {
-                if (tokenInfo != null){
-                    symbol = tokenInfo.getSymbol();
-                    decimals = tokenInfo.getDecimals();
-                    if (tokenInfo.getPrice() != null){
-                        rate = tokenInfo.getPrice().getRate();
-                    }
-                }
-            }catch (JsonSyntaxException | IllegalStateException e){
-                Log.e(AppUtils.APP_TAG, "try to insert illegal token, just ignore");
-                continue;
-            }
-
-            ContentValues values = new ContentValues();
-            values.put(DbUtils.TokenTableColumns.ACCOUNT_ID, accountId);
-            values.put(DbUtils.TokenTableColumns.ACCOUNT_ADDRESS, address);
-            values.put(DbUtils.TokenTableColumns.ID_IN_ALL, tokens.indexOf(token));
-            values.put(DbUtils.TokenTableColumns.NAME, tokenInfo.getName());
-            values.put(DbUtils.TokenTableColumns.SYMBOL, symbol);
-            values.put(DbUtils.TokenTableColumns.DECIMALS, decimals);
-            values.put(DbUtils.TokenTableColumns.CONTRACT_ADDRESS, tokenInfo.getAddress());
-            values.put(DbUtils.TokenTableColumns.BALANCE, token.getBalance());
-            values.put(DbUtils.TokenTableColumns.RATE, rate);
-            Uri uri = XWalletApplication.getApplication().getApplicationContext().getContentResolver()
-                    .insert(XWalletProvider.CONTENT_URI_TOKEN, values);
-            Log.i(AppUtils.APP_TAG, "Loader InsertTokenIntoDb  uri = " + uri);
-
         }
     }
 

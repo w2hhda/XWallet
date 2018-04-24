@@ -1,6 +1,7 @@
 package com.x.wallet.ui.activity;
 
 
+import android.app.LoaderManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -17,6 +18,7 @@ import com.x.wallet.R;
 import com.x.wallet.btc.BtcAccountDetailHelper;
 import com.x.wallet.btc.BtcUtils;
 import com.x.wallet.lib.common.LibUtils;
+import com.x.wallet.transaction.balance.AccountBalanceLoaderHelper;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 import com.x.wallet.ui.data.RawAccountItem;
@@ -46,6 +48,9 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     private Boolean mIsTokenAccount = false;
 
     private BtcAccountDetailHelper mBtcAccountDetailHelper;
+
+    private LoaderManager mLoaderManager;
+    private AccountBalanceLoaderHelper mAccountBalanceLoaderHelper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,6 +88,27 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
                 Toast.makeText(AccountDetailActivity.this, R.string.has_copied_address, Toast.LENGTH_SHORT).show();
             }
         });
+
+        mLoaderManager = getLoaderManager();
+        if (mTokenItem != null) {
+            mAccountBalanceLoaderHelper = new AccountBalanceLoaderHelper(this, getLoaderManager(),
+                    mAccountItem.getAddress(), mTokenItem.getContractAddress(),
+                    new AccountBalanceLoaderHelper.OnDataLoadFinishedListener() {
+                        @Override
+                        public void onBalanceLoadFinished(String balance) {
+                            updateBalance(balance);
+                        }
+                    });
+        } else {
+            mAccountBalanceLoaderHelper = new AccountBalanceLoaderHelper(this, getLoaderManager(),
+                    mAccountItem.getAddress(),
+                    new AccountBalanceLoaderHelper.OnDataLoadFinishedListener() {
+                        @Override
+                        public void onBalanceLoadFinished(String balance) {
+                            updateBalance(balance);
+                        }
+                    });
+        }
     }
 
     private void initCenterView(){
@@ -131,8 +157,10 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(mEthAccountDetailHelper != null){
-            mEthAccountDetailHelper.destory();
+        if(mLoaderManager != null){
+            mLoaderManager.destroyLoader(EthAccountDetailHelper.TX_LIST_LOADER);
+            mLoaderManager.destroyLoader(AccountBalanceLoaderHelper.ACCOUNT_BALANCE_LOADER);
+            mLoaderManager = null;
         }
         if(mBtcAccountDetailHelper != null){
             mBtcAccountDetailHelper.destory();
@@ -143,22 +171,27 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         mNoTransactionView.setVisibility(count > 0 ? View.GONE : View.VISIBLE);
     }
 
-    private void initViewForNormal(){
+    private void updateBalance(String balance){
         if (mIsTokenAccount){
-            mBalanceTv.setText(TokenUtils.getBalanceText(mTokenItem.getBalance(), mTokenItem.getDecimals()) + " " + mTokenItem.getCoinName());
+            mBalanceTv.setText(TokenUtils.getBalanceText(balance, mTokenItem.getDecimals()) + " " + mTokenItem.getCoinName());
             mBalanceTranslateTv.setText(this.getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
-                    TokenUtils.getTokenConversionText(mTokenItem.getBalance(), mTokenItem.getDecimals(), mTokenItem.getRate())));
+                    TokenUtils.getTokenConversionText(balance, mTokenItem.getDecimals(), mTokenItem.getRate())));
         }else {
-            mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS) + " ETH");
-            if(mAccountItem != null){
+            if(mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_BTC){
+                mBalanceTv.setText(TokenUtils.getBalanceText(balance, BtcUtils.BTC_DECIMALS_COUNT) + " " + mAccountItem.getCoinName());
                 mBalanceTranslateTv.setText(getResources().getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
-                        TokenUtils.getBalanceConversionText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS)));
+                        BtcUtils.getBalanceConversionTextFromRawBalance(balance)));
+            } else {
+                mBalanceTv.setText(TokenUtils.getBalanceText(balance, TokenUtils.ETH_DECIMALS) + " ETH");
+                if(mAccountItem != null){
+                    mBalanceTranslateTv.setText(getResources().getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
+                            TokenUtils.getBalanceConversionText(balance, TokenUtils.ETH_DECIMALS)));
+                }
             }
         }
     }
 
     private void initEthAccount(){
-        initViewForNormal();
         mEthAccountDetailHelper = new EthAccountDetailHelper();
         mEthAccountDetailHelper.initEthAccount(this, getLoaderManager(), mAccountItem.getAddress(),
                 mTokenItem != null,
@@ -175,13 +208,6 @@ public class AccountDetailActivity extends WithBackAppCompatActivity {
         RecyclerView recyclerView = (RecyclerView)AppUtils.getStubView(this, R.id.transaction_list_btc_view_stub, R.id.listview);
         recyclerView.setVisibility(View.VISIBLE);
         BtcAccountDetailHelper.OnDataLoadFinishedListener onDataLoadFinishedListener = new BtcAccountDetailHelper.OnDataLoadFinishedListener() {
-            @Override
-            public void onBalanceLoadFinished(String balance) {
-                mBalanceTv.setText(balance + " " + mAccountItem.getCoinName());
-                mBalanceTranslateTv.setText(getResources().getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
-                        BtcUtils.getBalanceConversionText(balance)));
-            }
-
             @Override
             public void onTransationListLoadFinished(int count) {
                 updateVisibility(count);
