@@ -319,4 +319,11 @@ public class DbUtils {
         return XWalletApplication.getApplication().getApplicationContext().getContentResolver().update(XWalletProvider.CONTENT_URI, values,
                 ADDRESS_SELECTION, new String[]{accountAddress});
     }
+
+    public static Cursor queryAccountToken(String accountAddress){
+        return XWalletApplication.getApplication().getContentResolver().query(XWalletProvider.CONTENT_URI_TOKEN,
+                new String[]{DbUtils.TokenTableColumns.NAME},
+                DbUtils.TokenTableColumns.ACCOUNT_ADDRESS + " = ?",
+                new String[]{accountAddress}, null);
+    }
 }

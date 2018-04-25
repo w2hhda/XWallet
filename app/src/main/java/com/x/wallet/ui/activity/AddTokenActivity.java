@@ -13,7 +13,7 @@ import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.transaction.token.InsertTokenAsycTask;
 import com.x.wallet.transaction.token.TokenListLoader;
-import com.x.wallet.ui.adapter.RecyclerViewArrayAdapter;
+import com.x.wallet.ui.adapter.AllSupportTokenListAdapter;
 import com.x.wallet.ui.data.TokenItemBean;
 
 import java.util.List;
@@ -24,26 +24,27 @@ import java.util.List;
 
 public class AddTokenActivity extends WithBackAppCompatActivity {
 
-    private View mAddBtn;
-
     private RecyclerView mRecyclerView;
+    private View mAddBtn;
+    private View mEmptyView;
+
     private LoaderManager mLoaderManager;
     private static final int TOKEN_LIST_LOADER = 1;
-    private RecyclerViewArrayAdapter mAdapter;
-    private String accountAddress;
+    private AllSupportTokenListAdapter mAdapter;
+    private String mAccountAddress;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_token_activity);
-        accountAddress = getIntent().getStringExtra(AppUtils.ACCOUNT_ADDRESS);
+        mAccountAddress = getIntent().getStringExtra(AppUtils.ACCOUNT_ADDRESS);
 
         initRecyclerView();
 
         initLoaderManager();
 
         final long accountId = getIntent().getLongExtra(AppUtils.ACCOUNT_ID, -1);
-        initAddBtn(accountId, accountAddress);
+        initAddBtn(accountId, mAccountAddress);
     }
 
     @Override
@@ -60,9 +61,10 @@ public class AddTokenActivity extends WithBackAppCompatActivity {
         final LinearLayoutManager manager = new LinearLayoutManager(this);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(manager);
-        mAdapter = new RecyclerViewArrayAdapter(R.layout.token_list_item, accountAddress);
+        mAdapter = new AllSupportTokenListAdapter(R.layout.token_list_item);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        mEmptyView = findViewById(R.id.empty_view);
     }
 
     private void initLoaderManager(){
@@ -88,15 +90,14 @@ public class AddTokenActivity extends WithBackAppCompatActivity {
                                     public void onInsertFinished() {
                                         AddTokenActivity.this.finish();
                                     }
-                                })
-                                .execute();
+                                }).execute();
                     } else {
                         AddTokenActivity.this.finish();
                     }
                 }
             }
         });
-        mAdapter.setItemClickListener(new RecyclerViewArrayAdapter.ItemClickListener() {
+        mAdapter.setItemClickListener(new AllSupportTokenListAdapter.ItemClickListener() {
             @Override
             public void onItemClick() {
                 mAddBtn.setEnabled(true);
@@ -109,12 +110,17 @@ public class AddTokenActivity extends WithBackAppCompatActivity {
 
                 @Override
                 public Loader<List<TokenItemBean>> onCreateLoader(int id, Bundle args) {
-                    return new TokenListLoader(AddTokenActivity.this);
+                    return new TokenListLoader(AddTokenActivity.this, mAccountAddress);
                 }
 
                 @Override
                 public void onLoadFinished(Loader<List<TokenItemBean>> loader, List<TokenItemBean> tokenItems) {
                     mAdapter.addAll(tokenItems);
+                    if(tokenItems == null || tokenItems.size() <= 0){
+                        mAddBtn.setVisibility(View.GONE);
+                        mRecyclerView.setVisibility(View.GONE);
+                        mEmptyView.setVisibility(View.VISIBLE);
+                    }
                 }
 
                 @Override

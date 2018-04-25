@@ -17,8 +17,18 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
         android:background="@drawable/create_account_btn_bg_selector"
         android:text="@string/add"
         android:enabled="false"/>
+
+    <TextView android:id="@+id/empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/all_token_has_been_added"
+        android:textSize="20sp"
+        android:textColor="@color/gray_df"
+        android:visibility="gone"/>
 </RelativeLayout>

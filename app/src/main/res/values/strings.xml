@@ -156,4 +156,5 @@
     <string name="use_fingerprint">请验证指纹</string>
     <string name="cannot_recognize">无法识别指纹，请重试</string>
     <string name="cannot_use_fingerprint">指纹暂时无法使用，请输入Pin密码</string>
+    <string name="all_token_has_been_added">所有支持的代币都已经被添加</string>
 </resources>

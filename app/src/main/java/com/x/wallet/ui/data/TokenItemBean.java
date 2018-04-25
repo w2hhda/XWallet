@@ -3,7 +3,7 @@ package com.x.wallet.ui.data;
 /**
  * Created by wuliang on 18-3-30.
  */
-
+//this same as token.json
 public class TokenItemBean {
     private int idInAll;
     private String name;
