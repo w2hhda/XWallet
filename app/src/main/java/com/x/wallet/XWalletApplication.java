@@ -2,7 +2,6 @@ package com.x.wallet;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.LoaderManager;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -10,7 +9,6 @@ import com.x.wallet.btc.BtcUtils;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.balance.BalanceLoaderManager;
 import com.x.wallet.transaction.history.HistoryLoaderManager;
-import com.x.wallet.transaction.token.TokenLoaderManager;
 import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 
 import net.bither.bitherj.crypto.mnemonic.MnemonicHelper;
@@ -22,7 +20,6 @@ import net.bither.bitherj.crypto.mnemonic.MnemonicHelper;
 public class XWalletApplication extends Application implements Application.ActivityLifecycleCallbacks{
     private static XWalletApplication mXWalletApplication = null;
     private BalanceLoaderManager mBalanceLoaderManager;
-    private TokenLoaderManager mTokenLoaderManager;
     private HistoryLoaderManager mHistoryLoaderManager;
 
     @Override
@@ -30,7 +27,6 @@ public class XWalletApplication extends Application implements Application.Activ
         super.onCreate();
         mXWalletApplication = this;
         mBalanceLoaderManager = new BalanceLoaderManager(getApplicationContext());
-        mTokenLoaderManager = new TokenLoaderManager(getApplicationContext());
         mHistoryLoaderManager = new HistoryLoaderManager(getApplicationContext());
         initApp();
         BtcUtils.init();
@@ -58,10 +54,6 @@ public class XWalletApplication extends Application implements Application.Activ
 
     public BalanceLoaderManager getBalanceLoaderManager() {
         return mBalanceLoaderManager;
-    }
-
-    public TokenLoaderManager getTokenLoaderManager() {
-        return mTokenLoaderManager;
     }
 
     public HistoryLoaderManager getHistoryLoaderManager() {
