@@ -7,8 +7,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.x.wallet.AppUtils;
 import com.x.wallet.R;
+import com.x.wallet.transaction.token.TokenIconUtils;
 import com.x.wallet.ui.data.TokenItem;
 
 public class AccountTokenListItem extends RelativeLayout{
@@ -38,7 +38,7 @@ public class AccountTokenListItem extends RelativeLayout{
     public void bind(Cursor cursor){
         mTokenItem = TokenItem.createFromCursor(cursor);
         mShortNameTv.setText(mTokenItem.getSymbol());
-        AppUtils.setImage(mImageView, mTokenItem.getContractAddress());
+        TokenIconUtils.setImage(mImageView, mTokenItem.getContractAddress());
     }
 
     public TokenItem getTokenItem() {

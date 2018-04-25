@@ -6,8 +6,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.x.wallet.AppUtils;
 import com.x.wallet.R;
+import com.x.wallet.transaction.token.TokenIconUtils;
 import com.x.wallet.ui.data.TokenItemBean;
 
 /**
@@ -21,8 +21,6 @@ public class TokenListItem extends RelativeLayout{
     private ImageView mCheckIv;
 
     private TokenItemBean mTokenItem;
-
-    public static final String BASE_URL = "file:///android_asset/";
 
     public TokenListItem(Context context) {
         super(context);
@@ -53,10 +51,6 @@ public class TokenListItem extends RelativeLayout{
         if (isChecked){
             this.setClickable(false);
         }
-        AppUtils.setImage(mImageView, mTokenItem.getContractAddress());
-    }
-
-    public TokenItemBean getTokenItem() {
-        return mTokenItem;
+        TokenIconUtils.setImage(mImageView, mTokenItem.getContractAddress());
     }
 }

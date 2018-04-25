@@ -12,6 +12,7 @@ import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.btc.BtcUtils;
 import com.x.wallet.lib.common.LibUtils;
+import com.x.wallet.transaction.token.TokenIconUtils;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.transaction.usdtocny.UsdToCnyHelper;
 import com.x.wallet.ui.data.AllAccountItem;
@@ -72,7 +73,7 @@ public class RawAccountListItem extends RelativeLayout {
             mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), accountItem.getDecimals()));
             mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
                     TokenUtils.getTokenConversionText(accountItem.getBalance(), accountItem.getDecimals(), accountItem.getRate())));
-            AppUtils.setImage(mImageView, mAccountItem.getContractAddress());
+            TokenIconUtils.setImage(mImageView, mAccountItem.getContractAddress());
             Log.i(AppUtils.APP_TAG, "RawAccountListItem bind balance = " + accountItem.getBalance() + ", rate = " + accountItem.getRate());
         }
     }
