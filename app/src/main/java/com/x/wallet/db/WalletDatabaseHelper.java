@@ -63,7 +63,6 @@ public class WalletDatabaseHelper extends SQLiteOpenHelper {
                 DbUtils.TokenTableColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 DbUtils.TokenTableColumns.ACCOUNT_ID + " INTEGER," +
                 DbUtils.TokenTableColumns.ACCOUNT_ADDRESS + " TEXT," +
-                DbUtils.TokenTableColumns.ID_IN_ALL + " INTEGER," +
                 DbUtils.TokenTableColumns.NAME + " TEXT," +
                 DbUtils.TokenTableColumns.SYMBOL + " TEXT," +
                 DbUtils.TokenTableColumns.DECIMALS + " INTEGER," +

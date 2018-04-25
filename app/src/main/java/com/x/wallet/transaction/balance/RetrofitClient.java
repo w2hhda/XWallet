@@ -332,7 +332,7 @@ public class RetrofitClient {
             } else {
                 boolean hasDeleted = DeleteTokenHelper.isDeletedToken(address, tokeName);
                 if(!hasDeleted){
-                    rawOperations.add(buildInsertTokenOperation(accountId, address, tokens.indexOf(tokenBean),
+                    rawOperations.add(buildInsertTokenOperation(accountId, address,
                             tokeName, symbol, decimals,
                             contractAddress, tokenBean.getBalance(), String.valueOf(rate)));
                 }
@@ -369,14 +369,13 @@ public class RetrofitClient {
         return gson.fromJson(responseResult, TokenListBean.class);
     }
 
-    private static ContentProviderOperation buildInsertTokenOperation(long accountId, String accountAddress, int idInAll,
+    private static ContentProviderOperation buildInsertTokenOperation(long accountId, String accountAddress,
                                                                       String name, String symbol, int decimals,
                                                                       String contractAddress, String rawBalance, String rate) {
         final ContentProviderOperation.Builder insertBuilder = ContentProviderOperation
                 .newInsert(XWalletProvider.CONTENT_URI_TOKEN);
         insertBuilder.withValue(DbUtils.TokenTableColumns.ACCOUNT_ID, accountId);
         insertBuilder.withValue(DbUtils.TokenTableColumns.ACCOUNT_ADDRESS, accountAddress);
-        insertBuilder.withValue(DbUtils.TokenTableColumns.ID_IN_ALL, idInAll);
         insertBuilder.withValue(DbUtils.TokenTableColumns.NAME, name);
         insertBuilder.withValue(DbUtils.TokenTableColumns.SYMBOL, symbol);
         insertBuilder.withValue(DbUtils.TokenTableColumns.DECIMALS, decimals);

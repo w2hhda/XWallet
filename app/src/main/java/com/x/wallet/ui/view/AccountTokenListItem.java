@@ -11,43 +11,28 @@ import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.ui.data.TokenItem;
 
-/**
- * Created by wuliang on 18-3-30.
- */
-
-public class ManagerTokenListItem extends RelativeLayout{
+public class AccountTokenListItem extends RelativeLayout{
     private ImageView mImageView;
     private TextView mShortNameTv;
-    private ImageView mCheckIv;
-
     private TokenItem mTokenItem;
 
-    public static final String BASE_URL = "file:///android_asset/";
-
-    public ManagerTokenListItem(Context context) {
+    public AccountTokenListItem(Context context) {
         super(context);
     }
 
-    public ManagerTokenListItem(Context context, AttributeSet attrs) {
+    public AccountTokenListItem(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ManagerTokenListItem(Context context, AttributeSet attrs, int defStyleAttr) {
+    public AccountTokenListItem(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mImageView = findViewById(R.id.token_icon);
+        mImageView = findViewById(R.id.token_icon_iv);
         mShortNameTv = findViewById(R.id.shortname_tv);
-        mCheckIv = findViewById(R.id.check_iv);
-    }
-
-    public void bind(TokenItem tokenItem){
-        mTokenItem = tokenItem;
-        mShortNameTv.setText(tokenItem.getSymbol());
-        AppUtils.setImage(mImageView, mTokenItem.getContractAddress());
     }
 
     public void bind(Cursor cursor){

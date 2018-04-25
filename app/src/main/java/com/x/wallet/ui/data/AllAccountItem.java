@@ -22,13 +22,12 @@ public class AllAccountItem {
     private int mDecimals;
     private double mRate;
     private String mContractAddress;
-    private int mIdInAll;
     private int mAllCoinType;
 
     public AllAccountItem(long id, long selfId, String address, String accountName, String coinName,
                           int coinType, String encrySeed, String encryMnemonic, String keyStore,
                           String balance,
-                          int decimals, double rate, String contractAddress, int idInAll, int allCoinType) {
+                          int decimals, double rate, String contractAddress, int allCoinType) {
         mId = id;
         mSelfId = selfId;
         mAddress = address;
@@ -42,7 +41,6 @@ public class AllAccountItem {
         mDecimals = decimals;
         mRate = rate;
         mContractAddress = contractAddress;
-        mIdInAll = idInAll;
         mAllCoinType = allCoinType;
     }
 
@@ -98,10 +96,6 @@ public class AllAccountItem {
         return mContractAddress;
     }
 
-    public int getIdInAll() {
-        return mIdInAll;
-    }
-
     public int getAllCoinType() {
         return mAllCoinType;
     }
@@ -134,7 +128,6 @@ public class AllAccountItem {
                 cursor.getInt(COLUMN_DECIMALS),
                 cursor.getDouble(COLUMN_RATE),
                 cursor.getString(COLUMN_CONTRACT_ADDRESS),
-                cursor.getInt(COLUMN_ID_IN_ALL),
                 cursor.getInt(COLUMN_ALL_COIN_TYPE)
                 );
     }
@@ -171,7 +164,6 @@ public class AllAccountItem {
             DbUtils.TokenTableColumns.DECIMALS,
             DbUtils.TokenTableColumns.RATE,
             DbUtils.TokenTableColumns.CONTRACT_ADDRESS,
-            DbUtils.TokenTableColumns.ID_IN_ALL,
             ALL_COIN_TYPE
     };
 
@@ -188,6 +180,5 @@ public class AllAccountItem {
     static final int COLUMN_DECIMALS                = 10;
     static final int COLUMN_RATE                    = 11;
     static final int COLUMN_CONTRACT_ADDRESS        = 12;
-    static final int COLUMN_ID_IN_ALL               = 13;
-    static final int COLUMN_ALL_COIN_TYPE           = 14;
+    static final int COLUMN_ALL_COIN_TYPE           = 13;
 }

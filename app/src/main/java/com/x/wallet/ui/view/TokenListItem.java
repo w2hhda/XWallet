@@ -10,8 +10,6 @@ import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.ui.data.TokenItemBean;
 
-import java.io.IOException;
-
 /**
  * Created by wuliang on 18-3-30.
  */
@@ -41,7 +39,7 @@ public class TokenListItem extends RelativeLayout{
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mImageView = findViewById(R.id.token_icon);
+        mImageView = findViewById(R.id.token_icon_iv);
         mShortNameTv = findViewById(R.id.shortname_tv);
         mWholeNameTv = findViewById(R.id.wholename_tv);
         mCheckIv = findViewById(R.id.check_iv);

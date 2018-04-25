@@ -38,13 +38,12 @@ public class DbUtils {
         String _ID = "_id";                          //0
         String ACCOUNT_ID = "account_id";            //1
         String ACCOUNT_ADDRESS = "account_address";  //2
-        String ID_IN_ALL = "id_in_all";              //3
-        String NAME = "name";                        //4
-        String SYMBOL = "symbol";                    //5
-        String DECIMALS = "decimals";                //6
-        String CONTRACT_ADDRESS = "contract_address"; //7
-        String BALANCE = "balance";                  //8
-        String RATE = "rate"; //usdprice             //9
+        String NAME = "name";                        //3
+        String SYMBOL = "symbol";                    //4
+        String DECIMALS = "decimals";                //5
+        String CONTRACT_ADDRESS = "contract_address"; //6
+        String BALANCE = "balance";                  //7
+        String RATE = "rate"; //usdprice             //8
     }
 
     public interface TxTableColumns{
@@ -273,13 +272,12 @@ public class DbUtils {
         return false;
     }
 
-    public static Uri insertTokenIntoDb(long accountId, String accountAddress, int idInAll,
+    public static Uri insertTokenIntoDb(long accountId, String accountAddress,
                                          String name, String symbol, int decimals,
                                          String contractAddress, String balance, String rate) {
         ContentValues values = new ContentValues();
         values.put(DbUtils.TokenTableColumns.ACCOUNT_ID, accountId);
         values.put(DbUtils.TokenTableColumns.ACCOUNT_ADDRESS, accountAddress);
-        values.put(DbUtils.TokenTableColumns.ID_IN_ALL, idInAll);
         values.put(DbUtils.TokenTableColumns.NAME, name);
         values.put(DbUtils.TokenTableColumns.SYMBOL, symbol);
         values.put(DbUtils.TokenTableColumns.DECIMALS, decimals);

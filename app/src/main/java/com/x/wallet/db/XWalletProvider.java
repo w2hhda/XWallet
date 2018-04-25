@@ -76,7 +76,7 @@ public class XWalletProvider extends ContentProvider {
                 String sql = "SELECT " + createMainAccountSql() + " FROM " + TABLE_ACCOUNT + " as t1"
                         + " UNION "
                         + "SELECT " + createTokenSql() + " FROM " + TABLE_TOKEN + " as t2"
-                        + " order by _id,all_coin_type";
+                        + " order by coin_type asc, _id desc, all_coin_type";
                 cursor = db.rawQuery(sql, selectionArgs);
                 break;
             case URI_TRANSACTION:
@@ -196,7 +196,6 @@ public class XWalletProvider extends ContentProvider {
                 "0 as " + DbUtils.TokenTableColumns.DECIMALS + ", " +
                 "0 as " + DbUtils.TokenTableColumns.RATE + ", " +
                 "null as " + DbUtils.TokenTableColumns.CONTRACT_ADDRESS + ", " +
-                "-1 as " + DbUtils.TokenTableColumns.ID_IN_ALL + ", " +
                 "1 as all_coin_type";
     }
 
@@ -206,7 +205,7 @@ public class XWalletProvider extends ContentProvider {
                 "t2." + DbUtils.TokenTableColumns.ACCOUNT_ADDRESS + " as address, " +
                 "null as " + DbUtils.DbColumns.NAME + ", " +
                 "t2." + DbUtils.TokenTableColumns.SYMBOL + " as " + DbUtils.DbColumns.COIN_NAME + ", " +
-                "-1 as " + DbUtils.DbColumns.COIN_TYPE + ", " +
+                "1 as " + DbUtils.DbColumns.COIN_TYPE + ", " +  //1: LibUtils.COINTYPE.COIN_ETH
                 "null as " + DbUtils.DbColumns.ENCRYPT_SEED + ", " +
                 "null as " + DbUtils.DbColumns.ENCRYPT_MNEMONIC + ", " +
                 "null as " + DbUtils.DbColumns.KEYSTORE + ", " +
@@ -214,7 +213,6 @@ public class XWalletProvider extends ContentProvider {
                 "t2." + DbUtils.TokenTableColumns.DECIMALS + " as " + DbUtils.TokenTableColumns.DECIMALS + ", " +
                 "t2." + DbUtils.TokenTableColumns.RATE + " as " + DbUtils.TokenTableColumns.RATE + ", " +
                 "t2." + DbUtils.TokenTableColumns.CONTRACT_ADDRESS + " as " + DbUtils.TokenTableColumns.CONTRACT_ADDRESS + ", " +
-                "t2." + DbUtils.TokenTableColumns.ID_IN_ALL + " as " + DbUtils.TokenTableColumns.ID_IN_ALL + ", " +
                 "2 as all_coin_type";
     }
 

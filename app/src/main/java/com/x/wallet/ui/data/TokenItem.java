@@ -7,7 +7,6 @@ import android.database.Cursor;
  */
 
 public class TokenItem {
-    private int mIdInAll;
     private String mName;
     private String mSymbol;
     private int mDecimals;
@@ -15,18 +14,13 @@ public class TokenItem {
     private double mRate;
     private String mContractAddress;
 
-    public TokenItem(int idInAll, String name, String symbol, int decimals, String balance, double rate, String contractAddress) {
-        mIdInAll = idInAll;
+    public TokenItem(String name, String symbol, int decimals, String balance, double rate, String contractAddress) {
         mName = name;
         mSymbol = symbol;
         mDecimals = decimals;
         mBalance = balance;
         mRate = rate;
         mContractAddress = contractAddress;
-    }
-
-    public int getIdInAll() {
-        return mIdInAll;
     }
 
     public String getName() {
@@ -53,17 +47,15 @@ public class TokenItem {
         return mContractAddress;
     }
 
-    public static final int TOKEN_COLUMN_ID_IN_ALL  = 3;
-    public static final int TOKEN_COLUMN_NAME    = 4;
-    public static final int TOKEN_COLUMN_SYMBOL = 5;
-    public static final int TOKEN_COLUMN_DECIMALS = 6;
-    public static final int TOKEN_COLUMN_CONTRACT_ADDRESS = 7;
-    public static final int TOKEN_COLUMN_BALANCE    = 8;
-    public static final int TOKEN_COLUMN_RATE    = 9;
+    public static final int TOKEN_COLUMN_NAME    = 3;
+    public static final int TOKEN_COLUMN_SYMBOL = 4;
+    public static final int TOKEN_COLUMN_DECIMALS = 5;
+    public static final int TOKEN_COLUMN_CONTRACT_ADDRESS = 6;
+    public static final int TOKEN_COLUMN_BALANCE    = 7;
+    public static final int TOKEN_COLUMN_RATE    = 8;
 
     public static TokenItem createFromCursor(Cursor cursor) {
         return new TokenItem(
-                cursor.getInt(TOKEN_COLUMN_ID_IN_ALL),
                 cursor.getString(TOKEN_COLUMN_NAME),
                 cursor.getString(TOKEN_COLUMN_SYMBOL),
                 cursor.getInt(TOKEN_COLUMN_DECIMALS),

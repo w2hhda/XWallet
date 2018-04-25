@@ -21,7 +21,7 @@ import com.x.wallet.R;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.transaction.token.DeleteTokenAsyncTask;
-import com.x.wallet.ui.adapter.ManagerTokenListAdapter;
+import com.x.wallet.ui.adapter.AccountTokenListAdapter;
 import com.x.wallet.ui.data.TokenItem;
 import com.x.wallet.ui.dialog.ContentShowDialogHelper;
 
@@ -32,7 +32,7 @@ import com.x.wallet.ui.dialog.ContentShowDialogHelper;
 public class ManageTokenView extends LinearLayout{
     private View mAddTokenView;
     private RecyclerView mRecyclerView;
-    private ManagerTokenListAdapter mAdapter;
+    private AccountTokenListAdapter mAdapter;
 
     private long mAccountId;
     private String mAccountAddress;
@@ -90,11 +90,11 @@ public class ManageTokenView extends LinearLayout{
         final LinearLayoutManager manager = new LinearLayoutManager(getContext());
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(manager);
-        mAdapter = new ManagerTokenListAdapter(this.getContext(), null, R.layout.manager_token_list_item,
+        mAdapter = new AccountTokenListAdapter(this.getContext(), null,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        final ManagerTokenListItem listItem = (ManagerTokenListItem) view.getParent();
+                        final AccountTokenListItem listItem = (AccountTokenListItem) view.getParent();
                         final TokenItem item = listItem.getTokenItem();
                         ContentShowDialogHelper.showConfirmDialog(ManageTokenView.this.getContext(), R.string.delete_token
                                 , getResources().getString(R.string.confirm_delete_token, item.getName())

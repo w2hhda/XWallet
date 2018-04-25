@@ -219,7 +219,7 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Integer>{
                 continue;
             }
 
-            Uri uri = DbUtils.insertTokenIntoDb(Long.parseLong(accountId), address, tokens.indexOf(token),
+            Uri uri = DbUtils.insertTokenIntoDb(Long.parseLong(accountId), address,
                     tokenInfo.getName(), symbol, decimals,
                     tokenInfo.getAddress(), token.getBalance(), String.valueOf(rate));
             Log.i(AppUtils.APP_TAG, "InsertTokenIntoDb when import uri = " + uri);
