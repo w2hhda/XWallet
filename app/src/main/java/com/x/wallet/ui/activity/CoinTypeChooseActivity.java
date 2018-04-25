@@ -3,6 +3,7 @@ package com.x.wallet.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -10,6 +11,7 @@ import android.widget.ListView;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
+import com.x.wallet.ui.ActionUtils;
 
 /**
  * Created by wuliang on 18-3-13.
@@ -17,6 +19,7 @@ import com.x.wallet.R;
 
 public class CoinTypeChooseActivity extends WithBackAppCompatActivity {
     private int mActionType;
+    public final int NEW_ACCOUNT_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,18 +35,20 @@ public class CoinTypeChooseActivity extends WithBackAppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                if(mActionType == AppUtils.ACCOUNT_ACTION_TYPE_NEW){
-                    Intent intent = new Intent("com.x.wallet.action.CREATE_ACCOUNT_ACTION");
-                    intent.putExtra(AppUtils.COIN_TYPE, position);
-                    startActivity(intent);
-                } else {
-                    Intent intent = new Intent("com.x.wallet.action.IMPORT_ACCOUNT_ACTION");
-                    intent.putExtra(AppUtils.COIN_TYPE, position);
-                    startActivity(intent);
-                }
+                ActionUtils.createAccount(CoinTypeChooseActivity.this, mActionType, position, NEW_ACCOUNT_REQUEST_CODE);
             }
         });
     }
 
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == NEW_ACCOUNT_REQUEST_CODE){
+            if(resultCode == RESULT_OK){
+                this.setResult(RESULT_OK); //to finish ManageAllAccountActivity
+                this.finish();//finish for create/import address success
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 }

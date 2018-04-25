@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Switch;
 
 import com.x.wallet.AppUtils;
+import com.x.wallet.MainActivity;
 import com.x.wallet.R;
 import com.x.wallet.ui.activity.CurrencyActivity;
 import com.x.wallet.ui.activity.ServicePolicyActivity;
@@ -40,7 +41,7 @@ public class SettingsFragment extends Fragment{
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent("com.x.wallet.action.MANAGE_ALL_ACCOUNT_ACTION");
-                startActivity(intent);
+                getActivity().startActivityForResult(intent, MainActivity.MANAGE_ALL_ACCOUNT_REQUEST_CODE);
             }
         });
 

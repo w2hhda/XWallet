@@ -124,7 +124,9 @@ public class ImportAddressAsycTask extends AsyncTask<Void, Void, Integer>{
             case AppUtils.CREATE_ADDRESS_OK:
                 Toast.makeText(mContext, R.string.import_address_success, Toast.LENGTH_LONG).show();
                 if(mContext instanceof Activity){
-                    ((Activity) mContext).finish();
+                    Activity activity = (Activity) mContext;
+                    activity.setResult(Activity.RESULT_OK); //to finish CoinTypeChooseActivity
+                    activity.finish(); //finish ImportAccountActivity
                 }
                 break;
             case AppUtils.CREATE_ADDRESS_FAILED_OTHER:

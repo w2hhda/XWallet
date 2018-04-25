@@ -1,5 +1,6 @@
 package com.x.wallet;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -17,6 +18,7 @@ public class MainActivity extends BaseAppCompatActivity {
     private ViewPager mViewPager;
     private MenuItem mMenuItem;
     private BottomNavigationView mBottomNavigationView;
+    public static final int MANAGE_ALL_ACCOUNT_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,5 +82,16 @@ public class MainActivity extends BaseAppCompatActivity {
         adapter.addFragment(new AccountListFragment());
         adapter.addFragment(new SettingsFragment());
         mViewPager.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == MANAGE_ALL_ACCOUNT_REQUEST_CODE){
+            if(resultCode == RESULT_OK){
+                mViewPager.setCurrentItem(0, false);
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

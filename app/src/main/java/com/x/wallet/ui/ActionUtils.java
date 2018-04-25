@@ -1,5 +1,6 @@
 package com.x.wallet.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
@@ -12,11 +13,16 @@ import com.x.wallet.ui.data.TransactionItem;
  */
 
 public class ActionUtils {
-    public static void handleAddAccountAction(Context context, int actionType){
-        Intent intent = new Intent("com.x.wallet.action.COINTYPE_CHOOSE_ACTION");
-        intent.putExtra(AppUtils.ACTION_TYPE, actionType);
-        context.startActivity(intent);
-
+    public static void handleAddAccountAction(Activity activity, int actionType, boolean isFromMainPage, int requestCode){
+        if(isFromMainPage) {
+            Intent intent = new Intent("com.x.wallet.action.COINTYPE_CHOOSE_ACTION");
+            intent.putExtra(AppUtils.ACTION_TYPE, actionType);
+            activity.startActivity(intent);
+        } else {
+            Intent intent = new Intent("com.x.wallet.action.COINTYPE_CHOOSE_ACTION");
+            intent.putExtra(AppUtils.ACTION_TYPE, actionType);
+            activity.startActivityForResult(intent, requestCode);
+        }
         /*if(actionType == AppUtils.ACCOUNT_ACTION_TYPE_NEW){
             Intent intent = new Intent("com.x.wallet.action.CREATE_ACCOUNT_ACTION");
             intent.putExtra(AppUtils.COIN_TYPE, LibUtils.COINTYPE.COIN_ETH);
@@ -35,5 +41,17 @@ public class ActionUtils {
         intent.putExtra(AppUtils.ACCOUNT_TYPE, isTokenAccount);
         intent.putExtra(AppUtils.COIN_TYPE, coinType);
         context.startActivity(intent);
+    }
+
+    public static void createAccount(Activity activity, int actionType, int coinType, int requestCode){
+        if(actionType == AppUtils.ACCOUNT_ACTION_TYPE_NEW){
+            Intent intent = new Intent("com.x.wallet.action.CREATE_ACCOUNT_ACTION");
+            intent.putExtra(AppUtils.COIN_TYPE, coinType);
+            activity.startActivityForResult(intent, requestCode);
+        } else {
+            Intent intent = new Intent("com.x.wallet.action.IMPORT_ACCOUNT_ACTION");
+            intent.putExtra(AppUtils.COIN_TYPE, coinType);
+            activity.startActivityForResult(intent, requestCode);
+        }
     }
 }

@@ -66,7 +66,9 @@ public class CreateAddressAsycTask extends AsyncTask<Void, Void, Integer>{
                 intent.putExtra(AppUtils.ADDRESS_URI, mUri);
                 mContext.startActivity(intent);
                 if(mContext instanceof Activity){
-                    ((Activity) mContext).finish();
+                    Activity activity = ((Activity) mContext);
+                    activity.setResult(Activity.RESULT_OK); //to finish CoinTypeChooseActivity
+                    activity.finish(); //finish CreateAccountActivity
                 }
                 break;
             case AppUtils.CREATE_ADDRESS_FAILED_OTHER:

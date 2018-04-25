@@ -157,7 +157,7 @@ public class AccountListFragment extends Fragment {
                 builder.setItems(AccountListFragment.this.getResources().getStringArray(R.array.account_action_array), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int which) {
-                        ActionUtils.handleAddAccountAction(AccountListFragment.this.getContext(), which);
+                        ActionUtils.handleAddAccountAction(AccountListFragment.this.getActivity(), which, true, -1);
                     }
                 });
                 builder.setTitle(R.string.add_account);

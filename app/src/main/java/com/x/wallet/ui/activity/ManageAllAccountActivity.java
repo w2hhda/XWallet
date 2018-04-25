@@ -35,6 +35,7 @@ public class ManageAllAccountActivity extends WithBackAppCompatActivity {
     private RecyclerView mRecyclerView;
 
     private static final int ACCOUNT_LIST_LOADER = 1;
+    private static final int NEW_ACCOUNT_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -110,12 +111,24 @@ public class ManageAllAccountActivity extends WithBackAppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_add_account:
-                ActionUtils.handleAddAccountAction(this, AppUtils.ACCOUNT_ACTION_TYPE_NEW);
+                ActionUtils.handleAddAccountAction(this, AppUtils.ACCOUNT_ACTION_TYPE_NEW, false, NEW_ACCOUNT_REQUEST_CODE);
                 return true;
             case R.id.action_import_account:
-                ActionUtils.handleAddAccountAction(this, AppUtils.ACCOUNT_ACTION_TYPE_IMPORT);
+                ActionUtils.handleAddAccountAction(this, AppUtils.ACCOUNT_ACTION_TYPE_IMPORT, false, NEW_ACCOUNT_REQUEST_CODE);
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == NEW_ACCOUNT_REQUEST_CODE){
+            if(resultCode == RESULT_OK){
+                this.setResult(RESULT_OK);
+                this.finish();
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }
