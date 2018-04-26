@@ -61,6 +61,15 @@ public class SettingsFragment extends Fragment{
             }
         });
         initPinView(view);
+
+        View favoriteAddress = view.findViewById(R.id.address_rl);
+        favoriteAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent("com.x.wallet.action.SEE_FAVORITE_ADDRESS_ACTION");
+                SettingsFragment.this.startActivity(intent);
+            }
+        });
         return view;
     }
 

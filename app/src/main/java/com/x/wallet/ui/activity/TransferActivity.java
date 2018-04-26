@@ -9,6 +9,8 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,7 +21,6 @@ import android.widget.Toast;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
-import com.x.wallet.XWalletApplication;
 import com.x.wallet.btc.BtcAccountBalanceLoaderHelper;
 import com.x.wallet.btc.BtcTransferHelper;
 import com.x.wallet.btc.BtcUtils;
@@ -28,13 +29,13 @@ import com.x.wallet.btc.PushBtcAsyncTask;
 import com.x.wallet.lib.btc.TxBuildResult;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.EthTransactionFeeHelper;
+import com.x.wallet.transaction.address.ChooseFavoriteAddressActivity;
 import com.x.wallet.transaction.address.ConfirmPasswordAsyncTask;
 import com.x.wallet.transaction.address.ConfirmTransactionCallback;
 import com.x.wallet.transaction.token.TokenUtils;
 import com.x.wallet.ui.data.RawAccountItem;
 import com.x.wallet.ui.data.SerializableAccountItem;
 
-import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.utils.Utils;
 
 import java.math.BigDecimal;
@@ -90,13 +91,14 @@ public class TransferActivity extends WithBackAppCompatActivity {
     private void initToAddressView(){
         mProgressDialog = new ProgressDialog(this);
         toAddress = findViewById(R.id.transfer_to_address);
-        ImageButton scanBtn = findViewById(R.id.wallet_scan);
-        scanBtn.setOnClickListener(new View.OnClickListener() {
+        ImageButton chooseAddressBtn = findViewById(R.id.choose_address_bt);
+        chooseAddressBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(TransferActivity.this, ScanAddressQRActivity.class);
+                Intent intent = new Intent("com.x.wallet.action.CHOOSE_FAVORITE_ADDRESS_ACTION");
                 intent.putExtra(AppUtils.COIN_TYPE, mTokenItem != null ? LibUtils.COINTYPE.COIN_ETH : mAccountItem.getCoinType());
-                startActivityForResult(intent, ScanAddressQRActivity.REQUEST_CODE);
+                startActivityForResult(intent, ChooseFavoriteAddressActivity.REQUEST_CODE);
+
             }
         });
     }
@@ -272,6 +274,12 @@ public class TransferActivity extends WithBackAppCompatActivity {
                 toAddress.setText(address);
             }
         }
+        if (requestCode == ChooseFavoriteAddressActivity.REQUEST_CODE){
+            if (resultCode == RESULT_OK){
+                String address = data.getStringExtra(ChooseFavoriteAddressActivity.EXTRA_ADDRESS);
+                toAddress.setText(address);
+            }
+        }
     }
 
     @Override
@@ -434,5 +442,28 @@ public class TransferActivity extends WithBackAppCompatActivity {
                     }
                 }).execute();
 
+    }
+
+    private void scanAddress(){
+        Intent intent = new Intent(TransferActivity.this, ScanAddressQRActivity.class);
+        intent.putExtra(AppUtils.COIN_TYPE, mTokenItem != null ? LibUtils.COINTYPE.COIN_ETH : mAccountItem.getCoinType());
+        startActivityForResult(intent, ScanAddressQRActivity.REQUEST_CODE);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.scan_address_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.scan_address_to_action:
+                scanAddress();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

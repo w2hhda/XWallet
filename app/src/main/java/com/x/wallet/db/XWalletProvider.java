@@ -22,12 +22,14 @@ public class XWalletProvider extends ContentProvider {
     static final String TABLE_ACCOUNT = "account";
     static final String TABLE_TOKEN = "token";
     static final String TABLE_TRANSACTION = "txlists";
+    static final String TABLE_ADDRESS = "address";
     public static final String AUTHORITY = "com.x.wallet";
     public static final Uri RAW_CONTENT_URI = Uri.parse("content://com.x.wallet/");
     public static final Uri ALL_ACCOUNT_CONTENT_URI = Uri.parse("content://com.x.wallet/allaccount");
     public static final Uri CONTENT_URI = Uri.parse("content://com.x.wallet/account");
     public static final Uri CONTENT_URI_TOKEN = Uri.parse("content://com.x.wallet/token");
     public static final Uri CONTENT_URI_TRANSACTION = Uri.parse("content://com.x.wallet/txlists");
+    public static final Uri CONTENT_URI_ADDRESS = Uri.parse("content://com.x.wallet/address");
 
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
@@ -87,6 +89,14 @@ public class XWalletProvider extends ContentProvider {
                         null, null,
                         sortOrder);
                 break;
+            case URI_ADDRESS:
+                cursor = db.query(TABLE_ADDRESS,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null, null,
+                        sortOrder);
+                break;
         }
         if (cursor != null) {
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
@@ -122,6 +132,11 @@ public class XWalletProvider extends ContentProvider {
                 Log.i(AppUtils.APP_TAG, "XWalletProvider insert rowId = " + rowId3);
                 result = Uri.parse(uri + "/" + rowId3);
             break;
+            case URI_ADDRESS:
+                long rowId4 = db.insert(TABLE_ADDRESS, null, values);
+                Log.i(AppUtils.APP_TAG, "XWalletProvider insert rowId = " + rowId4);
+                result = Uri.parse(uri + "/" + rowId4);
+                break;
         }
         if(result != null){
             //getContext().getContentResolver().notifyChange(uri, null);
@@ -146,6 +161,9 @@ public class XWalletProvider extends ContentProvider {
                 break;
             case URI_TRANSACTION:
                 count = db.delete(TABLE_TRANSACTION, selection, selectionArgs);
+                break;
+            case URI_ADDRESS:
+                count = db.delete(TABLE_ADDRESS, selection, selectionArgs);
                 break;
         }
         if(count > 0){
@@ -172,6 +190,9 @@ public class XWalletProvider extends ContentProvider {
                 break;
             case URI_TRANSACTION:
                 count = db.update(TABLE_TRANSACTION, values, selection, selectionArgs);
+                break;
+            case URI_ADDRESS:
+                count = db.update(TABLE_ADDRESS, values, selection, selectionArgs);
                 break;
         }
         Log.i(AppUtils.APP_TAG, "XWalletProvider update count =" + count);
@@ -221,11 +242,13 @@ public class XWalletProvider extends ContentProvider {
     private static final int URI_TOKEN                       = 2;
     private static final int ALL_ACCOUNT                     = 3;
     private static final int URI_TRANSACTION                 = 4;
+    private static final int URI_ADDRESS                     = 5;
     static {
         URI_MATCHER.addURI(AUTHORITY, "account", URI_ACCOUNT);
         URI_MATCHER.addURI(AUTHORITY, "account/#", URI_ACCOUNT_ID);
         URI_MATCHER.addURI(AUTHORITY, "token", URI_TOKEN);
         URI_MATCHER.addURI(AUTHORITY, "allaccount", ALL_ACCOUNT);
         URI_MATCHER.addURI(AUTHORITY, "txlists", URI_TRANSACTION);
+        URI_MATCHER.addURI(AUTHORITY, "address", URI_ADDRESS);
     }
 }

@@ -16,20 +16,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="56px"
+            android:layout_marginTop="16dp"
             android:text="@string/transfer_to_address"
             android:textColor="@color/address_title_textColor"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <ImageButton
-            android:id="@+id/wallet_scan"
+            android:id="@+id/choose_address_bt"
             android:layout_width="17dp"
             android:layout_height="17dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="16dp"
             android:background="@null"
-            android:src="@drawable/wallet_scan" />
+            android:src="@drawable/select_type_icon" />
 
         <EditText
             android:id="@+id/transfer_to_address"
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_alignStart="@+id/transfer_text_view"
             android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/wallet_scan"
+            android:layout_toStartOf="@+id/choose_address_bt"
             android:background="@null"
             android:hint="@string/transfer_to_hint"
             android:textCursorDrawable="@drawable/text_cursor_indicator"
@@ -73,7 +73,7 @@
             android:layout_marginTop="56px"
             android:text="@string/transfer_amount"
             android:textColor="@color/address_title_textColor"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <EditText
             android:id="@+id/transfer_to_amount"
@@ -151,7 +151,7 @@
             android:layout_marginTop="56px"
             android:text="@string/transfer_fee"
             android:textColor="@color/address_title_textColor"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/gas_price_item"
