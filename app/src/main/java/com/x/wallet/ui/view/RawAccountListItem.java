@@ -55,7 +55,7 @@ public class RawAccountListItem extends RelativeLayout {
         mCoinNameTv.setText(mAccountItem.getCoinName());
         if (mAccountItem.getAllCoinType() == AllAccountItem.COIN_TYPE_MAIN) {
             if (mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_ETH) {
-                mImageView.setImageResource(R.drawable.eth);
+                mImageView.setImageResource(R.drawable.icon_coin_eth);
                 mBalanceTv.setText(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS));
                 mBalanceConversionTv.setText(getContext().getString(R.string.item_balance, UsdToCnyHelper.getChooseCurrencyUnit(),
                         TokenUtils.getBalanceConversionText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS)));

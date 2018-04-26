@@ -45,14 +45,14 @@ import java.math.BigDecimal;
  */
 
 public class TransferActivity extends WithBackAppCompatActivity {
-    private EditText toAddress;
+    private EditText mToAddressEt;
 
-    private EditText transferAmount;
-    private TextView unitIndicator;
-    private TextView availableBalance;
+    private EditText mTransferAmountEt;
+    private TextView mUnitIndicatorTv;
+    private TextView mAvailableBalanceTv;
     private ProgressDialog mProgressDialog;
 
-    private TextView priceTv;
+    private TextView mPriceTv;
     private TextView mGasPriceUnitTv;
 
     private RawAccountItem mTokenItem;
@@ -90,7 +90,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
 
     private void initToAddressView(){
         mProgressDialog = new ProgressDialog(this);
-        toAddress = findViewById(R.id.transfer_to_address);
+        mToAddressEt = findViewById(R.id.transfer_to_address);
         ImageButton chooseAddressBtn = findViewById(R.id.choose_address_bt);
         chooseAddressBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,18 +104,18 @@ public class TransferActivity extends WithBackAppCompatActivity {
     }
 
     private void initAmountView(){
-        transferAmount = findViewById(R.id.transfer_to_amount);
-        unitIndicator = findViewById(R.id.unit_indicator);
+        mTransferAmountEt = findViewById(R.id.transfer_to_amount);
+        mUnitIndicatorTv = findViewById(R.id.unit_indicator);
         if (mTokenItem != null){
-            unitIndicator.setText(mTokenItem.getCoinName());
+            mUnitIndicatorTv.setText(mTokenItem.getCoinName());
         } else {
-            unitIndicator.setText(mAccountItem.getCoinName());
+            mUnitIndicatorTv.setText(mAccountItem.getCoinName());
         }
-        availableBalance = findViewById(R.id.available_balance);
+        mAvailableBalanceTv = findViewById(R.id.available_balance_tv);
     }
 
     private void initFeeView(){
-        priceTv = findViewById(R.id.gas_price_tv);
+        mPriceTv = findViewById(R.id.gas_price_tv);
         mGasPriceUnitTv = findViewById(R.id.gas_price_item);
         if(mTokenItem != null){
             mGasPriceUnitTv.setText(R.string.coin_unit_eth);
@@ -164,7 +164,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
     }
 
     private void handleTransaction(){
-        if (toAddress.getText() == null || toAddress.getText().length() < 40){
+        if (mToAddressEt.getText() == null || mToAddressEt.getText().length() < 40){
             responseForErrorResult(ERROR_TO_ADDRESS);
             return;
         }
@@ -174,7 +174,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
         }
 
         BigDecimal amount;
-        BigDecimal tokenFee = new BigDecimal(priceTv.getText().toString());
+        BigDecimal tokenFee = new BigDecimal(mPriceTv.getText().toString());
         if (mTokenItem == null){
             amount = new BigDecimal(TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS));
             amount = amount.subtract(tokenFee);
@@ -192,7 +192,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
         }
 
         //need to get gas price first
-        if (new BigDecimal(priceTv.getText().toString()).equals(BigDecimal.ZERO)){
+        if (new BigDecimal(mPriceTv.getText().toString()).equals(BigDecimal.ZERO)){
             Toast.makeText(TransferActivity.this,getResources().getString(R.string.wait_to_get_gas_price), Toast.LENGTH_SHORT).show();
             return;
         }
@@ -248,11 +248,11 @@ public class TransferActivity extends WithBackAppCompatActivity {
     private Intent getIntentForSend(String address, String password){
         Intent intent = new Intent();
         intent.putExtra(ConfirmPasswordAsyncTask.FROM_ADDRESS_TAG, address);
-        intent.putExtra(ConfirmPasswordAsyncTask.TO_ADDRESS_TAG, toAddress.getText().toString());
+        intent.putExtra(ConfirmPasswordAsyncTask.TO_ADDRESS_TAG, mToAddressEt.getText().toString());
         intent.putExtra(ConfirmPasswordAsyncTask.PASSWORD_TAG, password);
-        intent.putExtra(ConfirmPasswordAsyncTask.GAS_PRICE_TAG, mEthTransactionFeeHelper.getNowPrice(priceTv.getText().toString()).toBigInteger().toString());
+        intent.putExtra(ConfirmPasswordAsyncTask.GAS_PRICE_TAG, mEthTransactionFeeHelper.getNowPrice(mPriceTv.getText().toString()).toBigInteger().toString());
         intent.putExtra(ConfirmPasswordAsyncTask.GAS_LIMIT_TAG, mEthTransactionFeeHelper.getDefaultGasLimit());
-        intent.putExtra(ConfirmPasswordAsyncTask.AMOUNT_TAG, transferAmount.getText().toString());
+        intent.putExtra(ConfirmPasswordAsyncTask.AMOUNT_TAG, mTransferAmountEt.getText().toString());
         intent.putExtra(ConfirmPasswordAsyncTask.EXTRA_DATA_TAG, "");
         if (mAccountItem != null){
             intent.putExtra(AppUtils.ACCOUNT_DATA, mAccountItem);
@@ -271,13 +271,13 @@ public class TransferActivity extends WithBackAppCompatActivity {
         if (requestCode == ScanAddressQRActivity.REQUEST_CODE){
             if (resultCode == RESULT_OK){
                 String address = data.getStringExtra(ScanAddressQRActivity.EXTRA_ADDRESS);
-                toAddress.setText(address);
+                mToAddressEt.setText(address);
             }
         }
         if (requestCode == ChooseFavoriteAddressActivity.REQUEST_CODE){
             if (resultCode == RESULT_OK){
                 String address = data.getStringExtra(ChooseFavoriteAddressActivity.EXTRA_ADDRESS);
-                toAddress.setText(address);
+                mToAddressEt.setText(address);
             }
         }
     }
@@ -319,7 +319,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
             }else {
                 indicator = TokenUtils.getBalanceText(mAccountItem.getBalance(), TokenUtils.ETH_DECIMALS) + " " + mAccountItem.getCoinName();
             }
-            availableBalance.setText(indicator);
+            mAvailableBalanceTv.setText(indicator);
 
             mEthTransactionFeeHelper = new EthTransactionFeeHelper(new EthTransactionFeeHelper.OnPriceChangedListener() {
                 @Override
@@ -343,7 +343,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
         TransferActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                priceTv.setText(priceText);
+                mPriceTv.setText(priceText);
             }
         });
     }
@@ -375,10 +375,10 @@ public class TransferActivity extends WithBackAppCompatActivity {
     }
 
     private boolean checkSendOutAmount(){
-        if (TextUtils.isEmpty(transferAmount.getText())
-                || !AppUtils.isValideNumber(transferAmount.getText().toString())
-                || new BigDecimal(transferAmount.getText().toString()).equals(BigDecimal.ZERO)){
-            Log.i(AppUtils.APP_TAG,"TransferActivity checkAmount invalid amount = " + transferAmount.getText().toString());
+        if (TextUtils.isEmpty(mTransferAmountEt.getText())
+                || !AppUtils.isValideNumber(mTransferAmountEt.getText().toString())
+                || new BigDecimal(mTransferAmountEt.getText().toString()).equals(BigDecimal.ZERO)){
+            Log.i(AppUtils.APP_TAG,"TransferActivity checkAmount invalid amount = " + mTransferAmountEt.getText().toString());
             responseForErrorResult(ERROR_TO_AMOUNT);
             return false;
         }
@@ -387,7 +387,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
     }
 
     private boolean checkBalanceEnough(BigDecimal amount){
-        if (new BigDecimal(transferAmount.getText().toString()).compareTo(amount) > 0){
+        if (new BigDecimal(mTransferAmountEt.getText().toString()).compareTo(amount) > 0){
             responseForErrorResult(ERROR_INSUFFICIENT_BALANCE);
             return false;
         }
@@ -404,14 +404,14 @@ public class TransferActivity extends WithBackAppCompatActivity {
         mBtcTransferHelper.loadBalance(this, getLoaderManager(), mAccountItem.getAddress(), new BtcAccountBalanceLoaderHelper.OnDataLoadFinishedListener() {
             @Override
             public void onBalanceLoadFinished(String balance) {
-                availableBalance.setText(balance + " " + mAccountItem.getCoinName());
+                mAvailableBalanceTv.setText(balance + " " + mAccountItem.getCoinName());
             }
         });
         mBtcTransferHelper.getTransactionFee();
     }
 
     private void handleBtcTransaction(){
-        if(!Utils.validBicoinAddress(toAddress.getText().toString())){
+        if(!Utils.validBicoinAddress(mToAddressEt.getText().toString())){
             responseForErrorResult(ERROR_TO_ADDRESS);
             return;
         }
@@ -425,9 +425,9 @@ public class TransferActivity extends WithBackAppCompatActivity {
         if(!checkBalanceEnough(mBtcTransferHelper.getBalance())){
             return;
         }
-        long sendOutAmount = TokenUtils.translateToRaw(transferAmount.getText().toString(), BtcUtils.BTC_DECIMALS_COUNT).longValue();
+        long sendOutAmount = TokenUtils.translateToRaw(mTransferAmountEt.getText().toString(), BtcUtils.BTC_DECIMALS_COUNT).longValue();
         new BuildBtcTxAsycTask(this, sendOutAmount, mAddress,
-                toAddress.getText().toString(), mAddress, mBtcTransferHelper.getCurrentFeeBase(),
+                mToAddressEt.getText().toString(), mAddress, mBtcTransferHelper.getCurrentFeeBase(),
                 new BuildBtcTxAsycTask.OnTxBuildFinishedListener() {
                     @Override
                     public void onTxBuildFinished(TxBuildResult txBuildResult) {
