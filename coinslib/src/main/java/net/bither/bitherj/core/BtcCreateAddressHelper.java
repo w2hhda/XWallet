@@ -73,9 +73,7 @@ public class BtcCreateAddressHelper {
 
         DeterministicKey master = HDKeyDerivation.createMasterPrivateKey(hdSeed);
         DeterministicKey account = getAccount(master);
-        account.clearPrivateKey();
-
-        return startToGenerateAddress(isFromImport, account, encryptedMnemonicSeed, encryptedHDSeed);
+        return startToGenerateAddress(isFromImport, account, encryptedMnemonicSeed, encryptedHDSeed, password);
     }
 
     private static DeterministicKey getAccount(DeterministicKey master) {
@@ -88,17 +86,19 @@ public class BtcCreateAddressHelper {
     }
 
     private static AccountData startToGenerateAddress(boolean isFromImport, DeterministicKey accountKey, EncryptedData encryptedMnemonicSeed,
-                                        EncryptedData encryptedHDSeed) {
-        DeterministicKey externalKey = getChainRootKey(accountKey, AbstractHD.PathType
-                .EXTERNAL_ROOT_PATH);
-        accountKey.wipe();
+                                        EncryptedData encryptedHDSeed, CharSequence password) {
+        DeterministicKey externalKey = getChainRootKey(accountKey, AbstractHD.PathType.EXTERNAL_ROOT_PATH);
 
-        byte[] subExternalPub = externalKey.deriveSoftened(0).getPubKey();
+        DeterministicKey key = externalKey.deriveSoftened(0);
+        EncryptedData encryptedPrivKey = new EncryptedData(key.getPrivKeyBytes(), password, false);
+        byte[] subExternalPub = key.getPubKey();
         AccountData accountData = new AccountData(Utils.toAddress(Utils.sha256hash160(subExternalPub)),
                 encryptedHDSeed.toEncryptedString(),
                 encryptedMnemonicSeed.toEncryptedString(),
-                null, Base58.encode(subExternalPub), !isFromImport);
+                encryptedPrivKey.toEncryptedString(), Base58.encode(subExternalPub), !isFromImport);
+        accountKey.wipe();
         externalKey.wipe();
+        key.wipe();
         return accountData;
     }
 
