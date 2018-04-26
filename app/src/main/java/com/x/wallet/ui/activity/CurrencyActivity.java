@@ -27,7 +27,6 @@ public class CurrencyActivity extends WithBackAppCompatActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.currency_activity);
-
         initRecyclerView();
     }
 
@@ -39,7 +38,7 @@ public class CurrencyActivity extends WithBackAppCompatActivity{
         mAdapter = new CurrencyArrayAdapter(R.layout.currency_list_item,
                 this.getResources().getStringArray(R.array.support_currency_array),
                 this.getResources().getStringArray(R.array.support_currency_unit_array),
-                currencyFlags);
+                mCurrencyIcons);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
@@ -67,20 +66,20 @@ public class CurrencyActivity extends WithBackAppCompatActivity{
         });
     }
     
-    private final static int[] currencyFlags = {
-        R.drawable.chf,
-        R.drawable.cny,
-        R.drawable.eur,
-        R.drawable.gbp,
-        R.drawable.hkd,
-        R.drawable.inr,
-        R.drawable.jpy,
-        R.drawable.krw,
-        R.drawable.nzd,
-        R.drawable.pln,
-        R.drawable.rub,
-        R.drawable.sgd,
-        R.drawable.thb,
-        R.drawable.usd
+    private final static int[] mCurrencyIcons = {
+        R.drawable.currency_chf,
+        R.drawable.currency_cny,
+        R.drawable.currency_eur,
+        R.drawable.currency_gbp,
+        R.drawable.currency_hkd,
+        R.drawable.currency_inr,
+        R.drawable.currency_jpy,
+        R.drawable.currency_krw,
+        R.drawable.currency_nzd,
+        R.drawable.currency_pln,
+        R.drawable.currency_rub,
+        R.drawable.currency_sgd,
+        R.drawable.currency_thb,
+        R.drawable.currency_usd
     };
 }

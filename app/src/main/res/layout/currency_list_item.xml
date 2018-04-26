@@ -9,19 +9,21 @@
     android:paddingStart="@dimen/account_list_item_paddingEnd"
     android:paddingTop="14dp">
 
-    <TextView
-        android:id="@+id/currency_tv"
-        android:layout_alignParentLeft="true"
-        android:layout_width="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_height="wrap_content"/>
     <ImageView
-        android:id="@+id/flag_iv"
+        android:id="@+id/currency_icon_iv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="40dp"
         android:layout_centerVertical="true"
-        android:src="@drawable/cny"/>
+        android:scaleType="fitCenter"
+        android:src="@drawable/currency_cny" />
+
+    <TextView
+        android:id="@+id/currency_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/currency_icon_iv"
+        android:layout_marginStart="20dp" />
 
     <ImageView
         android:id="@+id/check_iv"

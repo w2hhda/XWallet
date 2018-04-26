@@ -2,12 +2,9 @@ package com.x.wallet.ui.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 
 /**
@@ -17,7 +14,7 @@ import com.x.wallet.R;
 public class CurrencyListItem extends RelativeLayout{
     private TextView mCurrencyTv;
     private ImageView mCheckIv;
-    private ImageView mFlagIv;
+    private ImageView mIconIv;
 
     public CurrencyListItem(Context context) {
         super(context);
@@ -36,12 +33,12 @@ public class CurrencyListItem extends RelativeLayout{
         super.onFinishInflate();
         mCurrencyTv = findViewById(R.id.currency_tv);
         mCheckIv = findViewById(R.id.check_iv);
-        mFlagIv = findViewById(R.id.flag_iv);
+        mIconIv = findViewById(R.id.currency_icon_iv);
     }
 
     public void bind(String currency, String chooseCurrency, int resId){
         mCurrencyTv.setText(currency);
         mCheckIv.setImageResource(currency.equals(chooseCurrency) ? R.drawable.ic_radio_button_checked : R.drawable.ic_radio_button_unchecked);
-        mFlagIv.setImageResource(resId);
+        mIconIv.setImageResource(resId);
     }
 }
