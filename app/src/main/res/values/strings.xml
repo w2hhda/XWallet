@@ -157,4 +157,17 @@
     <string name="cannot_recognize">无法识别指纹，请重试</string>
     <string name="cannot_use_fingerprint">指纹暂时无法使用，请输入Pin密码</string>
     <string name="all_token_has_been_added">所有支持的代币都已经被添加</string>
+    <string name="address_item">地址</string>
+    <string name="address_name">地址名称</string>
+    <string name="address_name_hint">请输入地址名称</string>
+    <string name="save_address">保存</string>
+    <string name="favorite_address">常用地址</string>
+    <string name="edit_favorite_address">编辑</string>
+    <string name="add_favorite_address">添加</string>
+    <string name="del_favorite_address">删除</string>
+    <string name="no_favorite_address">还未添加常用地址</string>
+    <string name="choose_coin_type">请选择地址类型</string>
+    <string name="confirm_delete_address">确认删除地址？</string>
+    <string name="select_address">选择收款地址</string>
+    <string name="invalid_address">地址无效、请重新输入</string>
 </resources>

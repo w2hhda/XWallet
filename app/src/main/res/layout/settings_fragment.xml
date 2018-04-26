@@ -19,7 +19,7 @@
 
         <ImageView
             android:id="@+id/manage_wallet_iv"
-            android:layout_width="wrap_content"
+            android:layout_width="27dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/settings_item_marginStart"
@@ -48,6 +48,43 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/settings_item_divider_height" />
 
+    <RelativeLayout android:id="@+id/address_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/item_bg_selector"
+        android:minHeight="@dimen/settings_item_height">
+
+        <ImageView
+            android:id="@+id/favorite_address_iv"
+            android:layout_width="27dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/settings_item_marginStart"
+            android:src="@drawable/favorite_icon" />
+
+        <TextView
+            style="@style/SettingItemTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/settings_item_tv_marginStart"
+            android:layout_toEndOf="@id/favorite_address_iv"
+            android:text="@string/favorite_address" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/settings_item_marginEnd"
+            android:src="@drawable/into_icon" />
+    </RelativeLayout>
+
+    <View
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/settings_item_divider_height" />
+
     <RelativeLayout android:id="@+id/service_aggrement_rl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,7 +93,7 @@
 
         <ImageView
             android:id="@+id/service_aggrement_iv"
-            android:layout_width="wrap_content"
+            android:layout_width="27dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/settings_item_marginStart"
@@ -93,7 +130,7 @@
 
         <ImageView
             android:id="@+id/privacy_terms_iv"
-            android:layout_width="wrap_content"
+            android:layout_width="27dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/settings_item_marginStart"
@@ -135,7 +172,7 @@
 
         <ImageView
             android:id="@+id/pin_iv"
-            android:layout_width="wrap_content"
+            android:layout_width="27dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/settings_item_marginStart"

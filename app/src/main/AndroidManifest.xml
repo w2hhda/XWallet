@@ -177,6 +177,30 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".transaction.address.FavoriteAddressActivity"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.x.wallet.action.SEE_FAVORITE_ADDRESS_ACTION"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".transaction.address.AddFavoriteAddressActivity"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.x.wallet.action.ADD_FAVORITE_ADDRESS_ACTION"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".transaction.address.ChooseFavoriteAddressActivity"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.x.wallet.action.CHOOSE_FAVORITE_ADDRESS_ACTION"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
         <provider
             android:name=".db.XWalletProvider"
             android:authorities="com.x.wallet"

@@ -9,6 +9,7 @@ import com.x.wallet.AppUtils;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.lib.common.AccountData;
 import com.x.wallet.lib.common.LibUtils;
+import com.x.wallet.transaction.address.AddFavoriteAddressActivity;
 
 /**
  * Created by wuliang on 18-3-14.
@@ -65,6 +66,14 @@ public class DbUtils {
         String TOKEN_NAME = "token_name";               //15
         String TOKEN_DECIMALS = "token_decimals";       //16
         String BLOCK_NUMBER = "block_number";           //17
+    }
+
+    public interface AddressTableColumns{
+        String _ID = "_id";                             //0
+        String ADDRESS = "address";                     //1
+        String ADDRESS_TYPE = "address_type";           //2
+        String NAME = "address_name";                   //3
+
     }
 
     public static final String UPDATE_TOKEN_SELECTION = DbUtils.TokenTableColumns.ACCOUNT_ADDRESS + " = ? AND " + DbUtils.TokenTableColumns.SYMBOL + " = ?";
@@ -326,4 +335,101 @@ public class DbUtils {
                 DbUtils.TokenTableColumns.ACCOUNT_ADDRESS + " = ?",
                 new String[]{accountAddress}, null);
     }
+
+    public static Uri insertFavoriteAddressIntoDb(String address, String addressType, String addressName, AddFavoriteAddressActivity.ChangeDbCallback callback){
+//        if (hasSameFavoriteAddress(address, addressType, addressName)){
+//            callback.changeFinished(false);
+//            return null;
+//        }
+        if (isFavoriteAddressExist(address)){
+            //callback.changeFinished(false);
+            updateFavoriteAddress(address, addressType, addressName, callback);
+            return null;
+        }
+        ContentValues values = new ContentValues();
+        values.put(AddressTableColumns.ADDRESS, address);
+        if (addressType != null){
+            values.put(AddressTableColumns.ADDRESS_TYPE, addressType);
+        }
+
+        if (addressName != null){
+            values.put(AddressTableColumns.NAME, addressName);
+        }
+
+        Uri uri =  XWalletApplication.getApplication().getApplicationContext().getContentResolver()
+                .insert(XWalletProvider.CONTENT_URI_ADDRESS, values);
+        callback.changeFinished(uri != null);
+        return uri;
+    }
+
+    public static int updateFavoriteAddress(String address, String addressType, String addressName, AddFavoriteAddressActivity.ChangeDbCallback callback){
+        ContentValues values = new ContentValues();
+        values.put(AddressTableColumns.ADDRESS, address);
+        if (addressType != null){
+            values.put(AddressTableColumns.ADDRESS_TYPE, addressType);
+        }
+
+        if (addressName != null){
+            values.put(AddressTableColumns.NAME, addressName);
+        }
+
+        int count = XWalletApplication.getApplication().getApplicationContext().getContentResolver()
+                .update(XWalletProvider.CONTENT_URI_ADDRESS, values,
+                        AddressTableColumns.ADDRESS + " = ?",
+                        new String[]{address});
+        callback.changeFinished(count > 0);
+        return count;
+
+    }
+
+    public static int deleteFavoriteAddress(String address, AddFavoriteAddressActivity.ChangeDbCallback callback){
+        if (!isFavoriteAddressExist(address)){
+            callback.changeFinished(true);
+            return 0;
+        }
+        String selection = AddressTableColumns.ADDRESS + " = ?";
+        int deleteRows = XWalletApplication.getApplication().getApplicationContext().getContentResolver()
+                .delete(XWalletProvider.CONTENT_URI_ADDRESS, selection, new String[]{address});
+        callback.changeFinished(deleteRows > 0);
+        return deleteRows;
+
+    }
+
+    private static boolean isFavoriteAddressExist(String address){
+        final String selection = AddressTableColumns.ADDRESS + " = ?";
+        Cursor cursor = null;
+        try {
+            cursor = XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
+                    XWalletProvider.CONTENT_URI_ADDRESS, null, selection, new String[]{address}, null
+            );
+            if (cursor != null && cursor.getCount() > 0){
+                return true;
+            }
+        }finally {
+            if (cursor != null){
+                cursor.close();
+            }
+        }
+        return false;
+    }
+
+    private static boolean hasSameFavoriteAddress(String address, String type, String name){
+        final String selection = AddressTableColumns.ADDRESS + " = ? AND " + AddressTableColumns.ADDRESS_TYPE + " = ? AND " + AddressTableColumns.NAME + " = ?";
+        final String[] selectionArgs = new String[]{address, type, name};
+        Cursor cursor = null;
+        try {
+            cursor = XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
+                    XWalletProvider.CONTENT_URI_ADDRESS, null, selection, selectionArgs, null
+            );
+            if (cursor != null && cursor.getCount() > 0){
+                return true;
+            }
+        }finally {
+            if (cursor != null){
+                cursor.close();
+            }
+        }
+        return false;
+    }
+
 }

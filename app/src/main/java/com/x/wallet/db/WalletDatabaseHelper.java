@@ -90,6 +90,12 @@ public class WalletDatabaseHelper extends SQLiteOpenHelper {
                 DbUtils.TxTableColumns.TOKEN_DECIMALS + " INTEGER DEFAULT 0," +
                 DbUtils.TxTableColumns.BLOCK_NUMBER + " TEXT DEFAULT 0);");
 
+        db.execSQL("CREATE TABLE " + XWalletProvider.TABLE_ADDRESS + " (" +
+                DbUtils.AddressTableColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                DbUtils.AddressTableColumns.ADDRESS + " TEXT," +
+                DbUtils.AddressTableColumns.ADDRESS_TYPE + " TEXT," +
+                DbUtils.AddressTableColumns.NAME + " TEXT);");
+
         BtcDbHelper.createBitCoinTable(db);
     }
 }

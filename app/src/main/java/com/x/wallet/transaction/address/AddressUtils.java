@@ -16,6 +16,7 @@ import com.x.wallet.lib.eth.api.EthAccountCreateHelper;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Created by wuliang on 18-3-14.
@@ -107,5 +108,10 @@ public class AddressUtils {
         accountData.setCoinName(AppUtils.COIN_ARRAY[coinType]);
         accountData.setAccountName(accountName);
         accountData.setCoinType(coinType);
+    }
+
+    public static boolean validEthAddress(String address){
+        String regString = "^0x$?[a-f0-9A-F]{40}";
+        return Pattern.matches(regString, address);
     }
 }

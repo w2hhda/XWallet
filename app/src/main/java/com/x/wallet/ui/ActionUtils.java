@@ -6,6 +6,7 @@ import android.content.Intent;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.lib.common.LibUtils;
+import com.x.wallet.ui.data.AddressItem;
 import com.x.wallet.ui.data.TransactionItem;
 
 /**
@@ -43,8 +44,8 @@ public class ActionUtils {
         context.startActivity(intent);
     }
 
-    public static void createAccount(Activity activity, int actionType, int coinType, int requestCode){
-        if(actionType == AppUtils.ACCOUNT_ACTION_TYPE_NEW){
+    public static void createAccount(Activity activity, int actionType, int coinType, int requestCode) {
+        if (actionType == AppUtils.ACCOUNT_ACTION_TYPE_NEW) {
             Intent intent = new Intent("com.x.wallet.action.CREATE_ACCOUNT_ACTION");
             intent.putExtra(AppUtils.COIN_TYPE, coinType);
             activity.startActivityForResult(intent, requestCode);
@@ -53,5 +54,14 @@ public class ActionUtils {
             intent.putExtra(AppUtils.COIN_TYPE, coinType);
             activity.startActivityForResult(intent, requestCode);
         }
+    }
+
+    public static void addFavoriteAddress(Context context, AddressItem item){
+        Intent intent = new Intent("com.x.wallet.action.ADD_FAVORITE_ADDRESS_ACTION");
+        if (item != null){
+            intent.putExtra(AppUtils.ADDRESS_ITEM, item);
+        }
+        context.startActivity(intent);
+
     }
 }
