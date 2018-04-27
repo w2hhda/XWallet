@@ -3,7 +3,6 @@ package net.bither.bitherj.core;
 import android.text.TextUtils;
 import android.util.Log;
 
-
 import com.x.wallet.lib.btc.CustomePrivateKeyUtil;
 import com.x.wallet.lib.common.AccountData;
 import com.x.wallet.lib.common.LibUtils;
@@ -11,9 +10,6 @@ import com.x.wallet.lib.common.LibUtils;
 import net.bither.bitherj.crypto.DumpedPrivateKey;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.EncryptedData;
-import net.bither.bitherj.crypto.KeyCrypter;
-import net.bither.bitherj.crypto.KeyCrypterException;
-import net.bither.bitherj.crypto.KeyCrypterScrypt;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.crypto.hd.DeterministicKey;
 import net.bither.bitherj.crypto.hd.HDKeyDerivation;
@@ -21,8 +17,6 @@ import net.bither.bitherj.crypto.mnemonic.MnemonicException;
 import net.bither.bitherj.crypto.mnemonic.MnemonicHelper;
 import net.bither.bitherj.utils.Base58;
 import net.bither.bitherj.utils.Utils;
-
-import org.spongycastle.crypto.params.KeyParameter;
 
 import java.security.SecureRandom;
 import java.util.List;

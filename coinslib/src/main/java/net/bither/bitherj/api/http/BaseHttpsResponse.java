@@ -1,7 +1,6 @@
 package net.bither.bitherj.api.http;
 
-import net.bither.bitherj.AbstractApp;
-import net.bither.bitherj.api.ConnectHttps;
+import com.x.wallet.lib.btc.TrustAllCertManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,7 +21,7 @@ public abstract class BaseHttpsResponse<T> {
 
     protected synchronized void trustCerts() {
         if (!isTrust) {
-            ConnectHttps.trustCerts(AbstractApp.trustCert);
+            TrustAllCertManager.allowAllSSL();
             isTrust = true;
         }
 

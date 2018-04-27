@@ -20,14 +20,12 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 
-import com.x.wallet.R;
 import com.x.wallet.XWalletApplication;
 
 import net.bither.bitherj.AbstractApp;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.ISetting;
 import net.bither.bitherj.NotificationService;
-import net.bither.bitherj.api.TrustCert;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 
 import org.apache.http.client.CookieStore;
@@ -36,13 +34,6 @@ import java.io.File;
 import java.util.List;
 
 public class AndroidImplAbstractApp extends AbstractApp {
-
-    @Override
-    public TrustCert initTrustCert() {
-        /*return new TrustCert(XWalletApplication.getApplication().getResources().openRawResource(R.raw
-                .bithertruststore), "bither".toCharArray(), "BKS");*/
-        return null;
-    }
 
     @Override
     public ISetting initSetting() {
