@@ -12,13 +12,10 @@ import com.x.wallet.ui.data.AddressItem;
 import com.x.wallet.ui.view.AddressListItem;
 
 public class FavoriteAddressAdapter extends CursorRecyclerAdapter<FavoriteAddressAdapter.ViewHolder> {
-    private boolean isToChoose;
-    private AddressItem item;
     private ItemClickListener mItemClickListener;
 
-    public FavoriteAddressAdapter(Context context, Cursor c, int flags, boolean isToChoose) {
+    public FavoriteAddressAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
-        this.isToChoose = isToChoose;
         setHasStableIds(true);
     }
 
@@ -28,9 +25,8 @@ public class FavoriteAddressAdapter extends CursorRecyclerAdapter<FavoriteAddres
         listItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                item = listItem.getmItem();
                 if (mItemClickListener != null){
-                    mItemClickListener.onItemClick(listItem.getmItem());
+                    mItemClickListener.onItemClick(listItem.getItem());
                 }
             }
         });
@@ -58,11 +54,6 @@ public class FavoriteAddressAdapter extends CursorRecyclerAdapter<FavoriteAddres
             mView = itemView;
         }
     }
-
-    public AddressItem getItem() {
-        return item;
-    }
-
     public void setItemClickListener(FavoriteAddressAdapter.ItemClickListener itemClickListener) {
         mItemClickListener = itemClickListener;
     }

@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -18,40 +17,38 @@ import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
+import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.ui.adapter.FavoriteAddressAdapter;
 import com.x.wallet.ui.data.AddressItem;
 
 public class ChooseFavoriteAddressActivity extends WithBackAppCompatActivity {
-    public static final int REQUEST_CODE = 936;
-    private static final int FAVORITE_ADDRESS_LOADER = 894;
-    public static final String EXTRA_ADDRESS = "extra_address";
+    private static final int FAVORITE_ADDRESS_LOADER = 1;
 
     private LoaderManager mLoaderManager;
     private RecyclerView mRecyclerView;
     private FavoriteAddressAdapter mAdapter;
     private TextView mNoFavoriteTv;
-    private String coinType;
+
+    private String mAddressType;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(R.string.select_address);
         setContentView(R.layout.favorite_address_activity);
-        getCoinType();
+        initData();
         initView();
     }
 
-    private void getCoinType(){
+    private void initData(){
         final int typeId = getIntent().getIntExtra(AppUtils.COIN_TYPE, -1);
         switch (typeId){
-            case 0:
-                coinType = AppUtils.COIN_ARRAY[0];
+            case LibUtils.COINTYPE.COIN_BTC:
+                mAddressType = AppUtils.COIN_ARRAY[0];
                 break;
-            case 1:
-                coinType = AppUtils.COIN_ARRAY[1];
+            case LibUtils.COINTYPE.COIN_ETH:
+                mAddressType = AppUtils.COIN_ARRAY[1];
                 break;
-            case -1:
             default:
-                coinType = null;
+                mAddressType = null;
                 break;
         }
 
@@ -66,7 +63,7 @@ public class ChooseFavoriteAddressActivity extends WithBackAppCompatActivity {
     private void initRecyclerView(){
         mRecyclerView = findViewById(R.id.favorite_address_rv);
         final LinearLayoutManager manager = new LinearLayoutManager(this);
-        mAdapter = new FavoriteAddressAdapter(this, null , 0, true);
+        mAdapter = new FavoriteAddressAdapter(this, null , 0);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(mAdapter);
@@ -76,7 +73,7 @@ public class ChooseFavoriteAddressActivity extends WithBackAppCompatActivity {
             @Override
             public void onItemClick(AddressItem item) {
                 Intent intent = new Intent();
-                intent.putExtra(EXTRA_ADDRESS, item.getAddress());
+                intent.putExtra(AppUtils.EXTRA_ADDRESS, item.getAddress());
                 setResult(RESULT_OK, intent);
                 ChooseFavoriteAddressActivity.this.finish();
             }
@@ -85,21 +82,27 @@ public class ChooseFavoriteAddressActivity extends WithBackAppCompatActivity {
 
     private void initLoaderManager(){
         mLoaderManager = getLoaderManager();
-        Loader favoriteAddressLoader = mLoaderManager.initLoader(FAVORITE_ADDRESS_LOADER, new Bundle(),
-                new ChooseFavoriteAddressActivity.FavoriteAddressLoaderCallbacks());
-       // favoriteAddressLoader.forceLoad();
-
+        mLoaderManager.initLoader(FAVORITE_ADDRESS_LOADER, new Bundle(),
+                new FavoriteAddressLoaderCallbacks());
     }
 
     private void updateVisibility(int count){
         mNoFavoriteTv.setVisibility(count > 0 ? View.GONE : View.VISIBLE);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mLoaderManager != null){
+            mLoaderManager.destroyLoader(FAVORITE_ADDRESS_LOADER);
+            mLoaderManager = null;
+        }
+    }
+
     private class FavoriteAddressLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor> {
         final String order = DbUtils.AddressTableColumns.NAME + " ASC";
         final String selection = DbUtils.AddressTableColumns.ADDRESS_TYPE + " = ?";
-        final String[] projection = new String[]{DbUtils.AddressTableColumns.ADDRESS};
-        final String[] selectionArgs = new String[]{coinType};
+        final String[] selectionArgs = new String[]{mAddressType};
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
             return new CursorLoader(ChooseFavoriteAddressActivity.this, XWalletProvider.CONTENT_URI_ADDRESS, null, selection, selectionArgs, order);
@@ -108,7 +111,6 @@ public class ChooseFavoriteAddressActivity extends WithBackAppCompatActivity {
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             updateVisibility(data.getCount());
-            Log.i("test", "data");
             mAdapter.swapCursor(data);
         }
 

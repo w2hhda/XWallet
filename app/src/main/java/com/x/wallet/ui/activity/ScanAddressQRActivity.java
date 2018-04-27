@@ -28,9 +28,6 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
  */
 
 public class ScanAddressQRActivity extends WithBackAppCompatActivity implements ZXingScannerView.ResultHandler{
-
-    public static final int REQUEST_CODE = 100;
-    public static final String EXTRA_ADDRESS = "extra_address";
     private ZXingScannerView mScannerView;
     private FrameLayout scanLayout;
     public static final int REQUEST_CAMERA_PERMISSION = 106;
@@ -70,7 +67,7 @@ public class ScanAddressQRActivity extends WithBackAppCompatActivity implements 
         try {
             AddressEncoder scanned = AddressEncoder.decode(address);
             Intent data = new Intent();
-            data.putExtra(EXTRA_ADDRESS, mCoinType == LibUtils.COINTYPE.COIN_BTC ? scanned.getAddress() : scanned.getAddress().toLowerCase());
+            data.putExtra(AppUtils.EXTRA_ADDRESS, mCoinType == LibUtils.COINTYPE.COIN_BTC ? scanned.getAddress() : scanned.getAddress().toLowerCase());
 
             setResult(RESULT_OK, data);
             finish();

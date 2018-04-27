@@ -178,23 +178,25 @@
         </activity>
 
         <activity android:name=".ui.activity.FavoriteAddressActivity"
-            android:exported="false">
+            android:exported="false"
+            android:label="@string/favorite_address">
             <intent-filter>
                 <action android:name="com.x.wallet.action.SEE_FAVORITE_ADDRESS_ACTION"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activity.AddFavoriteAddressActivity"
+        <activity android:name=".ui.activity.EditFavoriteAddressActivity"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.x.wallet.action.ADD_FAVORITE_ADDRESS_ACTION"/>
+                <action android:name="com.x.wallet.action.EDIT_FAVORITE_ADDRESS_ACTION"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
         <activity android:name=".ui.activity.ChooseFavoriteAddressActivity"
-            android:exported="false">
+            android:exported="false"
+            android:label="@string/select_address">
             <intent-filter>
                 <action android:name="com.x.wallet.action.CHOOSE_FAVORITE_ADDRESS_ACTION"/>
                 <category android:name="android.intent.category.DEFAULT"/>

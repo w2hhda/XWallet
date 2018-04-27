@@ -26,13 +26,15 @@ import com.x.wallet.ui.dialog.ContentShowDialogHelper;
 
 import net.bither.bitherj.utils.Utils;
 
-public class AddFavoriteAddressActivity extends WithBackAppCompatActivity {
+public class EditFavoriteAddressActivity extends WithBackAppCompatActivity {
     private EditText mAddressEt;
     private ImageButton mScanIb;
     private EditText mAddressTypeEt;
     private EditText mAddressNameEt;
     private Button mFinishButton;
     private AddressItem addressItem;
+
+    private static final int SCAN_ADDRESS_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,8 +58,8 @@ public class AddFavoriteAddressActivity extends WithBackAppCompatActivity {
         mScanIb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(AddFavoriteAddressActivity.this, ScanAddressQRActivity.class);
-                startActivityForResult(intent, ScanAddressQRActivity.REQUEST_CODE);
+                Intent intent = new Intent(EditFavoriteAddressActivity.this, ScanAddressQRActivity.class);
+                startActivityForResult(intent, SCAN_ADDRESS_REQUEST_CODE);
             }
         });
         mAddressTypeEt.setOnClickListener(new View.OnClickListener() {
@@ -152,12 +154,13 @@ public class AddFavoriteAddressActivity extends WithBackAppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ScanAddressQRActivity.REQUEST_CODE) {
+        if (requestCode == SCAN_ADDRESS_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                String address = data.getStringExtra(ScanAddressQRActivity.EXTRA_ADDRESS);
+                String address = data.getStringExtra(AppUtils.EXTRA_ADDRESS);
                 mAddressEt.setText(address);
             }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -172,10 +175,10 @@ public class AddFavoriteAddressActivity extends WithBackAppCompatActivity {
                     @Override
                     public void onDataActionFinished(boolean isSuccess) {
                         if (isSuccess) {
-                            Toast.makeText(AddFavoriteAddressActivity.this, getSuccessResultText(actionType), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(EditFavoriteAddressActivity.this, getSuccessResultText(actionType), Toast.LENGTH_SHORT).show();
                             finish();
                         } else {
-                            Toast.makeText(AddFavoriteAddressActivity.this, getFailedResultText(actionType), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(EditFavoriteAddressActivity.this, getFailedResultText(actionType), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }).execute();
@@ -218,7 +221,7 @@ public class AddFavoriteAddressActivity extends WithBackAppCompatActivity {
     }
 
     private void alertErrorMsg(String msg) {
-        Toast.makeText(AddFavoriteAddressActivity.this, msg, Toast.LENGTH_SHORT).show();
+        Toast.makeText(EditFavoriteAddressActivity.this, msg, Toast.LENGTH_SHORT).show();
     }
 
     private int getSuccessResultText(int actionType){

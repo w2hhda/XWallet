@@ -22,7 +22,7 @@ import com.x.wallet.ui.adapter.FavoriteAddressAdapter;
 import com.x.wallet.ui.data.AddressItem;
 
 public class FavoriteAddressActivity extends WithBackAppCompatActivity {
-    private static final int FAVORITE_ADDRESS_LOADER = 894;
+    private static final int FAVORITE_ADDRESS_LOADER = 1;
 
     private LoaderManager mLoaderManager;
     private RecyclerView mRecyclerView;
@@ -31,7 +31,6 @@ public class FavoriteAddressActivity extends WithBackAppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(R.string.favorite_address);
         setContentView(R.layout.favorite_address_activity);
         initView();
     }
@@ -45,7 +44,7 @@ public class FavoriteAddressActivity extends WithBackAppCompatActivity {
     private void initRecyclerView(){
         mRecyclerView = findViewById(R.id.favorite_address_rv);
         final LinearLayoutManager manager = new LinearLayoutManager(this);
-        mAdapter = new FavoriteAddressAdapter(this, null , 0, false);
+        mAdapter = new FavoriteAddressAdapter(this, null , 0);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(mAdapter);
@@ -54,17 +53,14 @@ public class FavoriteAddressActivity extends WithBackAppCompatActivity {
         mAdapter.setItemClickListener(new FavoriteAddressAdapter.ItemClickListener() {
             @Override
             public void onItemClick(AddressItem item) {
-                ActionUtils.addFavoriteAddress(FavoriteAddressActivity.this, item);
+                ActionUtils.editFavoriteAddress(FavoriteAddressActivity.this, item);
             }
         });
     }
 
     private void initLoaderManager(){
         mLoaderManager = getLoaderManager();
-        Loader favoriteAddressLoader = mLoaderManager.initLoader(FAVORITE_ADDRESS_LOADER, new Bundle(),
-                new FavoriteAddressLoaderCallbacks());
-        favoriteAddressLoader.forceLoad();
-
+        mLoaderManager.initLoader(FAVORITE_ADDRESS_LOADER, new Bundle(), new FavoriteAddressLoaderCallbacks());
     }
 
     private class FavoriteAddressLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -110,7 +106,7 @@ public class FavoriteAddressActivity extends WithBackAppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_add_favorite_address:
-                ActionUtils.addFavoriteAddress(this, null);
+                ActionUtils.editFavoriteAddress(this, null);
                 return true;
         }
         return super.onOptionsItemSelected(item);

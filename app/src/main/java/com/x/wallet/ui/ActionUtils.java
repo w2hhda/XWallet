@@ -56,8 +56,8 @@ public class ActionUtils {
         }
     }
 
-    public static void addFavoriteAddress(Context context, AddressItem item){
-        Intent intent = new Intent("com.x.wallet.action.ADD_FAVORITE_ADDRESS_ACTION");
+    public static void editFavoriteAddress(Context context, AddressItem item){
+        Intent intent = new Intent("com.x.wallet.action.EDIT_FAVORITE_ADDRESS_ACTION");
         if (item != null){
             intent.putExtra(AppUtils.ADDRESS_ITEM, item);
         }

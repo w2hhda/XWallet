@@ -3,7 +3,6 @@ package com.x.wallet.ui.view;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -43,7 +42,7 @@ public class AddressListItem extends RelativeLayout {
         addressView.setText(mItem.getAddress());
     }
 
-    public AddressItem getmItem() {
+    public AddressItem getItem() {
         return mItem;
     }
 }

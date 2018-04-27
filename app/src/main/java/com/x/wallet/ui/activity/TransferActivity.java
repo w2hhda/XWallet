@@ -61,6 +61,9 @@ public class TransferActivity extends WithBackAppCompatActivity {
     private EthTransactionFeeHelper mEthTransactionFeeHelper;
     private BtcTransferHelper mBtcTransferHelper;
 
+    private static final int SCAN_ADDRESS_REQUEST_CODE = 1;
+    private static final int CHOOSE_FAVORITE_ADDRESS_REQUEST_CODE = 2;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,7 +99,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent("com.x.wallet.action.CHOOSE_FAVORITE_ADDRESS_ACTION");
                 intent.putExtra(AppUtils.COIN_TYPE, mTokenItem != null ? LibUtils.COINTYPE.COIN_ETH : mAccountItem.getCoinType());
-                startActivityForResult(intent, ChooseFavoriteAddressActivity.REQUEST_CODE);
+                startActivityForResult(intent, CHOOSE_FAVORITE_ADDRESS_REQUEST_CODE);
 
             }
         });
@@ -266,18 +269,22 @@ public class TransferActivity extends WithBackAppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ScanAddressQRActivity.REQUEST_CODE){
-            if (resultCode == RESULT_OK){
-                String address = data.getStringExtra(ScanAddressQRActivity.EXTRA_ADDRESS);
-                mToAddressEt.setText(address);
-            }
-        }
-        if (requestCode == ChooseFavoriteAddressActivity.REQUEST_CODE){
-            if (resultCode == RESULT_OK){
-                String address = data.getStringExtra(ChooseFavoriteAddressActivity.EXTRA_ADDRESS);
-                mToAddressEt.setText(address);
-            }
+        switch (requestCode) {
+            case SCAN_ADDRESS_REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    String address = data.getStringExtra(AppUtils.EXTRA_ADDRESS);
+                    mToAddressEt.setText(address);
+                }
+                break;
+            case CHOOSE_FAVORITE_ADDRESS_REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    String address = data.getStringExtra(AppUtils.EXTRA_ADDRESS);
+                    mToAddressEt.setText(address);
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
         }
     }
 
@@ -446,7 +453,7 @@ public class TransferActivity extends WithBackAppCompatActivity {
     private void scanAddress(){
         Intent intent = new Intent(TransferActivity.this, ScanAddressQRActivity.class);
         intent.putExtra(AppUtils.COIN_TYPE, mTokenItem != null ? LibUtils.COINTYPE.COIN_ETH : mAccountItem.getCoinType());
-        startActivityForResult(intent, ScanAddressQRActivity.REQUEST_CODE);
+        startActivityForResult(intent, SCAN_ADDRESS_REQUEST_CODE);
     }
 
     @Override
