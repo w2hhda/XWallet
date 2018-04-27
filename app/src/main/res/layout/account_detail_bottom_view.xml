@@ -7,14 +7,13 @@
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_above="@id/account_detail_bottom"
-        android:background="#727484" />
+        android:background="@color/account_detail_btn_divider_color" />
 
     <LinearLayout
         android:id="@+id/account_detail_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:minHeight="41dp">
+        android:layout_alignParentBottom="true">
 
         <FrameLayout
             android:id="@+id/send_btn"
@@ -23,7 +22,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:background="@android:color/white"
-            android:minHeight="144px">
+            android:minHeight="@dimen/transaction_btn_height">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -51,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@color/colorPrimary"
-            android:minHeight="144px">
+            android:minHeight="@dimen/transaction_btn_height">
 
             <LinearLayout
                 android:layout_width="wrap_content"

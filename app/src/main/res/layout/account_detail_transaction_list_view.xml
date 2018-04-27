@@ -9,5 +9,5 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="144px" />
+        android:paddingBottom="@dimen/transaction_btn_height" />
 </android.support.v4.widget.SwipeRefreshLayout>

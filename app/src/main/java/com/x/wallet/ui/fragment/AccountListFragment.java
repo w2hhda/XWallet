@@ -15,7 +15,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -24,7 +23,6 @@ import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.db.XWalletProvider;
-import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.balance.AllBalanceLoader;
 import com.x.wallet.transaction.balance.BalanceConversionUtils;
 import com.x.wallet.transaction.balance.BalanceLoaderManager;
@@ -54,9 +52,6 @@ public class AccountListFragment extends Fragment {
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
-
-    private MenuItem mAddItem;
-    private MenuItem mImportItem;
 
     private static final int ACCOUNT_LIST_LOADER = 1;
     private static final int ALL_BALANCE_LOADER = 2;
@@ -100,28 +95,6 @@ public class AccountListFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         init(getLoaderManager());
     }
-
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        inflater.inflate(R.menu.add_acount_menu, menu);
-//        super.onCreateOptionsMenu(menu,inflater);
-//
-//        mAddItem = menu.findItem(R.id.action_add_account);
-//        mImportItem = menu.findItem(R.id.action_import_account);
-//    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()){
-//            case R.id.action_add_account:
-//                handleAccountAction(AppUtils.ACCOUNT_ACTION_TYPE_NEW);
-//                return true;
-//            case R.id.action_import_account:
-//                handleAccountAction(AppUtils.ACCOUNT_ACTION_TYPE_IMPORT);
-//                return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
 
     @Override
     public void onDestroy() {
@@ -193,7 +166,6 @@ public class AccountListFragment extends Fragment {
                 mEmptyAccountViewContainer.setVisibility(View.GONE);
                 mRecyclerView.setVisibility(View.VISIBLE);
                 mAllBalanceViewContainer.setVisibility(View.VISIBLE);
-                updateMenuVisibility(true);
                 mSwipeRefreshLayout.setEnabled(true);
                 requestBalance(null, false);
             } else {
@@ -201,18 +173,8 @@ public class AccountListFragment extends Fragment {
                 mEmptyAccountViewContainer.setVisibility(View.VISIBLE);
                 mRecyclerView.setVisibility(View.GONE);
                 mAllBalanceViewContainer.setVisibility(View.GONE);
-                updateMenuVisibility(false);
                 mSwipeRefreshLayout.setEnabled(false);
             }
-        }
-    }
-
-    private void updateMenuVisibility(boolean isVisible){
-        if(mAddItem != null){
-            mAddItem.setVisible(isVisible);
-        }
-        if(mImportItem != null){
-            mImportItem.setVisible(isVisible);
         }
     }
 

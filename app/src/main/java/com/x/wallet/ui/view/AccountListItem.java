@@ -18,10 +18,8 @@ import com.x.wallet.ui.data.AllAccountItem;
 
 public class AccountListItem extends LinearLayout {
     private AllAccountItem mAccountItem;
-    private View mAccountNameViewContainer;
     private TextView mAccountNameTv;
     private RawAccountListItem mRawAccountListItem;
-//    private View mAddTokenView;
     private View mDividerAboveHeader;
     private View mDividerAboveItem;
 
@@ -40,19 +38,7 @@ public class AccountListItem extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mAccountNameViewContainer = findViewById(R.id.account_name_container);
         mAccountNameTv = findViewById(R.id.account_name_tv);
-
-//        mAddTokenView = findViewById(R.id.add_token_container);
-//        mAddTokenView.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent("com.x.wallet.action.ADD_TOKEN_ACTION");
-//                intent.putExtra(AppUtils.ACCOUNT_ID, mAccountItem.getId());
-//                intent.putExtra(AppUtils.ACCOUNT_ADDRESS, mAccountItem.getAddress());
-//                getContext().startActivity(intent);
-//            }
-//        });
 
         mRawAccountListItem = findViewById(R.id.raw_item);
 
@@ -66,7 +52,7 @@ public class AccountListItem extends LinearLayout {
 
         if (mAccountItem.isToken()) {
             mDividerAboveHeader.setVisibility(GONE);
-            mAccountNameViewContainer.setVisibility(GONE);
+            mAccountNameTv.setVisibility(GONE);
             mDividerAboveItem.setVisibility(VISIBLE);
         } else {
             if(cursor.getPosition() == 0){
@@ -74,13 +60,8 @@ public class AccountListItem extends LinearLayout {
             } else {
                 mDividerAboveHeader.setVisibility(VISIBLE);
             }
-            mAccountNameViewContainer.setVisibility(VISIBLE);
+            mAccountNameTv.setVisibility(VISIBLE);
             mAccountNameTv.setText(mAccountItem.getAccountName());
-//            if (mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_ETH) {
-//                mAddTokenView.setVisibility(VISIBLE);
-//            } else {
-//                mAddTokenView.setVisibility(GONE);
-//            }
             mDividerAboveItem.setVisibility(GONE);
         }
         mRawAccountListItem.bind(mAccountItem);

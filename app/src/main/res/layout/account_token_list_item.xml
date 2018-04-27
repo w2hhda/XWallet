@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/item_bg_selector"
-    android:descendantFocusability="blocksDescendants"
     android:paddingBottom="14dp"
     android:paddingEnd="@dimen/account_list_item_paddingEnd"
     android:paddingStart="@dimen/account_list_item_paddingEnd"

@@ -4,50 +4,38 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <View android:id="@+id/divider_above_header"
+    <View
+        android:id="@+id/divider_above_header"
         android:layout_width="match_parent"
         android:layout_height="3dp"
-        android:background="@color/main_bg_color"/>
-    <RelativeLayout android:id="@+id/account_name_container"
-        android:layout_width="match_parent"
+        android:background="@color/main_bg_color" />
+
+    <TextView
+        android:id="@+id/account_name_tv"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:gravity="center_vertical"
         android:paddingBottom="10dip"
-        android:paddingTop="10dip"
         android:paddingEnd="@dimen/account_list_item_paddingEnd"
-        android:paddingStart="@dimen/account_list_item_paddingStart">
+        android:paddingStart="@dimen/account_list_item_paddingStart"
+        android:paddingTop="10dip" />
 
-        <TextView
-            android:id="@+id/account_name_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:gravity="center_vertical" />
-
-        <!--<TextView-->
-            <!--android:id="@+id/add_token_container"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignParentEnd="true"-->
-            <!--android:gravity="center"-->
-            <!--android:text="@string/add_token"-->
-            <!--android:textColor="@android:color/black"-->
-            <!--android:textSize="12sp" />-->
-    </RelativeLayout>
-    <View android:id="@+id/divider_above_item"
+    <View
+        android:id="@+id/divider_above_item"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/main_bg_color"
         android:layout_marginEnd="@dimen/account_list_item_paddingEnd"
-        android:layout_marginStart="@dimen/account_list_item_paddingStart"/>
+        android:layout_marginStart="@dimen/account_list_item_paddingStart"
+        android:background="@color/main_bg_color" />
+
     <com.x.wallet.ui.view.RawAccountListItem
         android:id="@+id/raw_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dip"
-        android:minHeight="@dimen/account_list_item_minHeight"
         android:background="@drawable/item_bg_selector"
+        android:minHeight="@dimen/account_list_item_minHeight"
         android:paddingEnd="@dimen/account_list_item_paddingEnd"
-        android:paddingStart="@dimen/account_list_item_paddingStart"/>
+        android:paddingStart="@dimen/account_list_item_paddingStart" />
 </com.x.wallet.ui.view.AccountListItem>

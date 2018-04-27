@@ -15,8 +15,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/account_detail_top"
-        android:paddingBottom="30px"
-        android:paddingTop="30px"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
         android:gravity="center_vertical"
         android:background="@color/gray_eb">
 

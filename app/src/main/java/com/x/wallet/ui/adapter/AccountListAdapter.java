@@ -37,7 +37,7 @@ public class AccountListAdapter extends CursorRecyclerAdapter<AccountListAdapter
     @Override
     public AccountViewHolder createViewHolder(Context context, ViewGroup parent, int viewType) {
         final LayoutInflater layoutInflater = LayoutInflater.from(context);
-        final AccountListItem messageListItem = (AccountListItem)layoutInflater.inflate(R.layout.account_list_item, null);
+        final AccountListItem messageListItem = (AccountListItem)layoutInflater.inflate(R.layout.account_list_item, parent, false);
         return new AccountViewHolder(messageListItem, mViewClickListener);
     }
 

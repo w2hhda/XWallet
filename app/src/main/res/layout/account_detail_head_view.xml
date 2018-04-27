@@ -37,7 +37,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="10dp"
             android:drawablePadding="4dp"
-            android:drawableRight="@drawable/copy_address_icon"
+            android:drawableEnd="@drawable/copy_address_icon"
             android:ellipsize="middle"
             android:singleLine="true"
             android:textColor="@color/gray_83"
