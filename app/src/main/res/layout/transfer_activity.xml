@@ -5,55 +5,54 @@
     android:background="@color/main_bg_color"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="105dp"
+        android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:minHeight="@dimen/settings_item_height">
+        android:orientation="vertical"
+        android:paddingBottom="19dp"
+        android:paddingEnd="@dimen/settings_item_marginStart"
+        android:paddingStart="@dimen/settings_item_marginStart"
+        android:paddingTop="19dp">
 
         <TextView
             android:id="@+id/transfer_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginBottom="10dp"
             android:text="@string/transfer_to_address"
             android:textColor="@color/address_title_textColor"
             android:textSize="14sp" />
 
-        <ImageButton
-            android:id="@+id/choose_address_bt"
-            android:layout_width="17dp"
-            android:layout_height="17dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="16dp"
-            android:background="@null"
-            android:src="@drawable/select_type_icon" />
-
-        <EditText
-            android:id="@+id/transfer_to_address"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/transfer_text_view"
-            android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/choose_address_bt"
-            android:background="@null"
-            android:hint="@string/transfer_to_hint"
-            android:textCursorDrawable="@drawable/text_cursor_indicator"
-            android:textSize="12sp" />
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/transfer_to_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@null"
+                android:hint="@string/transfer_to_hint"
+                android:textCursorDrawable="@drawable/text_cursor_indicator"
+                android:textSize="12sp" />
+
+            <ImageButton
+                android:id="@+id/choose_address_bt"
+                android:layout_width="17dp"
+                android:layout_height="17dp"
+                android:layout_gravity="center_vertical|end"
+                android:background="@null"
+                android:src="@drawable/select_type_icon" />
+        </FrameLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@id/transfer_to_address"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="10dp"
             android:background="@color/indicator_color" />
-
-
-    </RelativeLayout>
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
@@ -189,8 +188,8 @@
             android:id="@+id/gas_price_seekbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="0dp"
             android:paddingEnd="0dp"
+            android:paddingStart="0dp"
             android:progress="50" />
 
         <RelativeLayout
