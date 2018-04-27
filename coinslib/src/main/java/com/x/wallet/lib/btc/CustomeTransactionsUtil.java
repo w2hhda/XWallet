@@ -10,14 +10,15 @@ import net.bither.bitherj.core.BlockChain;
 import net.bither.bitherj.core.In;
 import net.bither.bitherj.core.Out;
 import net.bither.bitherj.core.Tx;
+import net.bither.bitherj.core.UnSignTransaction;
 import net.bither.bitherj.db.AbstractDb;
-import net.bither.bitherj.utils.TransactionsUtil;
 import net.bither.bitherj.utils.Utils;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,7 @@ public class CustomeTransactionsUtil {
                 transactions = CustomeTransactionsUtil.getTransactionsFromBlockChain(txResult, storeBlockHeight);
                 transactions = CustomeAddressManager.compressTxsForApi(transactions, address);
 
-                Collections.sort(transactions, new TransactionsUtil.ComparatorTx());
+                Collections.sort(transactions, new ComparatorTx());
                 CustomeAddress.initTxs(transactions);
                 txSum = txSum + transactions.size();
                 needGetTxs = txSum < txAllCount;
@@ -196,5 +197,19 @@ public class CustomeTransactionsUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static class ComparatorTx implements Comparator<Tx> {
+
+        @Override
+        public int compare(Tx lhs, Tx rhs) {
+            if (lhs.getBlockNo() != rhs.getBlockNo()) {
+                return Integer.valueOf(lhs.getBlockNo()).compareTo(Integer.valueOf(rhs.getBlockNo()));
+            } else {
+                return Integer.valueOf(lhs.getTxTime()).compareTo(Integer.valueOf(rhs.getTxTime()));
+            }
+
+        }
+
     }
 }

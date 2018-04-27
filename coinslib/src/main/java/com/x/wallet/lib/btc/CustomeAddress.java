@@ -1,7 +1,5 @@
 package com.x.wallet.lib.btc;
 
-import android.util.Log;
-
 import net.bither.bitherj.AbstractApp;
 import net.bither.bitherj.core.Tx;
 import net.bither.bitherj.crypto.ECKey;
@@ -9,7 +7,6 @@ import net.bither.bitherj.crypto.TransactionSignature;
 import net.bither.bitherj.db.AbstractDb;
 import net.bither.bitherj.exception.PasswordException;
 import net.bither.bitherj.script.ScriptBuilder;
-import net.bither.bitherj.utils.PrivateKeyUtil;
 import net.bither.bitherj.utils.Utils;
 
 import org.spongycastle.crypto.params.KeyParameter;
@@ -51,7 +48,7 @@ public class CustomeAddress {
 
     public static List<byte[]> signHashes(String address, List<byte[]> unsignedInHashes, CharSequence passphrase, TransactionSignature.SigHash sigHash) throws
             PasswordException {
-        ECKey key = PrivateKeyUtil.getECKeyFromSingleString(getFullEncryptPrivKey2(address), passphrase);
+        ECKey key = CustomePrivateKeyUtil.getECKeyFromSingleString(getFullEncryptPrivKey2(address), passphrase);
         if (key == null) {
             throw new PasswordException("do not decrypt eckey");
         }

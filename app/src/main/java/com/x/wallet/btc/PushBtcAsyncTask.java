@@ -5,11 +5,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import net.bither.bitherj.api.PushTxThirdParty;
 import net.bither.bitherj.core.PeerManager;
 import net.bither.bitherj.core.Tx;
-import net.bither.bitherj.core.UnSignTransaction;
-import net.bither.bitherj.utils.TransactionsUtil;
 
 
 /**
@@ -42,7 +39,6 @@ public class PushBtcAsyncTask extends AsyncTask<Void, Void, Integer>{
         try{
             //PushTxThirdParty.getInstance().pushTx(mTx);
             PeerManager.instance().publishTransaction(mTx);
-            TransactionsUtil.removeSignTx(new UnSignTransaction(mTx, mFromAddress));
         } catch (Exception e){
             Log.e(TAG, "PushBtcAsyncTask doInBackground Exception", e);
             return PushOutTxResult.ERROR_UNKNOWN;

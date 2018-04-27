@@ -17,13 +17,7 @@
 package com.x.wallet.btc;
 
 import net.bither.bitherj.db.AbstractDb;
-import net.bither.bitherj.db.IAddressProvider;
 import net.bither.bitherj.db.IBlockProvider;
-import net.bither.bitherj.db.IDesktopAddressProvider;
-import net.bither.bitherj.db.IDesktopTxProvider;
-import net.bither.bitherj.db.IEnterpriseHDMProvider;
-import net.bither.bitherj.db.IHDAccountAddressProvider;
-import net.bither.bitherj.db.IHDAccountProvider;
 import net.bither.bitherj.db.IPeerProvider;
 import net.bither.bitherj.db.ITxProvider;
 
@@ -41,36 +35,6 @@ public class AndroidDbImpl extends AbstractDb {
     @Override
     public ITxProvider initTxProvider() {
         return TxProvider.getInstance();
-    }
-
-    @Override
-    public IAddressProvider initAddressProvider() {
-        return null;//AddressProvider.getInstance();
-    }
-
-    @Override
-    public IHDAccountAddressProvider initHDAccountAddressProvider() {
-        return null;//HDAccountAddressProvider.getInstance();
-    }
-
-    @Override
-    public IHDAccountProvider initHDAccountProvider() {
-        return null;//HDAccountProvider.getInstance();
-    }
-
-    @Override
-    public IEnterpriseHDMProvider initEnterpriseHDMProvider() {
-        return null;//EnterpriseHDMProvider.getInstance();
-    }
-
-    @Override
-    public IDesktopAddressProvider initEnDesktopAddressProvider() {
-        return null;
-    }
-
-    @Override
-    public IDesktopTxProvider initDesktopTxProvider() {
-        return null;
     }
 
 }

@@ -4,20 +4,25 @@ import android.text.TextUtils;
 import android.util.Log;
 
 
+import com.x.wallet.lib.btc.CustomePrivateKeyUtil;
 import com.x.wallet.lib.common.AccountData;
 import com.x.wallet.lib.common.LibUtils;
 
 import net.bither.bitherj.crypto.DumpedPrivateKey;
 import net.bither.bitherj.crypto.ECKey;
 import net.bither.bitherj.crypto.EncryptedData;
+import net.bither.bitherj.crypto.KeyCrypter;
+import net.bither.bitherj.crypto.KeyCrypterException;
+import net.bither.bitherj.crypto.KeyCrypterScrypt;
 import net.bither.bitherj.crypto.SecureCharSequence;
 import net.bither.bitherj.crypto.hd.DeterministicKey;
 import net.bither.bitherj.crypto.hd.HDKeyDerivation;
 import net.bither.bitherj.crypto.mnemonic.MnemonicException;
 import net.bither.bitherj.crypto.mnemonic.MnemonicHelper;
 import net.bither.bitherj.utils.Base58;
-import net.bither.bitherj.utils.PrivateKeyUtil;
 import net.bither.bitherj.utils.Utils;
+
+import org.spongycastle.crypto.params.KeyParameter;
 
 import java.security.SecureRandom;
 import java.util.List;
@@ -110,7 +115,7 @@ public class BtcCreateAddressHelper {
     public static String readPrivateKey(String encryptKey, String encryptSeed, String password){
         try {
             if(!TextUtils.isEmpty(encryptKey)){
-                SecureCharSequence str = PrivateKeyUtil.getDecryptPrivateKeyString(encryptKey, password);
+                SecureCharSequence str = CustomePrivateKeyUtil.getDecryptPrivateKeyString(encryptKey, password);
                 String result = str.toString();
                 str.wipe();
                 return result;
@@ -274,8 +279,8 @@ public class BtcCreateAddressHelper {
                 if (resultKey == null) {
                     return null;
                 }
-                ecKey = PrivateKeyUtil.encrypt(resultKey, password);
-                return PrivateKeyUtil.getEncryptedString(ecKey);
+                ecKey = CustomePrivateKeyUtil.encrypt(resultKey, password);
+                return CustomePrivateKeyUtil.getEncryptedString(ecKey);
             }
         } catch (Exception e) {
             e.printStackTrace();
