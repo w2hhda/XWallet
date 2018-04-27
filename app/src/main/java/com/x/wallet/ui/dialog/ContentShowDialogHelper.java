@@ -3,14 +3,10 @@ package com.x.wallet.ui.dialog;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
@@ -50,11 +47,7 @@ public class ContentShowDialogHelper {
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ClipboardManager cm = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
-                if(cm != null){
-                    ClipData clip = ClipData.newPlainText("content",  content);
-                    cm.setPrimaryClip(clip);
-                    Toast.makeText(activity, R.string.copy_ok, Toast.LENGTH_LONG).show();
+                if(AppUtils.copyContent(activity, R.string.copy_ok, content, "content")){
                     updateHasBackup(ContentUris.withAppendedId(XWalletProvider.CONTENT_URI, accountId));
                 } else {
                     Toast.makeText(activity, R.string.copy_failed, Toast.LENGTH_LONG).show();

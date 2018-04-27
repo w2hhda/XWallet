@@ -1,8 +1,5 @@
 package com.x.wallet.ui.activity;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -12,11 +9,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
-import com.x.wallet.btc.GenerateQrBitmapAsycTask;
+import com.x.wallet.transaction.GenerateQrBitmapAsycTask;
 
 /**
  * Created by Nick on 26/3/2018.
@@ -56,10 +52,8 @@ public class AddressQrActivity extends WithBackAppCompatActivity {
         copyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("", address);
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(AddressQrActivity.this, R.string.has_copied_address, Toast.LENGTH_SHORT).show();
+                AppUtils.copyContent(AddressQrActivity.this,
+                        R.string.has_copied_address, address, "");
             }
         });
     }

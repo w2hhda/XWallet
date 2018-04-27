@@ -1,6 +1,8 @@
 package com.x.wallet;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -9,6 +11,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.Toast;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -177,5 +180,18 @@ public class AppUtils {
     public static String getPin(){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(XWalletApplication.getApplication().getApplicationContext());
         return preferences.getString(PIN_TAG,null);
+    }
+
+    public static boolean copyContent(Context context, int strId, String content, String label){
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        if(clipboard != null){
+            ClipData clip = ClipData.newPlainText(label, content);
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(context, strId, Toast.LENGTH_SHORT).show();
+            return true;
+        } else {
+            Log.w(APP_TAG, "AppUtils copyContent ClipboardManager is null!");
+        }
+        return false;
     }
 }

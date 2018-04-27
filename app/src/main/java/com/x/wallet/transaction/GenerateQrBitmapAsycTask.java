@@ -1,4 +1,4 @@
-package com.x.wallet.btc;
+package com.x.wallet.transaction;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -9,6 +9,7 @@ import android.util.Log;
 import com.google.zxing.BarcodeFormat;
 import com.x.wallet.AppUtils;
 import com.x.wallet.R;
+import com.x.wallet.btc.Qr;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.lib.eth.util.qr.AddressEncoder;
 import com.x.wallet.lib.eth.util.qr.Contents;

@@ -77,10 +77,7 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
         mAddressTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("", mAccountItem.getAddress());
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(ManageAccountActivity.this, R.string.has_copied_address, Toast.LENGTH_SHORT).show();
+                AppUtils.copyContent(ManageAccountActivity.this, R.string.has_copied_address, mAccountItem.getAddress(), "");
             }
         });
 
