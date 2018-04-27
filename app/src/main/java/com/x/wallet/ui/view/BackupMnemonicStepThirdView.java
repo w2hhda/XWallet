@@ -102,14 +102,14 @@ public class BackupMnemonicStepThirdView extends LinearLayout{
         for (Integer position : mCheckPositions) {
             gridData.add(mShuffleWords.get(position));
         }
-        mOutGridView.setAdapter(new GridViewAdapter(mContext, R.layout.grid_item, gridData));
+        mOutGridView.setAdapter(new GridViewAdapter(mContext, R.layout.confirm_mnemonic_grid_item, gridData));
     }
 
     public void initWords(List<String> words, Uri uri) {
         mShuffleWords = words;
         mInitialWords = new ArrayList<>(words);
         Collections.shuffle(words, new Random(20));
-        mInputGridView.setAdapter(new GridViewAdapter(mContext, R.layout.confirm_grid_item, words));
+        mInputGridView.setAdapter(new GridViewAdapter(mContext, R.layout.confirm_mnenonic_input_grid_item, words));
         mCheckPositions = new LinkedHashSet<>();
         mUri = uri;
     }

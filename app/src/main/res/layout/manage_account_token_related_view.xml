@@ -25,7 +25,7 @@
         <include layout="@layout/into_view" />
     </RelativeLayout>
 
-    <include layout="@layout/create_account_divider_view_without_padding" />
+    <include layout="@layout/create_account_divider_view" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView_manage_token"

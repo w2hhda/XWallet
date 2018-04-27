@@ -3,13 +3,11 @@ package com.x.wallet.ui.fingerprint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.text.InputType;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,7 +15,6 @@ import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
-import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 
 import java.util.ArrayList;
@@ -35,17 +32,12 @@ public class PwdView extends View {
     private int mRoundRadius;//圆角矩形的圆角程度
     private boolean isFirstTime = true;
 
-    public PwdView(Context context) {
-        super(context);
-        init(null);
-    }
-
     private InputCallBack inputCallBack;//输入完成的回调
     private InputMethodView inputMethodView; //输入键盘
 
-
-    public interface InputCallBack {
-        void onInputFinish(String result);
+    public PwdView(Context context) {
+        super(context);
+        init(null);
     }
 
     public PwdView(Context context, AttributeSet attrs) {
@@ -268,5 +260,9 @@ public class PwdView extends View {
             return sb.toString();
         }
         return null;
+    }
+
+    public interface InputCallBack {
+        void onInputFinish(String result);
     }
 }

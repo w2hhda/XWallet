@@ -1,134 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <RelativeLayout
-        android:id="@+id/tx_detail_top"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/account_detail_top_height"
-        android:layout_alignParentTop="true"
-        >
-        <FrameLayout
-            android:layout_alignParentTop="true"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:background="@color/colorPrimary">
+        android:layout_height="wrap_content">
 
-        </FrameLayout>
+        <LinearLayout
+            android:id="@+id/tx_detail_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:background="@color/colorPrimary" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="55dp" />
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/tx_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_centerInParent="true"
-            android:paddingBottom="25dp"
+            android:layout_gravity="center"
             android:src="@drawable/transaction_confirmed_icon" />
-
-    </RelativeLayout>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/transaction_detail_amount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tx_detail_top"
+        android:layout_marginBottom="10dp"
         android:gravity="center"
-        android:textColor="@color/gray_66"
-        android:paddingBottom="10dp"
-        android:text="0.0" />
+        android:text="0.0"
+        android:textColor="@color/gray_66" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:layout_below="@id/transaction_detail_amount"
-        android:background="@color/divider_color"/>
+        android:background="@color/divider_color" />
 
-
-    <LinearLayout
-        android:orientation="vertical"
+    <TextView
+        style="@style/TransactionDetailItemTitleStyle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/transaction_detail_amount">
+        android:layout_height="wrap_content"
+        android:text="@string/transfer_from_address" />
 
-        <LinearLayout
-            android:id="@+id/tx_from_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView
-                style="@style/ItemNameStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/transfer_from_address" />
+    <TextView
+        android:id="@+id/transaction_detail_from"
+        style="@style/TransactionDetailItemContentStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="" />
 
-            <TextView
-                style="@style/ItemDetailStyle"
-                android:id="@+id/transaction_detail_from"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="" />
-        </LinearLayout>
+    <TextView
+        style="@style/TransactionDetailItemTitleStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/transfer_to_address" />
 
-        <LinearLayout
-            android:id="@+id/tx_out_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+    <TextView
+        android:id="@+id/transaction_detail_to"
+        style="@style/TransactionDetailItemContentStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="" />
 
-            <TextView
-                style="@style/ItemNameStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/transfer_to_address" />
+    <TextView
+        style="@style/TransactionDetailItemTitleStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/transfer_fee" />
 
-            <TextView
-                style="@style/ItemDetailStyle"
-                android:id="@+id/transaction_detail_to"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="" />
+    <TextView
+        android:id="@+id/transaction_detail_fax"
+        style="@style/TransactionDetailItemContentStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0" />
 
-        </LinearLayout>
+    <TextView
+        style="@style/TransactionDetailItemTitleStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/transfer_hash" />
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                style="@style/ItemNameStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/transfer_fee" />
-
-            <TextView
-                style="@style/ItemDetailStyle"
-                android:id="@+id/transaction_detail_fax"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="0" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                style="@style/ItemNameStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/transfer_hash" />
-
-            <TextView
-                style="@style/ItemDetailStyle"
-                android:id="@+id/transaction_detail_hash"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="0" />
-
-        </LinearLayout>
-
-
-    </LinearLayout>
-</RelativeLayout>
+    <TextView
+        android:id="@+id/transaction_detail_hash"
+        style="@style/TransactionDetailItemContentStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0" />
+</LinearLayout>

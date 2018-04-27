@@ -68,7 +68,7 @@
         </RelativeLayout>
 
 
-        <include layout="@layout/create_account_divider_view_without_padding" />
+        <include layout="@layout/create_account_divider_view" />
 
         <RelativeLayout android:id="@+id/key_tv"
             android:layout_width="match_parent"
@@ -89,7 +89,7 @@
             <include layout="@layout/into_view" />
         </RelativeLayout>
 
-        <include layout="@layout/create_account_divider_view_without_padding" />
+        <include layout="@layout/create_account_divider_view" />
 
         <RelativeLayout android:id="@+id/keystore_tv"
             android:layout_width="match_parent"
@@ -110,7 +110,7 @@
             <include layout="@layout/into_view" />
         </RelativeLayout>
 
-        <include layout="@layout/create_account_divider_view_without_padding" />
+        <include layout="@layout/create_account_divider_view" />
 
         <RelativeLayout android:id="@+id/change_password_tv"
             android:layout_width="match_parent"

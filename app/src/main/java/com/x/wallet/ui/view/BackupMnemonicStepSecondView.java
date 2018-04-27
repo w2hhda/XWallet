@@ -67,7 +67,7 @@ public class BackupMnemonicStepSecondView extends LinearLayout {
                         mWords = words;
                         if(words != null && words.size() > 0){
                             mPasswordCheckDialogHelper.dismissDialog();
-                            mGridView.setAdapter(new GridViewAdapter(mContext, R.layout.grid_item, words));
+                            mGridView.setAdapter(new GridViewAdapter(mContext, R.layout.confirm_mnemonic_grid_item, words));
                             updateShowMnemonicBtn();
                         } else {
                             mPasswordCheckDialogHelper.updatePasswordCheckError();

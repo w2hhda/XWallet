@@ -4,6 +4,4 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="1px"
-    android:background="@color/divider_color"
-    android:layout_marginStart="@dimen/create_account_item_paddingSE"
-    android:layout_marginEnd="@dimen/create_account_item_paddingSE" />
+    android:background="@color/divider_color" />

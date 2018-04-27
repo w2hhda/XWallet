@@ -105,7 +105,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activity.ReceiveQRActivity"
+            android:name=".ui.activity.AddressQrActivity"
             android:label="@string/receipt_transaction"
             android:exported="false">
             <intent-filter>

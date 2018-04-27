@@ -22,11 +22,11 @@ import com.x.wallet.btc.GenerateQrBitmapAsycTask;
  * Created by Nick on 26/3/2018.
  */
 
-public class ReceiveQRActivity extends WithBackAppCompatActivity {
+public class AddressQrActivity extends WithBackAppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.receive_qr_activity);
+        setContentView(R.layout.address_qr_activity);
 
         String address = "";
         Intent intent = getIntent();
@@ -59,7 +59,7 @@ public class ReceiveQRActivity extends WithBackAppCompatActivity {
                 ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clip = ClipData.newPlainText("", address);
                 clipboard.setPrimaryClip(clip);
-                Toast.makeText(ReceiveQRActivity.this, R.string.has_copied_address, Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddressQrActivity.this, R.string.has_copied_address, Toast.LENGTH_SHORT).show();
             }
         });
     }
