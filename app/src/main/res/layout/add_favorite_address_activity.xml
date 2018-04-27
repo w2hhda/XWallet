@@ -78,6 +78,7 @@
             android:layout_height="17dp"
             android:layout_gravity="center_vertical|end"
             android:background="@null"
+            android:visibility="gone"
             android:src="@drawable/select_type_icon" />
     </FrameLayout>
 

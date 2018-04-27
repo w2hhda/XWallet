@@ -23,6 +23,7 @@ import com.x.wallet.transaction.FavoriteAddressDbAsycTask;
 import com.x.wallet.transaction.address.AddressUtils;
 import com.x.wallet.ui.data.AddressItem;
 import com.x.wallet.ui.dialog.ContentShowDialogHelper;
+import com.x.wallet.ui.helper.FavoriteAddressHelper;
 
 import net.bither.bitherj.utils.Utils;
 
@@ -140,8 +141,15 @@ public class EditFavoriteAddressActivity extends WithBackAppCompatActivity {
 
     private void chooseCoinType() {
         final String[] items = getResources().getStringArray(R.array.support_coins_array);
+        final String type = getEditContent(mAddressTypeEt);
+        int checkedItem = -1;
+        if (AppUtils.COIN_ARRAY[0].equals(type)){
+            checkedItem = 0;
+        }else if (AppUtils.COIN_ARRAY[1].equals(type)){
+            checkedItem = 1;
+        }
         AlertDialog dialog = new AlertDialog.Builder(this).setTitle(R.string.choose_coin_type).setSingleChoiceItems(
-                new ArrayAdapter<>(this, android.R.layout.select_dialog_singlechoice, items), -1, new DialogInterface.OnClickListener() {
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_single_choice, items), checkedItem, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mAddressTypeEt.setText(items[which]);
@@ -169,19 +177,33 @@ public class EditFavoriteAddressActivity extends WithBackAppCompatActivity {
         final String type = getEditContent(mAddressTypeEt);
         final String name = getEditContent(mAddressNameEt);
         long oldId = addressItem != null ? addressItem.getId() : -1;
-        new FavoriteAddressDbAsycTask(this, oldId,
-                address, type, name, actionType,
-                new FavoriteAddressDbAsycTask.OnDataActionFinishedListener() {
-                    @Override
-                    public void onDataActionFinished(boolean isSuccess) {
-                        if (isSuccess) {
-                            Toast.makeText(EditFavoriteAddressActivity.this, getSuccessResultText(actionType), Toast.LENGTH_SHORT).show();
-                            finish();
-                        } else {
-                            Toast.makeText(EditFavoriteAddressActivity.this, getFailedResultText(actionType), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }).execute();
+        final AddressItem item = new AddressItem(oldId, address, type, name);
+        final FavoriteAddressDbAsycTask.OnDataActionFinishedListener listener = new FavoriteAddressDbAsycTask.OnDataActionFinishedListener() {
+            @Override
+            public void onDataActionFinished(boolean isSuccess) {
+                if (isSuccess) {
+                    Toast.makeText(EditFavoriteAddressActivity.this, getSuccessResultText(actionType), Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Toast.makeText(EditFavoriteAddressActivity.this, getFailedResultText(actionType), Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+
+        FavoriteAddressHelper.handleAddressAction(EditFavoriteAddressActivity.this, actionType, item, listener);
+//        new FavoriteAddressDbAsycTask(this, oldId,
+//                address, type, name, actionType,
+//                new FavoriteAddressDbAsycTask.OnDataActionFinishedListener() {
+//                    @Override
+//                    public void onDataActionFinished(boolean isSuccess) {
+//                        if (isSuccess) {
+//                            Toast.makeText(EditFavoriteAddressActivity.this, getSuccessResultText(actionType), Toast.LENGTH_SHORT).show();
+//                            finish();
+//                        } else {
+//                            Toast.makeText(EditFavoriteAddressActivity.this, getFailedResultText(actionType), Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                }).execute();
     }
 
     private String getEditContent(EditText text) {

@@ -52,4 +52,10 @@ public class AddressItem implements Serializable {
     static final int COLUMN_ADDRESS = 1;
     static final int COLUMN_ADDRESS_TYPE = 2;
     static final int COLUMN_NAME = 3;
+
+    @Override
+    public String toString() {
+
+        return mName + "'s " + mAddressType + " Address : \n" + mAddress;
+    }
 }
