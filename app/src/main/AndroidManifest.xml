@@ -177,7 +177,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".transaction.address.FavoriteAddressActivity"
+        <activity android:name=".ui.activity.FavoriteAddressActivity"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.x.wallet.action.SEE_FAVORITE_ADDRESS_ACTION"/>
@@ -185,7 +185,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".transaction.address.AddFavoriteAddressActivity"
+        <activity android:name=".ui.activity.AddFavoriteAddressActivity"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.x.wallet.action.ADD_FAVORITE_ADDRESS_ACTION"/>
@@ -193,7 +193,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".transaction.address.ChooseFavoriteAddressActivity"
+        <activity android:name=".ui.activity.ChooseFavoriteAddressActivity"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.x.wallet.action.CHOOSE_FAVORITE_ADDRESS_ACTION"/>

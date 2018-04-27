@@ -4,48 +4,52 @@ import android.database.Cursor;
 
 import java.io.Serializable;
 
-public class AddressItem implements Serializable{
-    private String name;
-    private String address;
-    private String addressType;
+public class AddressItem implements Serializable {
+    private long mId;
+    private String mName;
+    private String mAddress;
+    private String mAddressType;
 
-    public AddressItem(String name, String address, String addressType) {
-        this.name = name;
-        this.address = address;
-        this.addressType = addressType;
+    public AddressItem(long id, String address, String addressType, String name) {
+        mId = id;
+        mAddress = address;
+        mAddressType = addressType;
+        mName = name;
     }
 
-    public static AddressItem createFromCursor(Cursor cursor){
-        return new AddressItem(cursor.getString(COLUMN_NAME)
-            , cursor.getString(COLUMN_ADDRESS), cursor.getString(COLUMN_ADDRESS_TYPE));
+    public static AddressItem createFromCursor(Cursor cursor) {
+        return new AddressItem(cursor.getLong(COLUMN_ID),
+                cursor.getString(COLUMN_ADDRESS),
+                cursor.getString(COLUMN_ADDRESS_TYPE),
+                cursor.getString(COLUMN_NAME));
     }
 
     public String getName() {
-        return name;
+        return mName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.mName = name;
     }
 
     public String getAddress() {
-        return address;
+        return mAddress;
     }
 
     public void setAddress(String address) {
-        this.address = address;
+        this.mAddress = address;
     }
 
     public String getAddressType() {
-        return addressType;
+        return mAddressType;
     }
 
-    public void setAddressType(String addressType) {
-        this.addressType = addressType;
+    public long getId() {
+        return mId;
     }
 
-    static final int COLUMN_ID           = 0;
-    static final int COLUMN_ADDRESS      = 1;
+    static final int COLUMN_ID = 0;
+    static final int COLUMN_ADDRESS = 1;
     static final int COLUMN_ADDRESS_TYPE = 2;
-    static final int COLUMN_NAME         = 3;
+    static final int COLUMN_NAME = 3;
 }

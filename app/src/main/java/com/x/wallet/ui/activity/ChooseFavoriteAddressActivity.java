@@ -1,4 +1,4 @@
-package com.x.wallet.transaction.address;
+package com.x.wallet.ui.activity;
 
 import android.app.LoaderManager;
 import android.content.CursorLoader;
@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -17,7 +18,6 @@ import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
-import com.x.wallet.ui.activity.WithBackAppCompatActivity;
 import com.x.wallet.ui.adapter.FavoriteAddressAdapter;
 import com.x.wallet.ui.data.AddressItem;
 
@@ -87,7 +87,7 @@ public class ChooseFavoriteAddressActivity extends WithBackAppCompatActivity {
         mLoaderManager = getLoaderManager();
         Loader favoriteAddressLoader = mLoaderManager.initLoader(FAVORITE_ADDRESS_LOADER, new Bundle(),
                 new ChooseFavoriteAddressActivity.FavoriteAddressLoaderCallbacks());
-        favoriteAddressLoader.forceLoad();
+       // favoriteAddressLoader.forceLoad();
 
     }
 
@@ -108,6 +108,7 @@ public class ChooseFavoriteAddressActivity extends WithBackAppCompatActivity {
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             updateVisibility(data.getCount());
+            Log.i("test", "data");
             mAdapter.swapCursor(data);
         }
 

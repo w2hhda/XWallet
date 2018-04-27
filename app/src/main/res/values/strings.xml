@@ -170,4 +170,10 @@
     <string name="confirm_delete_address">确认删除地址？</string>
     <string name="select_address">选择收款地址</string>
     <string name="invalid_address">地址无效、请重新输入</string>
+    <string name="favorite_address_save_success">常用地址保存成功！</string>
+    <string name="favorite_address_save_failed">常用地址保存失败！</string>
+    <string name="favorite_address_update_success">常用地址更新成功！</string>
+    <string name="favorite_address_update_failed">常用地址更新失败！</string>
+    <string name="favorite_address_delete_success">常用地址删除成功！</string>
+    <string name="favorite_address_delete_failed">常用地址删除失败！</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.x.wallet.transaction.address;
+package com.x.wallet.ui.activity;
 
 import android.app.LoaderManager;
 import android.content.CursorLoader;
@@ -14,12 +14,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.x.wallet.AppUtils;
 import com.x.wallet.R;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
 import com.x.wallet.ui.ActionUtils;
-import com.x.wallet.ui.activity.WithBackAppCompatActivity;
 import com.x.wallet.ui.adapter.FavoriteAddressAdapter;
 import com.x.wallet.ui.data.AddressItem;
 

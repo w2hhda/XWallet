@@ -9,7 +9,6 @@ import com.x.wallet.AppUtils;
 import com.x.wallet.XWalletApplication;
 import com.x.wallet.lib.common.AccountData;
 import com.x.wallet.lib.common.LibUtils;
-import com.x.wallet.transaction.address.AddFavoriteAddressActivity;
 
 /**
  * Created by wuliang on 18-3-14.
@@ -336,100 +335,61 @@ public class DbUtils {
                 new String[]{accountAddress}, null);
     }
 
-    public static Uri insertFavoriteAddressIntoDb(String address, String addressType, String addressName, AddFavoriteAddressActivity.ChangeDbCallback callback){
-//        if (hasSameFavoriteAddress(address, addressType, addressName)){
-//            callback.changeFinished(false);
-//            return null;
-//        }
-        if (isFavoriteAddressExist(address)){
-            //callback.changeFinished(false);
-            updateFavoriteAddress(address, addressType, addressName, callback);
-            return null;
-        }
-        ContentValues values = new ContentValues();
-        values.put(AddressTableColumns.ADDRESS, address);
-        if (addressType != null){
-            values.put(AddressTableColumns.ADDRESS_TYPE, addressType);
-        }
-
-        if (addressName != null){
-            values.put(AddressTableColumns.NAME, addressName);
+    public static boolean insertFavoriteAddressIntoDb(String address, String addressType, String addressName){
+        long oldId = isFavoriteAddressExist(address);
+        if (oldId > 0){
+            return updateFavoriteAddress(oldId, address, addressType, addressName);
         }
 
         Uri uri =  XWalletApplication.getApplication().getApplicationContext().getContentResolver()
-                .insert(XWalletProvider.CONTENT_URI_ADDRESS, values);
-        callback.changeFinished(uri != null);
-        return uri;
+                .insert(XWalletProvider.CONTENT_URI_ADDRESS, generateAddressContentValues(address, addressType, addressName));
+        return uri != null;
     }
 
-    public static int updateFavoriteAddress(String address, String addressType, String addressName, AddFavoriteAddressActivity.ChangeDbCallback callback){
-        ContentValues values = new ContentValues();
-        values.put(AddressTableColumns.ADDRESS, address);
-        if (addressType != null){
-            values.put(AddressTableColumns.ADDRESS_TYPE, addressType);
-        }
-
-        if (addressName != null){
-            values.put(AddressTableColumns.NAME, addressName);
-        }
-
+    public static boolean updateFavoriteAddress(long id, String address, String addressType, String addressName){
         int count = XWalletApplication.getApplication().getApplicationContext().getContentResolver()
-                .update(XWalletProvider.CONTENT_URI_ADDRESS, values,
-                        AddressTableColumns.ADDRESS + " = ?",
-                        new String[]{address});
-        callback.changeFinished(count > 0);
-        return count;
-
+                .update(XWalletProvider.CONTENT_URI_ADDRESS, generateAddressContentValues(address, addressType, addressName),
+                        AddressTableColumns._ID + " = ?",
+                        new String[]{Long.toString(id)});
+        return count > 0;
     }
 
-    public static int deleteFavoriteAddress(String address, AddFavoriteAddressActivity.ChangeDbCallback callback){
-        if (!isFavoriteAddressExist(address)){
-            callback.changeFinished(true);
-            return 0;
-        }
-        String selection = AddressTableColumns.ADDRESS + " = ?";
+    public static boolean deleteFavoriteAddress(long id){
+        String selection = AddressTableColumns._ID + " = ?";
         int deleteRows = XWalletApplication.getApplication().getApplicationContext().getContentResolver()
-                .delete(XWalletProvider.CONTENT_URI_ADDRESS, selection, new String[]{address});
-        callback.changeFinished(deleteRows > 0);
-        return deleteRows;
-
+                .delete(XWalletProvider.CONTENT_URI_ADDRESS, selection, new String[]{Long.toString(id)});
+        return deleteRows > 0;
     }
 
-    private static boolean isFavoriteAddressExist(String address){
+    private static long isFavoriteAddressExist(String address) {
         final String selection = AddressTableColumns.ADDRESS + " = ?";
         Cursor cursor = null;
         try {
             cursor = XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
-                    XWalletProvider.CONTENT_URI_ADDRESS, null, selection, new String[]{address}, null
-            );
-            if (cursor != null && cursor.getCount() > 0){
-                return true;
+                    XWalletProvider.CONTENT_URI_ADDRESS, new String[]{AddressTableColumns._ID},
+                    selection, new String[]{address}, null);
+            if (cursor != null && cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                return cursor.getLong(0);
             }
-        }finally {
-            if (cursor != null){
+        } finally {
+            if (cursor != null) {
                 cursor.close();
             }
         }
-        return false;
+        return -1;
     }
 
-    private static boolean hasSameFavoriteAddress(String address, String type, String name){
-        final String selection = AddressTableColumns.ADDRESS + " = ? AND " + AddressTableColumns.ADDRESS_TYPE + " = ? AND " + AddressTableColumns.NAME + " = ?";
-        final String[] selectionArgs = new String[]{address, type, name};
-        Cursor cursor = null;
-        try {
-            cursor = XWalletApplication.getApplication().getApplicationContext().getContentResolver().query(
-                    XWalletProvider.CONTENT_URI_ADDRESS, null, selection, selectionArgs, null
-            );
-            if (cursor != null && cursor.getCount() > 0){
-                return true;
-            }
-        }finally {
-            if (cursor != null){
-                cursor.close();
-            }
+    private static ContentValues generateAddressContentValues(String address, String addressType, String addressName){
+        ContentValues values = new ContentValues();
+        values.put(AddressTableColumns.ADDRESS, address);
+        if (!TextUtils.isEmpty(addressType)){
+            values.put(AddressTableColumns.ADDRESS_TYPE, addressType);
         }
-        return false;
-    }
 
+        if (!TextUtils.isEmpty(addressName)){
+            values.put(AddressTableColumns.NAME, addressName);
+        }
+        return values;
+    }
 }

@@ -29,7 +29,6 @@ import com.x.wallet.btc.PushBtcAsyncTask;
 import com.x.wallet.lib.btc.TxBuildResult;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.EthTransactionFeeHelper;
-import com.x.wallet.transaction.address.ChooseFavoriteAddressActivity;
 import com.x.wallet.transaction.address.ConfirmPasswordAsyncTask;
 import com.x.wallet.transaction.address.ConfirmTransactionCallback;
 import com.x.wallet.transaction.token.TokenUtils;
