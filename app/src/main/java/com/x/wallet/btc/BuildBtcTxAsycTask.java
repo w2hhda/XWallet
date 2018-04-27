@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.x.wallet.R;
@@ -85,10 +86,10 @@ public class BuildBtcTxAsycTask extends AsyncTask<Void, Void, TxBuildResult>{
                                 passwordCheckDialogHelper.dismissDialog();
                                 ContentShowDialogHelper.showConfirmDialog(mContext, R.string.confirm_transaction
                                         , buildTxConfirmText(tx)
-                                        , new DialogInterface.OnClickListener() {
+                                        ,null
+                                        ,new View.OnClickListener(){
                                             @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                dialogInterface.dismiss();
+                                            public void onClick(View view) {
                                                 new PushBtcAsyncTask(mContext, mFromAddress, tx, new PushBtcAsyncTask.OnPushBtcTxFinishedListener() {
                                                     @Override
                                                     public void onPushBtcTxFinished(int resultCode) {

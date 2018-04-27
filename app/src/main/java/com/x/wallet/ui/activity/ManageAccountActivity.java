@@ -2,12 +2,9 @@ package com.x.wallet.ui.activity;
 
 import android.app.Activity;
 import android.app.LoaderManager;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.CursorLoader;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -197,41 +194,37 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
 
     private void showPasswordCheckDialogForDelete(){
         final PasswordCheckDialogHelper passwordCheckDialogHelper = new PasswordCheckDialogHelper();
-
         passwordCheckDialogHelper.showPasswordDialog(this, new PasswordCheckDialogHelper.ConfirmBtnClickListener() {
             @Override
             public void onConfirmBtnClick(String password, Context context) {
-                new DecryptKeyStoreAsycTask(context, mAccountItem.getCoinType(), mAccountItem.getKeyStore(),
-                        password, new DecryptKeyStoreAsycTask.OnDecryptKeyStoreFinishedListener() {
-                    @Override
-                    public void onDecryptKeyStoreFinished(String keyStore) {
-                        if(!TextUtils.isEmpty(keyStore)){
-                            passwordCheckDialogHelper.dismissDialog();
-                            ContentShowDialogHelper.showConfirmDialog(mActivity, R.string.delete_account
-                                    , mActivity.getResources().getString(R.string.confirm_delete_account, mAccountItem.getAccountName())
-                                    , new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.dismiss();
-                                    new DeleteAccountAsycTask(mActivity, mAccountItem.getId(), mAccountItem.getAddress(), mAccountItem.getCoinType(),
-                                            new DeleteAccountAsycTask.OnDeleteFinishedListener() {
-                                        @Override
-                                        public void onDeleteFinished(int count) {
-                                            if(count > 0){
-                                                Toast.makeText(mActivity, R.string.delete_account_success, Toast.LENGTH_LONG).show();
-                                                mActivity.finish();
-                                            } else {
-                                                Toast.makeText(mActivity, R.string.delete_account_failed, Toast.LENGTH_LONG).show();
-                                            }
-                                        }
-                                    }).execute();
-                                }
-                            });
-                        } else {
-                            passwordCheckDialogHelper.updatePasswordCheckError();
+                if(mAccountItem.getCoinType() == LibUtils.COINTYPE.COIN_ETH){
+                    new DecryptKeyStoreAsycTask(context, mAccountItem.getCoinType(), mAccountItem.getKeyStore(),
+                            password, new DecryptKeyStoreAsycTask.OnDecryptKeyStoreFinishedListener() {
+                        @Override
+                        public void onDecryptKeyStoreFinished(String keyStore) {
+                            if(!TextUtils.isEmpty(keyStore)){
+                                passwordCheckDialogHelper.dismissDialog();
+                                showConfirmDialog();
+                            } else {
+                                passwordCheckDialogHelper.updatePasswordCheckError();
+                            }
                         }
-                    }
-                }).execute();
+                    }).execute();
+                } else {
+                    new DecryptKeyAsycTask(context, mAccountItem.getCoinType(), password, mAccountItem.getKeyStore(),
+                            mAccountItem.getEncrySeed(), mAccountItem.getPrivKey(),
+                            new DecryptKeyAsycTask.OnDecryptKeyFinishedListener() {
+                                @Override
+                                public void onDecryptKeyFinished(String key) {
+                                    if(!TextUtils.isEmpty(key)){
+                                        passwordCheckDialogHelper.dismissDialog();
+                                        showConfirmDialog();
+                                    } else {
+                                        passwordCheckDialogHelper.updatePasswordCheckError();
+                                    }
+                                }
+                            }).execute();
+                }
             }
         }, R.string.confirm_password);
     }
@@ -285,6 +278,29 @@ public class ManageAccountActivity extends WithBackAppCompatActivity {
             mDeleteView.setEnabled(false);
             mDeleteNoticeTv.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void showConfirmDialog(){
+        ContentShowDialogHelper.showConfirmDialog(mActivity, R.string.delete_account
+                , mActivity.getResources().getString(R.string.confirm_delete_account, mAccountItem.getAccountName())
+                , null,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        new DeleteAccountAsycTask(mActivity, mAccountItem.getId(), mAccountItem.getAddress(), mAccountItem.getCoinType(),
+                                new DeleteAccountAsycTask.OnDeleteFinishedListener() {
+                                    @Override
+                                    public void onDeleteFinished(int count) {
+                                        if (count > 0) {
+                                            Toast.makeText(mActivity, R.string.delete_account_success, Toast.LENGTH_LONG).show();
+                                            mActivity.finish();
+                                        } else {
+                                            Toast.makeText(mActivity, R.string.delete_account_failed, Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                }).execute();
+                    }
+                });
     }
 
     public String[] mProjection = {DbUtils.DbColumns.ENCRYPT_SEED,         //0

@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +30,7 @@ public class ContentShowDialogHelper {
     public static void showContentDialog(final Activity activity, final int titleId, final int btnStrId, final String content, final long accountId){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         final LayoutInflater inflater = activity.getLayoutInflater();
-        final View contentView = inflater.inflate(R.layout.content_show_dialog, null);
+        final View contentView = inflater.inflate(R.layout.show_account_key_dialog, null);
         builder.setView(contentView);
         final Dialog dialog = builder.create();
 
@@ -60,13 +59,45 @@ public class ContentShowDialogHelper {
         dialog.show();
     }
 
-    public static void showConfirmDialog(final Context context, int titleId, String message, DialogInterface.OnClickListener listener){
+    public static void showConfirmDialog(final Context context, int titleId, String content,
+                                         final View.OnClickListener leftBtnClickListener, final View.OnClickListener rightBtnClickListener){
+        final LayoutInflater inflater = LayoutInflater.from(context);
+        final View contentView = inflater.inflate(R.layout.content_dialog, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(titleId);
-        builder.setMessage(message);
-        builder.setPositiveButton(R.string.confirm, listener);
-        builder.setNegativeButton(R.string.cancel, null);
-        builder.show();
+        builder.setView(contentView);
+        final Dialog dialog = builder.create();
+
+        TextView titleTv = contentView.findViewById(R.id.title_tv);
+        titleTv.setText(titleId);
+
+        final TextView contentTv = contentView.findViewById(R.id.content_tv);
+        contentTv.setText(content);
+
+        final Button leftBtn = contentView.findViewById(R.id.left_btn);
+        leftBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(leftBtnClickListener != null){
+                    leftBtnClickListener.onClick(view);
+                }
+                if(dialog != null){
+                    dialog.dismiss();
+                }
+            }
+        });
+        final Button rightBtn = contentView.findViewById(R.id.right_btn);
+        rightBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(rightBtnClickListener != null){
+                    rightBtnClickListener.onClick(view);
+                }
+                if(dialog != null){
+                    dialog.dismiss();
+                }
+            }
+        });
+        dialog.show();
     }
 
     public static void updateHasBackup(final Uri uri){

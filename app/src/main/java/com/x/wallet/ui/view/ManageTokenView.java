@@ -98,10 +98,10 @@ public class ManageTokenView extends LinearLayout{
                         final TokenItem item = listItem.getTokenItem();
                         ContentShowDialogHelper.showConfirmDialog(ManageTokenView.this.getContext(), R.string.delete_token
                                 , getResources().getString(R.string.confirm_delete_token, item.getName())
-                                , new DialogInterface.OnClickListener() {
+                                , null
+                                , new View.OnClickListener() {
                                     @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        dialogInterface.dismiss();
+                                    public void onClick(View view) {
                                         new DeleteTokenAsyncTask(ManageTokenView.this.getContext(),
                                                 item,
                                                 mAccountAddress).execute();

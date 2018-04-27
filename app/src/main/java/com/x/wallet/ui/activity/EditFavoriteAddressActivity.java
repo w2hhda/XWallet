@@ -212,12 +212,15 @@ public class EditFavoriteAddressActivity extends WithBackAppCompatActivity {
     }
 
     private void deleteConfirmDialog() {
-        ContentShowDialogHelper.showConfirmDialog(this, R.string.del_favorite_address, getResources().getString(R.string.confirm_delete_address), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                handleAddressAction(FavoriteAddressDbAsycTask.DEL_ACTION);
-            }
-        });
+        ContentShowDialogHelper.showConfirmDialog(this, R.string.del_favorite_address,
+                getResources().getString(R.string.confirm_delete_address),
+                null,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        handleAddressAction(FavoriteAddressDbAsycTask.DEL_ACTION);
+                    }
+                });
     }
 
     private void alertErrorMsg(String msg) {
