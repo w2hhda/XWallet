@@ -1,7 +1,6 @@
-package com.x.wallet.transaction.address;
+package com.x.wallet.transaction.transfer;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -48,15 +47,7 @@ import okhttp3.Response;
  * Created by Nick on 26/3/2018.
  */
 
-public class ConfirmPasswordAsyncTask extends AsyncTask<ConfirmTransactionCallback, Void, Void> {
-    public final static String FROM_ADDRESS_TAG     = "from_address_tag";
-    public final static String TO_ADDRESS_TAG       = "to_address_tag";
-    public final static String GAS_PRICE_TAG        = "gas_price_tag";
-    public final static String GAS_LIMIT_TAG        = "gas_limit_tag";
-    public final static String AMOUNT_TAG           = "amount_tag";
-    public final static String EXTRA_DATA_TAG       = "extra_data_tag";
-    public final static String PASSWORD_TAG         = "password_tag";
-    private Intent intent;
+public class SendEthTransactionAsyncTask extends AsyncTask<ConfirmTransactionCallback, Void, Void> {
     private String password;
     private String address;
 
@@ -74,18 +65,16 @@ public class ConfirmPasswordAsyncTask extends AsyncTask<ConfirmTransactionCallba
 
     private final BigInteger defaultGasLimit = new BigInteger("91000");
 
-
-    public ConfirmPasswordAsyncTask(Intent intent, String passwrod, String address){
-        this.password = passwrod;
-        this.address = address;
-        this.intent = intent;
-        fromAddress = intent.getStringExtra(FROM_ADDRESS_TAG);
-        toAddress   = intent.getStringExtra(TO_ADDRESS_TAG);
-        gasPrice    = intent.getStringExtra(GAS_PRICE_TAG);
-        gasLimit    = intent.getStringExtra(GAS_LIMIT_TAG);
-        amount      = intent.getStringExtra(AMOUNT_TAG);
-        extraData   = intent.getStringExtra(EXTRA_DATA_TAG);
-        password    = intent.getStringExtra(PASSWORD_TAG);
+    public SendEthTransactionAsyncTask(TransactionData data, RawAccountItem tokenItem){
+        this.password = data.getPassword();
+        this.address = data.getAddress();
+        fromAddress =  data.getFromAddress();
+        toAddress   = data.getToAddress();
+        gasPrice    = data.getGasPrice();
+        gasLimit    = data.getGasLimit().toString();
+        amount      = data.getAmount();
+        extraData   = data.getExtraData();
+        mTokenItem = tokenItem;
     }
 
     @Override
@@ -171,9 +160,7 @@ public class ConfirmPasswordAsyncTask extends AsyncTask<ConfirmTransactionCallba
 
         values = getLocalContentValues();
 
-        if (intent.hasExtra(AppUtils.TOKEN_DATA)){  //token transfer
-            mTokenItem = (RawAccountItem) intent.getSerializableExtra(AppUtils.TOKEN_DATA);
-            String token20Name = mTokenItem.getCoinName();
+        if (mTokenItem != null){  //token transfer
             token20Address  = mTokenItem.getContractAddress();
             int token20Decimals = mTokenItem.getDecimals();
             values.put(DbUtils.TxTableColumns.CONTRACT_ADDRESS, token20Address);

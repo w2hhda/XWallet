@@ -29,9 +29,10 @@ import com.x.wallet.btc.PushBtcAsyncTask;
 import com.x.wallet.lib.btc.TxBuildResult;
 import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.transaction.EthTransactionFeeHelper;
-import com.x.wallet.transaction.address.ConfirmPasswordAsyncTask;
-import com.x.wallet.transaction.address.ConfirmTransactionCallback;
+import com.x.wallet.transaction.transfer.SendEthTransactionAsyncTask;
+import com.x.wallet.transaction.transfer.ConfirmTransactionCallback;
 import com.x.wallet.transaction.token.TokenUtils;
+import com.x.wallet.transaction.transfer.TransactionData;
 import com.x.wallet.ui.data.RawAccountItem;
 import com.x.wallet.ui.data.SerializableAccountItem;
 
@@ -238,8 +239,8 @@ public class TransferActivity extends WithBackAppCompatActivity {
             @Override
             public void onClick(View view) {
                 String password = passwordEdit.getText().toString();
-                Intent intent = getIntentForSend(mAddress, password);
-                new ConfirmPasswordAsyncTask(intent, password, mAddress).execute(createConfirmTransactionCallback());
+                TransactionData data = getTransactionData(mAddress, password);
+                new SendEthTransactionAsyncTask(data, mTokenItem).execute(createConfirmTransactionCallback());
                 dialog.dismiss();
                 mProgressDialog.show();
                 mProgressDialog.setCancelable(false);
@@ -247,24 +248,13 @@ public class TransferActivity extends WithBackAppCompatActivity {
         });
     }
 
-    private Intent getIntentForSend(String address, String password){
-        Intent intent = new Intent();
-        intent.putExtra(ConfirmPasswordAsyncTask.FROM_ADDRESS_TAG, address);
-        intent.putExtra(ConfirmPasswordAsyncTask.TO_ADDRESS_TAG, mToAddressEt.getText().toString());
-        intent.putExtra(ConfirmPasswordAsyncTask.PASSWORD_TAG, password);
-        intent.putExtra(ConfirmPasswordAsyncTask.GAS_PRICE_TAG, mEthTransactionFeeHelper.getNowPrice(mPriceTv.getText().toString()).toBigInteger().toString());
-        intent.putExtra(ConfirmPasswordAsyncTask.GAS_LIMIT_TAG, mEthTransactionFeeHelper.getDefaultGasLimit());
-        intent.putExtra(ConfirmPasswordAsyncTask.AMOUNT_TAG, mTransferAmountEt.getText().toString());
-        intent.putExtra(ConfirmPasswordAsyncTask.EXTRA_DATA_TAG, "");
-        if (mAccountItem != null){
-            intent.putExtra(AppUtils.ACCOUNT_DATA, mAccountItem);
-        }
-
-        if (mTokenItem != null){
-            intent.putExtra(AppUtils.TOKEN_DATA, mTokenItem);
-        }
-
-        return intent;
+    private TransactionData getTransactionData(String address, String password){
+        return new TransactionData(
+                password, address,
+                address, mToAddressEt.getText().toString(),
+                mEthTransactionFeeHelper.getNowPrice(mPriceTv.getText().toString()).toBigInteger().toString(),
+                mEthTransactionFeeHelper.getDefaultGasLimit(),
+                mTransferAmountEt.getText().toString(), "");
     }
 
     @Override
