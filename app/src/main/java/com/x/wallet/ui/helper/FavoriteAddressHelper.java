@@ -1,7 +1,6 @@
 package com.x.wallet.ui.helper;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.View;
 import android.widget.Toast;
 

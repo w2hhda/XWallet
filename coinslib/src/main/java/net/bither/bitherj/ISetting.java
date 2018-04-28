@@ -18,8 +18,6 @@ package net.bither.bitherj;
 
 import net.bither.bitherj.qrcode.QRCodeUtil;
 
-import org.apache.http.client.CookieStore;
-
 import java.io.File;
 
 public abstract class ISetting {
@@ -48,8 +46,6 @@ public abstract class ISetting {
     public abstract File getPrivateDir(String dirName);
 
     public abstract boolean isApplicationRunInForeground();
-
-    public abstract CookieStore getCookieStore();
 
     public int hdmAddressPerSeedCount() {
         return HDM_ADDRESS_PER_SEED_COUNT_LIMIT;

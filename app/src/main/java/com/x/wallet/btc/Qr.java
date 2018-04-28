@@ -17,6 +17,7 @@
 package com.x.wallet.btc;
 
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.zxing.BarcodeFormat;
@@ -28,14 +29,12 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import java.util.Hashtable;
 
-import javax.annotation.Nonnull;
-
 public class Qr {
 
     private final static QRCodeWriter QR_CODE_WRITER = new QRCodeWriter();
 
 
-    public static Bitmap bitmap(@Nonnull final String content, final int size, int fgColor,
+    public static Bitmap bitmap(@NonNull final String content, final int size, int fgColor,
                                 int bgColor, int margin) {
         try {
             final Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();

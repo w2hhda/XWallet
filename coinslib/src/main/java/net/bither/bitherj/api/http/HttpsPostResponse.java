@@ -1,26 +1,58 @@
 package net.bither.bitherj.api.http;
 
-import org.json.JSONObject;
+import android.util.Log;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import com.x.wallet.lib.common.LibUtils;
+
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.net.ssl.HttpsURLConnection;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public abstract class HttpsPostResponse<T> extends BaseHttpsResponse<T> {
 
     public void handleHttpPost() throws Exception {
-        trustCerts();
-        HttpsURLConnection con = null;
-        String responseContent = null;
+        Response response = null;
         try {
-            StringBuffer params = new StringBuffer();
-            for (Iterator iter = getParams().entrySet().iterator(); iter
-                    .hasNext(); ) {
+            OkHttpClient okHttpClient = createOkHttpClient();
+            MediaType mediaType = MediaType.parse("text/html");
+            RequestBody requestBody = RequestBody.create(mediaType, getRequestBody());
+            Request request = new Request.Builder()
+                    .url(getUrl())
+                    .post(requestBody)
+                    .build();
+            response = okHttpClient.newCall(request).execute();
+            int responseCode = response.code();
+            Log.i(LibUtils.TAG_BTC, "HttpsGetResponse handleHttpPost responseCode = " + responseCode);
+            if (responseCode != 200) {
+                return;
+            }
+            ResponseBody body = response.body();
+            if (body != null) {
+                String result = body.string();
+                setResult(result);
+            } else {
+                Log.w(LibUtils.TAG_BTC, "HttpsGetResponse handleHttpPost body is null!");
+            }
+        } catch (Exception e) {
+            Log.e(LibUtils.TAG_BTC, "HttpsGetResponse handleHttpPost Exception", e);
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+        }
+    }
+
+    private String getRequestBody() {
+        StringBuffer params = new StringBuffer();
+        try {
+            for (Iterator iter = getParams().entrySet().iterator(); iter.hasNext(); ) {
                 Map.Entry element = (Map.Entry) iter.next();
                 params.append(element.getKey().toString());
                 params.append("=");
@@ -32,50 +64,11 @@ public abstract class HttpsPostResponse<T> extends BaseHttpsResponse<T> {
             if (params.length() > 0) {
                 params = params.deleteCharAt(params.length() - 1);
             }
-
-            URL url = new URL(getUrl());
-            con = (HttpsURLConnection) url.openConnection();
-            con.setRequestMethod("POST");
-            System.setProperty("sun.net.client.defaultConnectTimeout", String
-                    .valueOf(HttpSetting.HTTP_CONNECTION_TIMEOUT));
-            System.setProperty("sun.net.client.defaultReadTimeout", String
-                    .valueOf(HttpSetting.HTTP_SO_TIMEOUT));
-
-            con.setDoOutput(true);
-            byte[] b = params.toString().getBytes();
-            con.getOutputStream().write(b, 0, b.length);
-            con.getOutputStream().flush();
-            con.getOutputStream().close();
-
-            InputStream in = con.getInputStream();
-            responseContent = getStringFromIn(in);
-
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            if (con.getResponseCode() == 400) {
-                String str = getStringFromIn(con.getErrorStream());
-                JSONObject json = new JSONObject(str);
-                Iterator it = json.keys();
-                if (it.hasNext()) {
-                    String key = (String) it.next();
-                    String value = json.getString(key);
-                    throw new Http400Exception(Integer.valueOf(key), value);
-                }
-            } else if (con.getResponseCode() != 200) {
-                String str = getStringFromIn(con.getErrorStream());
-                throw new HttpException(con.getResponseCode() + "," + str);
-            } else {
-                throw e;
-            }
-        } finally {
-            if (con != null) {
-                con.disconnect();
-            }
+        } catch (Exception e) {
+            Log.e(LibUtils.TAG_BTC, "HttpsGetResponse getRequestBody Exception", e);
         }
-        setResult(responseContent);
+        return params.toString();
     }
-
 
     public abstract Map<String, String> getParams() throws Exception;
 }

@@ -21,7 +21,6 @@ import net.bither.bitherj.AbstractApp;
 import net.bither.bitherj.BitherjSettings;
 import net.bither.bitherj.api.BlockChainDownloadSpvApi;
 import net.bither.bitherj.api.BlockChainGetLatestBlockApi;
-import net.bither.bitherj.api.DownloadSpvApi;
 import net.bither.bitherj.core.Block;
 import net.bither.bitherj.core.BlockChain;
 
@@ -114,21 +113,12 @@ public class BlockUtil {
         if (AbstractApp.bitherjSetting.getDownloadSpvFinish()) {
             return null;
         }
-        Block block = null;
+        Block block;
         try {
-            DownloadSpvApi downloadSpvApi = new DownloadSpvApi();
-            downloadSpvApi.handleHttpGet();
-            block = downloadSpvApi.getResult();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            if (block == null) {
-                BlockChainGetLatestBlockApi blockChainGetLatestBlockApi = new
-                        BlockChainGetLatestBlockApi();
-                blockChainGetLatestBlockApi.handleHttpGet();
-                block = blockChainGetLatestBlockApi.getResult();
-            }
+            BlockChainGetLatestBlockApi blockChainGetLatestBlockApi = new
+                    BlockChainGetLatestBlockApi();
+            blockChainGetLatestBlockApi.handleHttpGet();
+            block = blockChainGetLatestBlockApi.getResult();
         } catch (Exception e) {
             e.printStackTrace();
             AbstractApp.notificationService.sendBroadcastGetSpvBlockComplete(false);

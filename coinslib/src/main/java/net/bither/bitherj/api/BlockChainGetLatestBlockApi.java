@@ -1,7 +1,6 @@
 package net.bither.bitherj.api;
 
 import net.bither.bitherj.api.http.BitherUrl;
-import net.bither.bitherj.api.http.HttpGetResponse;
 import net.bither.bitherj.api.http.HttpsGetResponse;
 import net.bither.bitherj.core.Block;
 import net.bither.bitherj.utils.BlockUtil;

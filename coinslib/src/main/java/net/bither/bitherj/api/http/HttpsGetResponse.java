@@ -1,41 +1,41 @@
 package net.bither.bitherj.api.http;
 
-import java.io.IOException;
-import java.net.URL;
+import android.util.Log;
 
-import javax.net.ssl.HttpsURLConnection;
+import com.x.wallet.lib.common.LibUtils;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public abstract class HttpsGetResponse<T> extends BaseHttpsResponse<T> {
 
     public void handleHttpGet() throws Exception {
-        trustCerts();
-        URL url;
-        HttpsURLConnection con = null;
+        Response response = null;
         try {
-
-            url = new URL(getUrl());
-            con = (HttpsURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            System.setProperty("sun.net.client.defaultConnectTimeout", String
-                    .valueOf(HttpSetting.HTTP_CONNECTION_TIMEOUT));
-            System.setProperty("sun.net.client.defaultReadTimeout", String
-                    .valueOf(HttpSetting.HTTP_SO_TIMEOUT));
-            StringBuffer out = new StringBuffer();
-            byte[] b = new byte[4096];
-            for (int n; (n = con.getInputStream().read(b)) != -1; ) {
-                out.append(new String(b, 0, n));
-            }
-            setResult(out.toString());
-        } catch (IOException e) {
-            if (con.getResponseCode() != 200) {
-                String str = getStringFromIn(con.getErrorStream());
-                throw new HttpException(con.getResponseCode() + "," + str);
-            } else {
-                throw e;
+            OkHttpClient okHttpClient = createOkHttpClient();
+            if (okHttpClient != null) {
+                Request request = new Request.Builder()
+                        .url(getUrl())
+                        .build();
+                response = okHttpClient.newCall(request).execute();
+                int responseCode = response.code();
+                Log.i(LibUtils.TAG_BTC, "HttpsGetResponse handleHttpGet responseCode = " + responseCode);
+                if (responseCode != 200) {
+                    return;
+                }
+                ResponseBody body = response.body();
+                if (body != null) {
+                    String result = body.string();
+                    setResult(result);
+                } else {
+                    Log.w(LibUtils.TAG_BTC, "HttpsGetResponse handleHttpGet body is null!");
+                }
             }
         } finally {
-            if (con != null) {
-                con.disconnect();
+            if (response != null) {
+                response.close();
             }
         }
     }

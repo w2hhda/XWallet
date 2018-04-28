@@ -24,28 +24,15 @@ public class FavoriteAddressDbAsycTask extends AsyncTask<Void, Void, Boolean> {
     public static final int DEL_ACTION = 2;
     public static final int UPDATE_ACTION = 3;
 
-    public FavoriteAddressDbAsycTask(Context context, long oldId,
-                                     String address, String type, String name,
-                                     int actionType,
+    public FavoriteAddressDbAsycTask(Context context, AddressItem item, int actionType,
                                      OnDataActionFinishedListener onDataActionFinishedListener) {
-        mOldId = oldId;
-        mAddress = address;
-        mType = type;
-        mName = name;
-        mActionType = actionType;
-        mOnDataActionFinishedListener = onDataActionFinishedListener;
-        mProgressDialog = new ProgressDialog(context);
-    }
-
-    public FavoriteAddressDbAsycTask(Context context, AddressItem item, int mActionType,
-                                     OnDataActionFinishedListener mOnDataActionFinishedListener) {
         mOldId = item.getId();
         mAddress = item.getAddress();
         mType = item.getAddressType();
         mName =item.getName();
-        this.mActionType = mActionType;
-        this.mProgressDialog = new ProgressDialog(context);
-        this.mOnDataActionFinishedListener = mOnDataActionFinishedListener;
+        mActionType = actionType;
+        mOnDataActionFinishedListener = onDataActionFinishedListener;
+        mProgressDialog = new ProgressDialog(context);
     }
 
     @Override

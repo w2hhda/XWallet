@@ -1,14 +1,22 @@
 package net.bither.bitherj.api.http;
 
-import com.x.wallet.lib.btc.TrustAllCertManager;
+import android.util.Log;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import com.x.wallet.lib.common.LibUtils;
+
+import java.security.KeyStore;
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+
+import okhttp3.OkHttpClient;
 
 public abstract class BaseHttpsResponse<T> {
-    private static boolean isTrust = false;
     protected T result;
     private String mUrl;
 
@@ -19,14 +27,6 @@ public abstract class BaseHttpsResponse<T> {
 
     public abstract void setResult(String response) throws Exception;
 
-    protected synchronized void trustCerts() {
-        if (!isTrust) {
-            TrustAllCertManager.allowAllSSL();
-            isTrust = true;
-        }
-
-    }
-
     protected String getUrl() {
         return mUrl;
     }
@@ -35,21 +35,32 @@ public abstract class BaseHttpsResponse<T> {
         this.mUrl = url;
     }
 
-    protected String getStringFromIn(InputStream in) throws IOException {
-        BufferedReader rd = new BufferedReader(new InputStreamReader(in,
-                HttpSetting.REQUEST_ENCODING));
-        String tempLine = rd.readLine();
-        StringBuffer tempStr = new StringBuffer();
-        String crlf = System.getProperty("line.separator");
-        while (tempLine != null) {
-            tempStr.append(tempLine);
-            tempStr.append(crlf);
-            tempLine = rd.readLine();
+    public static OkHttpClient createOkHttpClient() {
+        try {
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            trustManagerFactory.init((KeyStore) null);
+            TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+            if (trustManagers.length != 1 || !(trustManagers[0] instanceof X509TrustManager)) {
+                throw new IllegalStateException("Unexpected default trust managers:"
+                        + Arrays.toString(trustManagers));
+            }
+            X509TrustManager trustManager = (X509TrustManager) trustManagers[0];
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, new TrustManager[]{trustManager}, null);
+            SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+            return createOkHttpClientBuilder()
+                    .sslSocketFactory(sslSocketFactory, trustManager)
+                    .build();
+        } catch (Exception e) {
+            Log.e(LibUtils.TAG_BTC, "BaseHttpsResponse createOkHttpClient Exception", e);
+            return createOkHttpClientBuilder().build();
         }
-        rd.close();
-
-        return tempStr.toString();
     }
 
+    public static OkHttpClient.Builder createOkHttpClientBuilder() {
+        return new OkHttpClient.Builder()
+                .connectTimeout(HttpSetting.HTTP_CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+                .readTimeout(HttpSetting.HTTP_SO_TIMEOUT, TimeUnit.SECONDS);
+    }
 
 }

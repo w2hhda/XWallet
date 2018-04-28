@@ -191,19 +191,6 @@ public class EditFavoriteAddressActivity extends WithBackAppCompatActivity {
         };
 
         FavoriteAddressHelper.handleAddressAction(EditFavoriteAddressActivity.this, actionType, item, listener);
-//        new FavoriteAddressDbAsycTask(this, oldId,
-//                address, type, name, actionType,
-//                new FavoriteAddressDbAsycTask.OnDataActionFinishedListener() {
-//                    @Override
-//                    public void onDataActionFinished(boolean isSuccess) {
-//                        if (isSuccess) {
-//                            Toast.makeText(EditFavoriteAddressActivity.this, getSuccessResultText(actionType), Toast.LENGTH_SHORT).show();
-//                            finish();
-//                        } else {
-//                            Toast.makeText(EditFavoriteAddressActivity.this, getFailedResultText(actionType), Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                }).execute();
     }
 
     private String getEditContent(EditText text) {

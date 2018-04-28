@@ -28,8 +28,6 @@ import net.bither.bitherj.ISetting;
 import net.bither.bitherj.NotificationService;
 import net.bither.bitherj.qrcode.QRCodeUtil;
 
-import org.apache.http.client.CookieStore;
-
 import java.io.File;
 import java.util.List;
 
@@ -103,14 +101,6 @@ public class AndroidImplAbstractApp extends AbstractApp {
             public void setDownloadSpvFinish(boolean finish) {
                 AppSharedPreference.getInstance().setDownloadSpvFinish(finish);
             }
-
-            @Override
-            public CookieStore getCookieStore() {
-                return null;//PersistentCookieStore.getInstance();
-            }
-
-
-            
         };
     }
 
