@@ -149,22 +149,6 @@ public class SendEthTransactionAsyncTask extends AsyncTask<ConfirmTransactionCal
 
     }
 
-    private String queryKeyStore(){
-        Cursor cursor = null;
-        try {
-            cursor = XWalletApplication.getApplication().getContentResolver().query(XWalletProvider.CONTENT_URI,
-                    new String[]{DbUtils.DbColumns.KEYSTORE}, DbUtils.ADDRESS_SELECTION, new String[]{address}, null);
-            if (cursor != null && cursor.moveToFirst()){
-                return cursor.getString(0);
-            }
-        } finally {
-            if (cursor != null){
-                cursor.close();
-            }
-        }
-        return null;
-    }
-
     private void prepareToSend(Credentials credentials, ConfirmTransactionCallback callback){
         //Credentials credentials = getCredential(fromAddress, password);
 
@@ -198,31 +182,24 @@ public class SendEthTransactionAsyncTask extends AsyncTask<ConfirmTransactionCal
                 @Override
                 public void onFailure(Call call, IOException e) {
                     handleErrorCallback(callback, e);
+                    Log.e(AppUtils.APP_TAG, "SendEthTransactionAsyncTask sendTransaction onFailure IOException", e);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-                    Cursor cursor;
                     try {
-                        final String selection = DbUtils.TxTableColumns.FROM_ADDRESS + " = ?";
-                        final String sortOrder = DbUtils.TxTableColumns.NONCE + " DESC";
-                        cursor = XWalletApplication.getApplication().getContentResolver().query(XWalletProvider.CONTENT_URI_TRANSACTION,
-                                new String[]{DbUtils.TxTableColumns.NONCE},selection, new String[]{address}, sortOrder);
-                        long localNonce = 0;
-                        if (cursor != null && cursor.getCount() > 0){
-                            cursor.moveToFirst();
-                            localNonce = Long.parseLong(cursor.getString(0));
-                        }
+                        long localNonce = queryNonce();
                         AppUtils.log("localNonce = " + localNonce);
 
                         JSONObject jsonObject = new JSONObject(response.body().string());
                         String result = jsonObject.getString("result").substring(2);
-
                         Long netNonce = Long.parseLong(result, 16);
                         AppUtils.log("netNonce = " + netNonce);
+
                         if (localNonce >= netNonce){
                             netNonce = localNonce + 1;
                         }
+
                         BigInteger nonce = BigInteger.valueOf(netNonce);
                         AppUtils.log("nonce ready to insert = " + nonce);
                         BigInteger gasP = new BigInteger(gasPrice);
@@ -238,16 +215,16 @@ public class SendEthTransactionAsyncTask extends AsyncTask<ConfirmTransactionCal
                         byte[] signed = TransactionEncoder.signMessage(tx ,(byte) 1 ,credentials);
 
                         pushTransaction(signed, callback);
-                    }catch (JSONException e){
+                    } catch (Exception e){
                         handleErrorCallback(callback, e);
+                        Log.e(AppUtils.APP_TAG, "SendEthTransactionAsyncTask sendTransaction onResponse Exception", e);
                     }
-
                 }
             });
         } catch (IOException e){
             handleErrorCallback(callback, e);
+            Log.e(AppUtils.APP_TAG, "SendEthTransactionAsyncTask sendTransaction onResponse IOException", e);
         }
-
     }
 
     private void sendTokenTransaction(final String address, final String toAddress, final String contractAddress,
@@ -258,6 +235,7 @@ public class SendEthTransactionAsyncTask extends AsyncTask<ConfirmTransactionCal
                 @Override
                 public void onFailure(Call call, IOException e) {
                     handleErrorCallback(callback, e);
+                    Log.e(AppUtils.APP_TAG, "SendEthTransactionAsyncTask sendTokenTransaction onFailure IOException", e);
                 }
 
                 @Override
@@ -274,11 +252,13 @@ public class SendEthTransactionAsyncTask extends AsyncTask<ConfirmTransactionCal
                         pushTransaction(singedMessage, callback);
                     }catch (JSONException e){
                         handleErrorCallback(callback, e);
+                        Log.e(AppUtils.APP_TAG, "SendEthTransactionAsyncTask sendTokenTransaction onResponse JSONException", e);
                     }
                 }
             });
         }catch (IOException e){
             handleErrorCallback(callback, e);
+            Log.e(AppUtils.APP_TAG, "SendEthTransactionAsyncTask sendTokenTransaction onResponse IOException", e);
         }
     }
 
@@ -297,6 +277,7 @@ public class SendEthTransactionAsyncTask extends AsyncTask<ConfirmTransactionCal
                 @Override
                 public void onFailure(Call call, IOException e) {
                     handleErrorCallback(callback, e);
+                    Log.e(AppUtils.APP_TAG, "SendEthTransactionAsyncTask pushTransaction onFailure IOException", e);
                 }
 
                 @Override
@@ -336,6 +317,7 @@ public class SendEthTransactionAsyncTask extends AsyncTask<ConfirmTransactionCal
             });
         } catch (IOException e){
             handleErrorCallback(callback, e);
+            Log.e(AppUtils.APP_TAG, "SendEthTransactionAsyncTask pushTransaction onResponse IOException", e);
         }
     }
 
@@ -389,5 +371,42 @@ public class SendEthTransactionAsyncTask extends AsyncTask<ConfirmTransactionCal
         //   values.put(DbUtils.TxTableColumns.INPUT_DATA, bean.getInput());             //11
         //   values.put(DbUtils.TxTableColumns.CONTRACT_ADDRESS, token20Address);     //13
         return values;
+    }
+
+    private String queryKeyStore(){
+        Cursor cursor = null;
+        try {
+            cursor = XWalletApplication.getApplication().getContentResolver().query(XWalletProvider.CONTENT_URI,
+                    new String[]{DbUtils.DbColumns.KEYSTORE}, DbUtils.ADDRESS_SELECTION, new String[]{address}, null);
+            if (cursor != null && cursor.moveToFirst()){
+                return cursor.getString(0);
+            }
+        } finally {
+            if (cursor != null){
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    private long queryNonce(){
+        long localNonce = 0;
+        Cursor cursor = null;
+        try {
+            final String selection = DbUtils.TxTableColumns.FROM_ADDRESS + " = ?";
+            final String sortOrder = DbUtils.TxTableColumns.NONCE + " DESC";
+            cursor = XWalletApplication.getApplication().getContentResolver().query(XWalletProvider.CONTENT_URI_TRANSACTION,
+                    new String[]{DbUtils.TxTableColumns.NONCE},selection, new String[]{address}, sortOrder);
+            if (cursor != null && cursor.getCount() > 0){
+                cursor.moveToFirst();
+                localNonce = Long.parseLong(cursor.getString(0));
+            }
+
+        } finally {
+            if(cursor != null){
+                cursor.close();
+            }
+        }
+        return localNonce;
     }
 }
