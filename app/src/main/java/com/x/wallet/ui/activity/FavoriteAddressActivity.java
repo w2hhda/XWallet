@@ -1,7 +1,11 @@
 package com.x.wallet.ui.activity;
 
+import android.app.AlertDialog;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -12,17 +16,22 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.x.wallet.R;
 import com.x.wallet.db.DbUtils;
 import com.x.wallet.db.XWalletProvider;
+import com.x.wallet.transaction.FavoriteAddressDbAsycTask;
 import com.x.wallet.ui.ActionUtils;
 import com.x.wallet.ui.adapter.FavoriteAddressAdapter;
 import com.x.wallet.ui.data.AddressItem;
+import com.x.wallet.ui.helper.FavoriteAddressHelper;
 
 public class FavoriteAddressActivity extends WithBackAppCompatActivity {
     private static final int FAVORITE_ADDRESS_LOADER = 1;
+    private static final int SHARE  = 0;
+    private static final int DELETE = 1;
 
     private LoaderManager mLoaderManager;
     private RecyclerView mRecyclerView;
@@ -54,6 +63,13 @@ public class FavoriteAddressActivity extends WithBackAppCompatActivity {
             @Override
             public void onItemClick(AddressItem item) {
                 ActionUtils.editFavoriteAddress(FavoriteAddressActivity.this, item);
+            }
+        });
+
+        mAdapter.setItemLongClickListener(new FavoriteAddressAdapter.ItemLongClickListener() {
+            @Override
+            public void onLongClick(AddressItem item) {
+                showActions(FavoriteAddressActivity.this, item);
             }
         });
     }
@@ -110,5 +126,47 @@ public class FavoriteAddressActivity extends WithBackAppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showActions(Context context, final AddressItem item){
+        final String[] actions = context.getResources().getStringArray(R.array.support_long_click_action_array);
+        AlertDialog dialog = new AlertDialog.Builder(context).setTitle(R.string.action_to_favorite_address).setSingleChoiceItems(
+                new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice, actions), -1, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case SHARE:
+                                shareAddress(item);
+                                break;
+                            case DELETE:
+                                deleteAddress(item);
+                                break;
+                        }
+                        dialog.dismiss();
+                    }
+                }
+        ).create();
+        dialog.show();
+    }
+
+    private void shareAddress(AddressItem item){
+        Intent textIntent = new Intent(Intent.ACTION_SEND);
+        textIntent.setType("text/plain");
+        textIntent.putExtra(Intent.EXTRA_TEXT, item.toString());
+        startActivity(Intent.createChooser(textIntent, getString(R.string.share)));
+    }
+
+    private void deleteAddress(AddressItem item){
+        final FavoriteAddressDbAsycTask.OnDataActionFinishedListener listener = new FavoriteAddressDbAsycTask.OnDataActionFinishedListener() {
+            @Override
+            public void onDataActionFinished(boolean isSuccess) {
+                if (isSuccess){
+                    FavoriteAddressHelper.alertMsg(FavoriteAddressActivity.this, getString(R.string.favorite_address_delete_success));
+                }else {
+                    FavoriteAddressHelper.alertMsg(FavoriteAddressActivity.this, getString(R.string.favorite_address_delete_failed));
+                }
+            }
+        };
+        FavoriteAddressHelper.deleteFavoriteAddress(this, item, listener);
     }
 }

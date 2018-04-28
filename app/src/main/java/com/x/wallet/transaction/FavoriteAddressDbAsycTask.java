@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.x.wallet.db.DbUtils;
+import com.x.wallet.ui.data.AddressItem;
 
 /**
  * Created by wuliang on 18-3-27.
@@ -34,6 +35,17 @@ public class FavoriteAddressDbAsycTask extends AsyncTask<Void, Void, Boolean> {
         mActionType = actionType;
         mOnDataActionFinishedListener = onDataActionFinishedListener;
         mProgressDialog = new ProgressDialog(context);
+    }
+
+    public FavoriteAddressDbAsycTask(Context context, AddressItem item, int mActionType,
+                                     OnDataActionFinishedListener mOnDataActionFinishedListener) {
+        mOldId = item.getId();
+        mAddress = item.getAddress();
+        mType = item.getAddressType();
+        mName =item.getName();
+        this.mActionType = mActionType;
+        this.mProgressDialog = new ProgressDialog(context);
+        this.mOnDataActionFinishedListener = mOnDataActionFinishedListener;
     }
 
     @Override

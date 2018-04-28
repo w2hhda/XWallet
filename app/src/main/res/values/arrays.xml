@@ -45,4 +45,9 @@
         <!--<item>NT$</item>--> <!--TWD-->
         <item>US$</item> <!--USD-->
     </string-array>
+
+    <string-array name="support_long_click_action_array">
+        <item>@string/share</item>
+        <item>@string/del_favorite_address</item>
+    </string-array>
 </resources>

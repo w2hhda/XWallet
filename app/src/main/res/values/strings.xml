@@ -176,4 +176,6 @@
     <string name="favorite_address_update_failed">常用地址更新失败！</string>
     <string name="favorite_address_delete_success">常用地址删除成功！</string>
     <string name="favorite_address_delete_failed">常用地址删除失败！</string>
+    <string name="action_to_favorite_address">请选择操作</string>
+    <string name="share">分享</string>
 </resources>

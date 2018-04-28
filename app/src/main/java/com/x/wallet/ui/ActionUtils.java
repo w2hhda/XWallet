@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.x.wallet.AppUtils;
-import com.x.wallet.lib.common.LibUtils;
 import com.x.wallet.ui.data.AddressItem;
 import com.x.wallet.ui.data.TransactionItem;
 

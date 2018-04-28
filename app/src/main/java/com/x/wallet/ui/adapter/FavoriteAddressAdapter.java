@@ -13,6 +13,7 @@ import com.x.wallet.ui.view.AddressListItem;
 
 public class FavoriteAddressAdapter extends CursorRecyclerAdapter<FavoriteAddressAdapter.ViewHolder> {
     private ItemClickListener mItemClickListener;
+    private ItemLongClickListener mItemLongClickListener;
 
     public FavoriteAddressAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -28,6 +29,17 @@ public class FavoriteAddressAdapter extends CursorRecyclerAdapter<FavoriteAddres
                 if (mItemClickListener != null){
                     mItemClickListener.onItemClick(listItem.getItem());
                 }
+            }
+        });
+
+        listItem.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (mItemLongClickListener != null){
+                    mItemLongClickListener.onLongClick(listItem.getItem());
+                    return true;
+                }
+                return false;
             }
         });
 
@@ -60,5 +72,13 @@ public class FavoriteAddressAdapter extends CursorRecyclerAdapter<FavoriteAddres
 
     public interface ItemClickListener{
         void onItemClick(AddressItem item);
+    }
+
+    public void setItemLongClickListener(ItemLongClickListener itemLongClickListener){
+        mItemLongClickListener = itemLongClickListener;
+    }
+
+    public interface ItemLongClickListener{
+        void onLongClick(AddressItem item);
     }
 }
