@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.x.wallet.AppUtils;
@@ -79,50 +81,42 @@ public class SendEthTransactionAsyncTask extends AsyncTask<ConfirmTransactionCal
 
     @Override
     protected Void doInBackground(ConfirmTransactionCallback... params ) {
-        String keyStore;
         ConfirmTransactionCallback callback = params[0];
-        Cursor cursor = null;
-        try {
-            cursor = XWalletApplication.getApplication().getContentResolver().query(XWalletProvider.CONTENT_URI,
-                    new String[]{DbUtils.DbColumns.KEYSTORE}, DbUtils.ADDRESS_SELECTION, new String[]{address}, null);
-
-            if (cursor != null && cursor.moveToFirst()){
-                keyStore = cursor.getString(0);
-                if (keyStore == null){
-                    handleErrorCallback(callback, null);
-                    return null;
-                }
-
-                ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
-
-                try {
-                    WalletFile walletFile = mapper.readValue(keyStore, WalletFile.class);
-                    ECKeyPair keyPair = Wallet.decrypt(password, walletFile);
-                    if (keyPair != null){
-                        WalletFile file = Wallet.createStandard(password, keyPair);
-                        String newAddress = "0x" +file.getAddress();
-                        if (newAddress.equalsIgnoreCase(address)){
-                            Credentials credentials = Credentials.create(Wallet.decrypt(password, walletFile));
-                            prepareToSend(credentials, callback);
-                            //return true;
-                        }else {
-                            handleErrorCallback(callback, null);
-                        }
-                    }
-
-                } catch (IOException e) {
-                    handleErrorCallback(callback, e);
-                    //e.printStackTrace();
-                }catch (CipherException e){
-                    handleErrorCallback(callback, e);
-                }
-            }
-        } finally {
-            if (cursor != null){
-                cursor.close();
-            }
+        String keyStore = queryKeyStore();
+        if (TextUtils.isEmpty(keyStore)){
+            handleErrorCallback(callback, null);
+            Log.w(AppUtils.APP_TAG, "SendEthTransactionAsyncTask doInBackground keyStore is empty");
+            return null;
         }
 
+        ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
+
+        try {
+            WalletFile walletFile = mapper.readValue(keyStore, WalletFile.class);
+            ECKeyPair keyPair = Wallet.decrypt(password, walletFile);
+            if (keyPair == null){
+                handleErrorCallback(callback, null);
+                Log.w(AppUtils.APP_TAG, "SendEthTransactionAsyncTask doInBackground keyPair is null");
+                return null;
+            }
+
+            WalletFile file = Wallet.createStandard(password, keyPair);
+            String newAddress = "0x" +file.getAddress();
+            if (!newAddress.equalsIgnoreCase(address)){
+                handleErrorCallback(callback, null);
+                Log.w(AppUtils.APP_TAG, "SendEthTransactionAsyncTask doInBackground address not the same!");
+                return null;
+            }
+
+            Credentials credentials = Credentials.create(Wallet.decrypt(password, walletFile));
+            prepareToSend(credentials, callback);
+        } catch (IOException e) {
+            handleErrorCallback(callback, e);
+            Log.e(AppUtils.APP_TAG, "SendEthTransactionAsyncTask doInBackground IOException", e);
+        }catch (CipherException e){
+            handleErrorCallback(callback, e);
+            Log.e(AppUtils.APP_TAG, "SendEthTransactionAsyncTask doInBackground CipherException", e);
+        }
         return null;
     }
 
@@ -153,6 +147,22 @@ public class SendEthTransactionAsyncTask extends AsyncTask<ConfirmTransactionCal
 //            Toast.makeText(mContext, "error password", Toast.LENGTH_SHORT).show();
 //        }
 
+    }
+
+    private String queryKeyStore(){
+        Cursor cursor = null;
+        try {
+            cursor = XWalletApplication.getApplication().getContentResolver().query(XWalletProvider.CONTENT_URI,
+                    new String[]{DbUtils.DbColumns.KEYSTORE}, DbUtils.ADDRESS_SELECTION, new String[]{address}, null);
+            if (cursor != null && cursor.moveToFirst()){
+                return cursor.getString(0);
+            }
+        } finally {
+            if (cursor != null){
+                cursor.close();
+            }
+        }
+        return null;
     }
 
     private void prepareToSend(Credentials credentials, ConfirmTransactionCallback callback){
