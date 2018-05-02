@@ -141,7 +141,7 @@ public class ConfirmPinActivity extends Activity implements PwdView.InputCallBac
         switch (errorCode) {
             case AuthErrorCodes.CANNOT_RECOGNIZE_ERROR:
                 inputHint.setText(getResources().getString(R.string.cannot_recognize));
-                dialog.setTitle(getText(R.string.cannot_recognize));
+                //dialog.setTitle(getText(R.string.cannot_recognize));
                 break;
             case AuthErrorCodes.NON_RECOVERABLE_ERROR:
                 dismissFingerprintAuto(true);
