@@ -65,13 +65,42 @@
         android:layout_height="wrap_content"
         android:text="@string/transfer_to_address" />
 
-    <TextView
-        android:id="@+id/transaction_detail_to"
-        style="@style/TransactionDetailItemContentStyle"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="" />
+        android:layout_height="wrap_content">
 
+        <TextView
+            style="@style/TransactionDetailItemContentStyleSub"
+            android:id="@+id/transaction_detail_to"
+            android:layout_centerVertical="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="" />
+
+        <TextView
+            style="@style/TransactionDetailItemContentStyleSub"
+            android:id="@+id/add_to_favorite"
+            android:visibility="gone"
+            android:text="@string/add_favorite_address"
+            android:textColor="@color/gray_d2"
+            android:layout_toStartOf="@id/to_icon"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/to_icon"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="3dp"
+            android:paddingStart="2dp"
+            android:paddingEnd="21dp"
+            android:src="@drawable/into_icon" />
+
+    </RelativeLayout>
     <TextView
         style="@style/TransactionDetailItemTitleStyle"
         android:layout_width="match_parent"

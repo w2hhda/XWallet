@@ -144,6 +144,14 @@
         <item name="android:paddingRight">@dimen/spacing_tiny</item>
         <item name="android:includeFontPadding">false</item>
     </style>
+
+    <style name="TransactionDetailItemContentStyleSub">
+        <item name="android:paddingStart">21dp</item>
+        <item name="android:layout_marginTop">3dp</item>
+        <item name="android:textColor">#666666</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <declare-styleable name="PwdView">
         <attr name="count" format="integer" />
         <attr name="border_color" format="color" />
