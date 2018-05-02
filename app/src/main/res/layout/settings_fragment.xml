@@ -44,9 +44,8 @@
     </RelativeLayout>
 
     <View
-        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/settings_item_divider_height" />
+        android:layout_height="@dimen/settings_item_divider_height_low" />
 
     <RelativeLayout android:id="@+id/address_rl"
         android:layout_width="match_parent"
@@ -81,9 +80,8 @@
     </RelativeLayout>
 
     <View
-        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/settings_item_divider_height" />
+        android:layout_height="@dimen/settings_item_divider_height_low" />
 
     <RelativeLayout android:id="@+id/service_aggrement_rl"
         android:layout_width="match_parent"
