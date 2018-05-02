@@ -24,9 +24,13 @@ import java.math.BigDecimal;
  */
 
 public class TransactionDetailActivity extends WithBackAppCompatActivity {
-    private TextView addFavoriteTv;
-    private ImageView addToIv;
+    private TextView addOutAddressFavoriteTv;
+    private ImageView addOutAddressIv;
     private TextView toAddressTv;
+    private TextView fromAddressTv;
+    private TextView addReceivedFavoriteTv;
+    private ImageView addReceivedIv;
+    private TransactionItem item;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,14 +40,16 @@ public class TransactionDetailActivity extends WithBackAppCompatActivity {
     }
 
     private void initView(){
-        TextView fromAddressTv = findViewById(R.id.transaction_detail_from);
+        fromAddressTv = findViewById(R.id.transaction_detail_from);
         toAddressTv   = findViewById(R.id.transaction_detail_to);
         TextView amountTv      = findViewById(R.id.transaction_detail_amount);
         TextView feeTv         = findViewById(R.id.transaction_detail_fax);
         TextView hashTv        = findViewById(R.id.transaction_detail_hash);
-        addFavoriteTv = findViewById(R.id.add_to_favorite);
-        addToIv = findViewById(R.id.to_icon);
-        TransactionItem item = (TransactionItem) getIntent().getSerializableExtra(AppUtils.TRANSACTION_ITEM);
+        addOutAddressFavoriteTv = findViewById(R.id.add_to_favorite_to_address);
+        addOutAddressIv = findViewById(R.id.to_icon_to_address);
+        addReceivedFavoriteTv = findViewById(R.id.add_to_favorite_from_address);
+        addReceivedIv = findViewById(R.id.to_icon_from_address);
+        item = (TransactionItem) getIntent().getSerializableExtra(AppUtils.TRANSACTION_ITEM);
         boolean isTokenAccount = getIntent().getBooleanExtra(AppUtils.ACCOUNT_TYPE, false);
 
         fromAddressTv.setText(item.getFromAddress());
@@ -56,14 +62,7 @@ public class TransactionDetailActivity extends WithBackAppCompatActivity {
         }
 
         hashTv.setText(item.getReceiptHash());
-        final String address = toAddressTv.getText().toString();
-        final String type = isBtcAccount() ? AppUtils.COIN_ARRAY[0] : AppUtils.COIN_ARRAY[1];
-        addFavoriteTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ActionUtils.addFavoriteAddress(TransactionDetailActivity.this, address, type);
-            }
-        });
+        initAddView();
         bindAddView();
     }
 
@@ -116,29 +115,74 @@ public class TransactionDetailActivity extends WithBackAppCompatActivity {
         bindAddView();
     }
 
-    private void bindAddView(){
-        final AddressItem addressItem = getAddressItem();
-        final int actionType = FavoriteAddressDbAsycTask.QUERY_EXIST;
-        FavoriteAddressHelper.handleAddressAction(TransactionDetailActivity.this, actionType, addressItem, listener);
-    }
-
-    final FavoriteAddressDbAsycTask.OnDataActionFinishedListener listener = new FavoriteAddressDbAsycTask.OnDataActionFinishedListener() {
+    final FavoriteAddressDbAsycTask.OnDataActionFinishedListener outListener = new FavoriteAddressDbAsycTask.OnDataActionFinishedListener() {
         @Override
         public void onDataActionFinished(boolean isSuccess) {
             if (!isSuccess) {
-                addToIv.setVisibility(View.VISIBLE);
-                addFavoriteTv.setVisibility(View.VISIBLE);
+                addOutAddressIv.setVisibility(View.VISIBLE);
+                addOutAddressFavoriteTv.setVisibility(View.VISIBLE);
             }else {
-                addToIv.setVisibility(View.GONE);
-                addFavoriteTv.setVisibility(View.GONE);
+                addOutAddressIv.setVisibility(View.GONE);
+                addOutAddressFavoriteTv.setVisibility(View.GONE);
             }
         }
     };
 
-    private AddressItem getAddressItem(){
-        final String address = toAddressTv.getText().toString();
+    final FavoriteAddressDbAsycTask.OnDataActionFinishedListener receivedListener = new FavoriteAddressDbAsycTask.OnDataActionFinishedListener() {
+        @Override
+        public void onDataActionFinished(boolean isSuccess) {
+            if (!isSuccess) {
+                addReceivedIv.setVisibility(View.VISIBLE);
+                addReceivedFavoriteTv.setVisibility(View.VISIBLE);
+            }else {
+                addReceivedIv.setVisibility(View.GONE);
+                addReceivedFavoriteTv.setVisibility(View.GONE);
+            }
+        }
+    };
+
+    private void initAddView(){
         final String type = isBtcAccount() ? AppUtils.COIN_ARRAY[0] : AppUtils.COIN_ARRAY[1];
-        return new AddressItem(-1, address, type, null);
+        if (isReceiveTx()){
+            final String address = fromAddressTv.getText().toString();
+            addReceivedFavoriteTv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ActionUtils.addFavoriteAddress(TransactionDetailActivity.this, address, type);
+                }
+            });
+        }else {
+            final String address = toAddressTv.getText().toString();
+            addOutAddressFavoriteTv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ActionUtils.addFavoriteAddress(TransactionDetailActivity.this, address, type);
+                }
+            });
+        }
+    }
+
+    private void bindAddView(){
+        final String type = isBtcAccount() ? AppUtils.COIN_ARRAY[0] : AppUtils.COIN_ARRAY[1];
+        String address;
+        FavoriteAddressDbAsycTask.OnDataActionFinishedListener listener;
+        if (isReceiveTx()){
+            address = fromAddressTv.getText().toString();
+            listener = receivedListener;
+        }else {
+            address = toAddressTv.getText().toString();
+            listener = outListener;
+        }
+        final AddressItem addressItem = new AddressItem(-1, address, type, null);
+        final int actionType = FavoriteAddressDbAsycTask.QUERY_EXIST;
+        FavoriteAddressHelper.handleAddressAction(TransactionDetailActivity.this, actionType, addressItem, listener);
+    }
+
+    private boolean isReceiveTx(){
+        if (item == null){
+            return false;
+        }
+        return item.getTransactionType().equals(TransactionItem.TRANSACTION_TYPE_RECEIVE);
     }
 
 }
