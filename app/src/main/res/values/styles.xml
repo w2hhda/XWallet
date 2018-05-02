@@ -152,9 +152,4 @@
         <item name="android:textSize">12sp</item>
     </style>
 
-    <declare-styleable name="PwdView">
-        <attr name="count" format="integer" />
-        <attr name="border_color" format="color" />
-        <attr name="dot_color" format="color" />
-    </declare-styleable>
 </resources>

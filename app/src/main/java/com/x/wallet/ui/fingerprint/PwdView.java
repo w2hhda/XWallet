@@ -1,11 +1,9 @@
 package com.x.wallet.ui.fingerprint;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -21,19 +19,16 @@ import java.util.ArrayList;
 
 public class PwdView extends View {
 
-    private ArrayList<String> result;//输入结果保存
-    private int count;//密码位数
-    private int size;//默认每一格的大小
-    private Paint mBorderPaint;//边界画笔
-    private Paint mDotPaint;//掩盖点的画笔
-    private int mBorderColor;//边界颜色
-    private int mDotColor;//掩盖点的颜色
-    private RectF mRoundRect;//外面的圆角矩形
-    private int mRoundRadius;//圆角矩形的圆角程度
+    private ArrayList<String> result;
+    private int count;
+    private int size;
+    private Paint mBorderPaint;
+    private Paint mDotPaint;
+
     private boolean isFirstTime = true;
 
-    private InputCallBack inputCallBack;//输入完成的回调
-    private InputMethodView inputMethodView; //输入键盘
+    private InputCallBack inputCallBack;
+    //private InputMethodView inputMethodView;
 
     public PwdView(Context context) {
         super(context);
@@ -50,35 +45,26 @@ public class PwdView extends View {
         init(attrs);
     }
 
-    void init(AttributeSet attrs) {
+    private void init(AttributeSet attrs) {
         final float dp = getResources().getDisplayMetrics().density;
         this.setFocusable(true);
         this.setFocusableInTouchMode(true);
         result = new ArrayList<>();
-        if (attrs != null) {
-            TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.PwdView);
-            mBorderColor = ta.getColor(R.styleable.PwdView_border_color, getResources().getColor(R.color.gray_aa));
-            mDotColor = ta.getColor(R.styleable.PwdView_dot_color, getResources().getColor(R.color.gray_aa));
-            count = ta.getInt(R.styleable.PwdView_count, 6);
-            ta.recycle();
-        } else {
-            mBorderColor = getResources().getColor(R.color.gray_aa);
-            mDotColor = getResources().getColor(R.color.gray_aa);
-            count = 6;//默认6位密码
-        }
-        size = (int) (dp * 30);//默认30dp一格
-        //color
+        int color = getResources().getColor(R.color.gray_aa);
+
+        count = 6;
+
+        size = (int) (dp * 30);
+
         mBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBorderPaint.setStrokeWidth(3);
         mBorderPaint.setStyle(Paint.Style.STROKE);
-        mBorderPaint.setColor(mBorderColor);
+        mBorderPaint.setColor(color);
 
         mDotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mDotPaint.setStrokeWidth(3);
         mDotPaint.setStyle(Paint.Style.FILL);
-        mDotPaint.setColor(mDotColor);
-        mRoundRect = new RectF();
-        mRoundRadius = (int) (5 * dp);
+        mDotPaint.setColor(color);
     }
 
     @Override
@@ -87,17 +73,17 @@ public class PwdView extends View {
         int h = measureHeight(heightMeasureSpec);
         int wsize = MeasureSpec.getSize(widthMeasureSpec);
         int hsize = MeasureSpec.getSize(heightMeasureSpec);
-        //宽度没指定,但高度指定
+
         if (w == -1) {
             if (h != -1) {
-                w = h * count;//宽度=高*数量
+                w = h * count;
                 size = h;
-            } else {//两个都不知道,默认宽高
+            } else {
                 w = size * count;
                 h = size;
             }
-        } else {//宽度已知
-            if (h == -1) {//高度不知道
+        } else {
+            if (h == -1) {
                 h = w / count;
                 size = h;
             }
@@ -106,43 +92,21 @@ public class PwdView extends View {
     }
 
     private int measureWidth(int widthMeasureSpec) {
-        //宽度
         int wmode = MeasureSpec.getMode(widthMeasureSpec);
         int wsize = MeasureSpec.getSize(widthMeasureSpec);
-        if (wmode == MeasureSpec.AT_MOST) {//wrap_content
+        if (wmode == MeasureSpec.AT_MOST) {
             return -1;
         }
         return wsize;
     }
 
     private int measureHeight(int heightMeasureSpec) {
-        //高度
         int hmode = MeasureSpec.getMode(heightMeasureSpec);
         int hsize = MeasureSpec.getSize(heightMeasureSpec);
-        if (hmode == MeasureSpec.AT_MOST) {//wrap_content
+        if (hmode == MeasureSpec.AT_MOST) {
             return -1;
         }
         return hsize;
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {//点击控件弹出输入键盘
-            requestFocus();
-            inputMethodView.setVisibility(VISIBLE);
-            return true;
-        }
-        return true;
-    }
-
-    @Override
-    protected void onFocusChanged(boolean gainFocus, int direction, Rect previouslyFocusedRect) {
-        super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
-        if (gainFocus) {
-            inputMethodView.setVisibility(VISIBLE);
-        } else {
-            inputMethodView.setVisibility(GONE);
-        }
     }
 
     @Override
@@ -172,7 +136,7 @@ public class PwdView extends View {
 
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-        outAttrs.inputType = InputType.TYPE_CLASS_NUMBER;//输入类型为数字
+        outAttrs.inputType = InputType.TYPE_CLASS_NUMBER;
         outAttrs.imeOptions = EditorInfo.IME_ACTION_DONE;
         return new MyInputConnection(this, false);
     }
@@ -181,7 +145,7 @@ public class PwdView extends View {
         this.inputCallBack = inputCallBack;
     }
 
-    public void clearResult() {
+    private void clearResult() {
         result.clear();
         isFirstTime = !isFirstTime;
         invalidate();
@@ -194,14 +158,7 @@ public class PwdView extends View {
         }
 
         @Override
-        public boolean commitText(CharSequence text, int newCursorPosition) {
-            //这里是接受输入法的文本的，我们只处理数字，所以什么操作都不做
-            return super.commitText(text, newCursorPosition);
-        }
-
-        @Override
         public boolean deleteSurroundingText(int beforeLength, int afterLength) {
-            //软键盘的删除键 DEL 无法直接监听，自己发送del事件
             if (beforeLength == 1 && afterLength == 0) {
                 return super.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
                         && super.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL));
@@ -210,15 +167,9 @@ public class PwdView extends View {
         }
     }
 
-
-    /**
-     * 设置输入键盘view
-     *
-     * @param inputMethodView
-     */
     public void setInputMethodView(InputMethodView inputMethodView) {
-        this.inputMethodView = inputMethodView;
-        this.inputMethodView.setInputReceiver(new InputMethodView.InputReceiver() {
+        //this.inputMethodView = inputMethodView;
+        inputMethodView.setInputReceiver(new InputMethodView.InputReceiver() {
             @Override
             public void receive(String num) {
                 if (num.equals("-1")) {
@@ -230,7 +181,12 @@ public class PwdView extends View {
                     if (result.size() < count) {
                         result.add(num);
                         invalidate();
-                        ensureFinishInput();
+                        postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                ensureFinishInput();
+                            }
+                        },100);
                     }
                 }
 
@@ -239,7 +195,7 @@ public class PwdView extends View {
         });
     }
 
-    void ensureFinishInput() {
+    private void ensureFinishInput() {
         if (result.size() == count && inputCallBack != null) {
             StringBuffer sb = new StringBuffer();
             for (String i : result) {
@@ -249,17 +205,6 @@ public class PwdView extends View {
 
             clearResult();
         }
-    }
-
-    public String getInputText() {
-        if (result.size() == count) {
-            StringBuffer sb = new StringBuffer();
-            for (String i : result) {
-                sb.append(i);
-            }
-            return sb.toString();
-        }
-        return null;
     }
 
     public interface InputCallBack {
