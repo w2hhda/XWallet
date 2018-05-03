@@ -64,6 +64,7 @@ public class AppUtils {
     public static final String CONFIRM_PIN_CODE = "confirm_pin_code";
     public static final String ADDRESS_ITEM = "address_item";
     public static final String EXTRA_ADDRESS = "extra_address";
+    public static final String EXTRA_ADDRESS_TYPE = "extra_address_type";
 
     public static final String APP_TAG = "XWallet";
 

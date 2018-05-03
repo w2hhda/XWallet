@@ -188,9 +188,9 @@
             android:id="@+id/gas_price_seekbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingEnd="0dp"
-            android:paddingStart="0dp"
-            android:progress="50" />
+            android:paddingEnd="6dp"
+            android:paddingStart="6dp"
+            android:progress="50"/>
 
         <RelativeLayout
             android:layout_width="match_parent"

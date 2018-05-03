@@ -127,6 +127,17 @@ public class EditFavoriteAddressActivity extends WithBackAppCompatActivity {
             mFinishButton.setEnabled(true);
         } else {
             setTitle(R.string.add_favorite_address);
+            final Intent intent = getIntent();
+            if (intent == null){
+                return;
+            }
+            if (intent.hasExtra(AppUtils.EXTRA_ADDRESS)){
+                mAddressEt.setText(intent.getStringExtra(AppUtils.EXTRA_ADDRESS));
+                mFinishButton.setEnabled(true);
+            }
+            if (intent.hasExtra(AppUtils.EXTRA_ADDRESS_TYPE)){
+                mAddressTypeEt.setText(intent.getStringExtra(AppUtils.EXTRA_ADDRESS_TYPE));
+            }
         }
     }
 

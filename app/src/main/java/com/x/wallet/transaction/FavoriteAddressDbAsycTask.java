@@ -23,6 +23,7 @@ public class FavoriteAddressDbAsycTask extends AsyncTask<Void, Void, Boolean> {
     public static final int INSERT_ACTION = 1;
     public static final int DEL_ACTION = 2;
     public static final int UPDATE_ACTION = 3;
+    public static final int QUERY_EXIST = 4;
 
     public FavoriteAddressDbAsycTask(Context context, AddressItem item, int actionType,
                                      OnDataActionFinishedListener onDataActionFinishedListener) {
@@ -50,6 +51,8 @@ public class FavoriteAddressDbAsycTask extends AsyncTask<Void, Void, Boolean> {
                 return DbUtils.deleteFavoriteAddress(mOldId);
             case UPDATE_ACTION:
                 return DbUtils.updateFavoriteAddress(mOldId, mAddress, mType, mName);
+            case QUERY_EXIST:
+                return DbUtils.isFavoriteAddressExist(mAddress) > 0;
         }
         return false;
     }

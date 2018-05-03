@@ -53,12 +53,12 @@ public class ConfirmPinActivity extends Activity implements PwdView.InputCallBac
             mFingerprintIv.setVisibility(View.VISIBLE);
             fingerPrintAuthHelper = FingerPrintAuthHelper.getHelper(this, this);
         }
-        mFingerprintIv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createFingerprintDialog();
-            }
-        });
+//        mFingerprintIv.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                createFingerprintDialog();
+//            }
+//        });
     }
 
     @Override
@@ -91,7 +91,8 @@ public class ConfirmPinActivity extends Activity implements PwdView.InputCallBac
     protected void onResume() {
         super.onResume();
         if (!TextUtils.isEmpty(confirmPinCode) && !resetPinCode){
-            createFingerprintDialog();
+            //createFingerprintDialog();
+            fingerPrintAuthHelper.startAuth();
         }
     }
 
@@ -117,12 +118,12 @@ public class ConfirmPinActivity extends Activity implements PwdView.InputCallBac
 
     @Override
     public void onNoFingerPrintHardwareFound() {
-        dismissFingerprintAuto(true);
+        noFingerprint();
     }
 
     @Override
     public void onNoFingerPrintRegistered() {
-        dismissFingerprintAuto(true);
+        noFingerprint();
     }
 
     @Override
@@ -140,7 +141,7 @@ public class ConfirmPinActivity extends Activity implements PwdView.InputCallBac
         switch (errorCode) {
             case AuthErrorCodes.CANNOT_RECOGNIZE_ERROR:
                 inputHint.setText(getResources().getString(R.string.cannot_recognize));
-                dialog.setTitle(getText(R.string.cannot_recognize));
+                //dialog.setTitle(getText(R.string.cannot_recognize));
                 break;
             case AuthErrorCodes.NON_RECOVERABLE_ERROR:
                 dismissFingerprintAuto(true);
@@ -173,5 +174,10 @@ public class ConfirmPinActivity extends Activity implements PwdView.InputCallBac
         }else {
             inputHint.setText(getResources().getString(R.string.confirm_pin_code));
         }
+    }
+
+    private void noFingerprint(){
+        mFingerprintIv.setVisibility(View.GONE);
+        inputHint.setText(getResources().getString(R.string.confirm_pin_code));
     }
 }

@@ -63,4 +63,12 @@ public class ActionUtils {
         context.startActivity(intent);
 
     }
+
+    public static void addFavoriteAddress(Context context, String address, String addressType){
+        Intent intent = new Intent("com.x.wallet.action.EDIT_FAVORITE_ADDRESS_ACTION");
+        intent.putExtra(AppUtils.EXTRA_ADDRESS, address);
+        intent.putExtra(AppUtils.EXTRA_ADDRESS_TYPE, addressType);
+        context.startActivity(intent);
+
+    }
 }
