@@ -361,7 +361,7 @@ public class DbUtils {
         return deleteRows > 0;
     }
 
-    public static long isFavoriteAddressExist(String address) {
+    private static long isFavoriteAddressExist(String address) {
         final String selection = AddressTableColumns.ADDRESS + " = ?";
         Cursor cursor = null;
         try {

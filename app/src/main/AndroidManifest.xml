@@ -133,6 +133,7 @@
 
         <activity
             android:name=".ui.activity.TransactionDetailActivity"
+            android:label="@string/transaction_detail"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.x.wallet.action_SEE_TRANSACTION_DETAIL" />

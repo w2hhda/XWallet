@@ -51,41 +51,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/transfer_from_address" />
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingStart="21dp"
+        android:paddingEnd="21dp"
+        android:layout_marginTop="3dp">
 
         <TextView
             android:id="@+id/transaction_detail_from"
-            style="@style/TransactionDetailItemContentStyle"
-            android:layout_centerVertical="true"
-            android:layout_width="match_parent"
+            style="@style/TransactionDetailItemContentTextStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:text="" />
 
-        <TextView
-            style="@style/TransactionDetailItemContentStyleSub"
-            android:id="@+id/add_to_favorite_from_address"
-            android:visibility="gone"
-            android:text="@string/add_favorite_address"
-            android:textColor="@color/gray_d2"
-            android:layout_toStartOf="@id/to_icon_from_address"
-            android:layout_centerVertical="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <ImageView
-            android:id="@+id/to_icon_from_address"
-            android:visibility="gone"
+        <com.x.wallet.ui.view.AddToUsualUseAddressView
+            android:id="@+id/add_from_to_usual_address_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginTop="3dp"
-            android:paddingStart="2dp"
-            android:paddingEnd="21dp"
-            android:src="@drawable/into_icon" />
-
+            android:visibility="gone" />
     </RelativeLayout>
 
     <TextView
@@ -96,40 +84,28 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingStart="21dp"
+        android:paddingEnd="21dp"
+        android:layout_marginTop="3dp">
 
         <TextView
-            style="@style/TransactionDetailItemContentStyleSub"
             android:id="@+id/transaction_detail_to"
-            android:layout_centerVertical="true"
-            android:layout_width="match_parent"
+            style="@style/TransactionDetailItemContentTextStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:text="" />
 
-        <TextView
-            style="@style/TransactionDetailItemContentStyleSub"
-            android:id="@+id/add_to_favorite_to_address"
-            android:visibility="gone"
-            android:text="@string/add_favorite_address"
-            android:textColor="@color/gray_d2"
-            android:layout_toStartOf="@id/to_icon_to_address"
-            android:layout_centerVertical="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <ImageView
-            android:id="@+id/to_icon_to_address"
-            android:visibility="gone"
+        <com.x.wallet.ui.view.AddToUsualUseAddressView
+            android:id="@+id/add_to_to_usual_address_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginTop="3dp"
-            android:paddingStart="2dp"
-            android:paddingEnd="21dp"
-            android:src="@drawable/into_icon" />
-
+            android:visibility="gone" />
     </RelativeLayout>
+
     <TextView
         style="@style/TransactionDetailItemTitleStyle"
         android:layout_width="match_parent"

@@ -145,9 +145,7 @@
         <item name="android:includeFontPadding">false</item>
     </style>
 
-    <style name="TransactionDetailItemContentStyleSub">
-        <item name="android:paddingStart">21dp</item>
-        <item name="android:layout_marginTop">3dp</item>
+    <style name="TransactionDetailItemContentTextStyle">
         <item name="android:textColor">#666666</item>
         <item name="android:textSize">12sp</item>
     </style>
